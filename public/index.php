@@ -69,11 +69,22 @@ body {
 .tx-info { flex: 1; min-width: 0; }
 .tx-desc { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .tx-cat  { font-size: 12px; color: #9e9e9e; margin-top: 2px; }
-.tx-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.tx-right { display: flex; flex-direction: row; align-items: center; gap: 8px; }
 .tx-amt  { font-size: 15px; font-weight: 700; white-space: nowrap; }
 .tx-amt.expense { color: #e53935; }
 .tx-amt.income  { color: #00BCD4; }
-.tx-thumb { width: 36px; height: 36px; border-radius: 6px; object-fit: cover; }
+.tx-thumb-slot {
+  width: 42px; height: 42px; border-radius: 8px; flex-shrink: 0;
+  background: #f0f0f0; border: 1.5px dashed #d0d0d0;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden; cursor: pointer; position: relative;
+}
+.tx-thumb-slot.empty { cursor: default; opacity: .55; }
+.tx-thumb-slot img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.12);
+  border: 1px solid rgba(0,0,0,.08);
+}
 .empty-msg { text-align: center; padding: 60px 20px; color: #bdbdbd; font-size: 15px; line-height: 1.9; }
 
 /* ── 달력 뷰 ── */
@@ -178,7 +189,19 @@ body {
 .txa-amt  { font-size: 16px; font-weight: 700; white-space: nowrap; }
 .txa-amt.expense { color: #e53935; }
 .txa-amt.income  { color: #00BCD4; }
-.txa-photo { width: calc(100% - 40px); margin: 0 20px 0; max-height: 140px; object-fit: cover; border-radius: 10px; border-bottom: 1px solid #f0f0f0; }
+/* ── 사진 캐러셀 (액션시트/상세) ── */
+.photo-carousel-wrap { position: relative; margin: 10px 20px 0; border-radius: 12px; overflow: hidden; background: #f0f0f0; border: 1px solid #e0e0e0; touch-action: pan-y; }
+.photo-carousel-inner { display: flex; transition: transform .28s ease; will-change: transform; }
+.photo-carousel-inner img { width: 100%; flex-shrink: 0; max-height: 180px; object-fit: contain; cursor: zoom-in; border-radius: 0; display: block; background: #f0f0f0; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08); }
+.photo-carousel-dots { display: flex; justify-content: center; gap: 7px; padding: 7px 0 2px; }
+.photo-carousel-dot { width: 7px; height: 7px; border-radius: 50%; background: #d0d0d0; transition: background .2s, transform .2s; }
+.photo-carousel-dot.on { background: #455A64; transform: scale(1.3); }
+/* ── 모달 다중사진 ── */
+.photo-grid { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 13px; }
+.photo-grid-item { position: relative; width: 68px; height: 68px; border-radius: 8px; overflow: hidden; border: 1px solid #e0e0e0; flex-shrink: 0; background: #f5f5f5; box-shadow: inset 0 0 0 1px rgba(0,0,0,.06); }
+.photo-grid-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.photo-grid-x { position: absolute; top: 2px; right: 2px; background: rgba(0,0,0,.58); color: #fff; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1; padding: 0; }
+.photo-add-btn { width: 68px; height: 68px; border-radius: 8px; border: 1.5px dashed #bbb; background: #f5f5f5; display: flex; align-items: center; justify-content: center; font-size: 26px; cursor: pointer; flex-shrink: 0; color: #aaa; }
 .txa-menu { margin-top: 4px; }
 .txa-item { display: flex; align-items: center; gap: 14px; padding: 15px 22px; font-size: 15px; cursor: pointer; border-bottom: 1px solid #f5f5f5; }
 .txa-item:active { background: #f5f5f5; }
@@ -426,10 +449,9 @@ body {
         <button class="photo-btn" onclick="document.getElementById('photoInput').click()" title="사진 첨부">📷</button>
         <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="onPhotoSelect(this)">
       </div>
-      <!-- 사진 미리보기 -->
-      <div class="photo-preview" id="photoPreview">
-        <img id="photoImg" src="" alt="첨부사진">
-        <button class="photo-remove" onclick="removePhoto()">✕</button>
+      <!-- 사진 미리보기 (다중) -->
+      <div id="photoGrid" style="display:none">
+        <div class="photo-grid" id="photoGridItems"></div>
       </div>
 
       <label class="mf-label">결제수단</label>
@@ -472,7 +494,7 @@ let txs        = [];
 let customCats = { expense: [], income: [] }; // [{emoji, name}]
 let curMonth   = new Date().toISOString().slice(0,7);
 let curType    = 'expense';
-let photoData  = null; // base64
+let photosData = []; // base64 array
 let calVisible = false;
 let prevTab    = 'ledger'; // 달력 닫을 때 돌아갈 탭
 let activeTxId  = null;   // 액션 시트에서 선택된 tx
@@ -482,6 +504,12 @@ let daySheetDate = null;  // 달력에서 클릭한 날짜
 // ── 로드 ──────────────────────────────────────────────────────
 function load() {
   try { txs = JSON.parse(localStorage.getItem(SK)||'[]'); } catch { txs=[]; }
+  // 구버전 photo → photos 마이그레이션
+  txs = txs.map(t => {
+    if (t.photo && !t.photos) { t.photos = [t.photo]; delete t.photo; }
+    if (!t.photos) t.photos = [];
+    return t;
+  });
   try { customCats = JSON.parse(localStorage.getItem(CATS_SK)||'{"expense":[],"income":[]}'); }
   catch { customCats = {expense:[],income:[]}; }
 }
@@ -502,6 +530,67 @@ function getIcon(cat) {
   const all = [...customCats.expense, ...customCats.income];
   const found = all.find(c => c.name === cat);
   return found ? found.emoji : '📦';
+}
+
+// ── tx-row HTML 공통 빌더 ───────────────────────────────────
+function txRowHtml(t, extraOnclick) {
+  const photos = Array.isArray(t.photos) ? t.photos : (t.photo ? [t.photo] : []);
+  const firstPhoto = photos[0] || null;
+  const thumb = firstPhoto
+    ? `<div class="tx-thumb-slot" onclick="event.stopPropagation();openPhoto('${firstPhoto}')">
+         <img src="${firstPhoto}" alt="">
+       </div>`
+    : '';
+  return `<div class="tx-row" onclick="${extraOnclick||''}openTxAction('${t.id}')">
+    <div class="tx-icon">${getIcon(t.category)}</div>
+    ${thumb}
+    <div class="tx-info">
+      <div class="tx-desc">${esc(t.description||t.category)}</div>
+      <div class="tx-cat">${esc(t.category)}${t.payment?` · ${esc(t.payment)}`:''}</div>
+    </div>
+    <div class="tx-right">
+      <div class="tx-amt ${t.type}">${t.type==='income'?'+':'-'}${fmt(t.amount)}</div>
+    </div>
+  </div>`;
+}
+
+// ── 사진 캐러셀 빌더 ────────────────────────────────────────
+function buildCarousel(photos, id) {
+  const slides = photos.map(src =>
+    `<img src="${src}" alt="" onclick="openPhoto('${src}')">`
+  ).join('');
+  const dots = photos.length > 1
+    ? `<div class="photo-carousel-dots" id="dots-${id}">` +
+      photos.map((_,i) => `<div class="photo-carousel-dot${i===0?' on':''}" onclick="goSlide('${id}',${i})"></div>`).join('') +
+      `</div>`
+    : '';
+  return `<div class="photo-carousel-wrap" id="car-${id}">
+    <div class="photo-carousel-inner" id="inner-${id}">${slides}</div>
+  </div>${dots}`;
+}
+function initCarousel(id) {
+  const wrap = document.getElementById('car-'+id);
+  const inner = document.getElementById('inner-'+id);
+  if (!wrap || !inner) return;
+  let cur = 0, startX = 0, dx = 0, dragging = false;
+  wrap.addEventListener('touchstart', e => { startX = e.touches[0].clientX; dragging = true; dx = 0; }, {passive:true});
+  wrap.addEventListener('touchmove', e => { if (!dragging) return; dx = e.touches[0].clientX - startX; }, {passive:true});
+  wrap.addEventListener('touchend', () => {
+    if (!dragging) return; dragging = false;
+    const count = inner.children.length;
+    if (dx < -40 && cur < count-1) cur++;
+    else if (dx > 40 && cur > 0) cur--;
+    goSlide(id, cur);
+  });
+}
+function goSlide(id, idx) {
+  const inner = document.getElementById('inner-'+id);
+  if (!inner) return;
+  const count = inner.children.length;
+  idx = Math.max(0, Math.min(count-1, idx));
+  inner.style.transform = `translateX(-${idx*100}%)`;
+  const dots = document.getElementById('dots-'+id);
+  if (dots) dots.querySelectorAll('.photo-carousel-dot').forEach((d,i)=>d.classList.toggle('on',i===idx));
 }
 
 // ── 탭 전환 ──────────────────────────────────────────────────
@@ -604,8 +693,8 @@ function openModalForDate() {
   document.getElementById('fAmt').value = '';
   document.getElementById('fDesc').value = '';
   document.getElementById('fPay').value = '현금';
-  photoData = null;
-  document.getElementById('photoPreview').style.display = 'none';
+  photosData = [];
+  renderPhotoGrid();
   document.getElementById('newCatBox').classList.remove('show');
   setType('expense');
   document.getElementById('modal').classList.add('show');
@@ -621,18 +710,9 @@ function openDaySheet(dateStr) {
   if (!rows.length) {
     document.getElementById('daySheetBody').innerHTML = '<div class="empty-msg" style="padding:30px">내역이 없어요</div>';
   } else {
-    document.getElementById('daySheetBody').innerHTML = rows.map(t=>`
-      <div class="tx-row" onclick="document.getElementById('daySheet').classList.remove('show');openTxAction('${t.id}')">
-        <div class="tx-icon">${getIcon(t.category)}</div>
-        <div class="tx-info">
-          <div class="tx-desc">${esc(t.description||t.category)}</div>
-          <div class="tx-cat">${esc(t.category)}${t.payment?` · ${esc(t.payment)}`:''}</div>
-        </div>
-        <div class="tx-right">
-          <div class="tx-amt ${t.type}">${t.type==='income'?'+':'-'}${fmt(t.amount)}</div>
-          ${t.photo?`<img class="tx-thumb" src="${t.photo}" alt="" onclick="event.stopPropagation();openPhoto('${t.photo}')" style="cursor:zoom-in">`:''}
-        </div>
-      </div>`).join('');
+    document.getElementById('daySheetBody').innerHTML = rows.map(t=>
+      txRowHtml(t, `document.getElementById('daySheet').classList.remove('show');`)
+    ).join('');
   }
   document.getElementById('daySheet').classList.add('show');
 }
@@ -672,18 +752,7 @@ function renderLedger() {
     if (dExp) dayTotal+=`<span style="color:#ef9a9a">-${fmt(dExp)}</span>`;
     return `<div class="date-group">
       <div class="date-header"><span>${parseInt(dd)}일 (${dow})</span><span>${dayTotal}</span></div>
-      ${rows.map(t=>`
-      <div class="tx-row" onclick="openTxAction('${t.id}')">
-        <div class="tx-icon">${getIcon(t.category)}</div>
-        <div class="tx-info">
-          <div class="tx-desc">${esc(t.description||t.category)}</div>
-          <div class="tx-cat">${esc(t.category)}${t.payment?` · ${esc(t.payment)}`:''}</div>
-        </div>
-        <div class="tx-right">
-          <div class="tx-amt ${t.type}">${t.type==='income'?'+':'-'}${fmt(t.amount)}</div>
-          ${t.photo?`<img class="tx-thumb" src="${t.photo}" alt="" onclick="event.stopPropagation();openPhoto('${t.photo}')" style="cursor:zoom-in">`:''}
-        </div>
-      </div>`).join('')}
+      ${rows.map(t=>txRowHtml(t)).join('')}
     </div>`;
   }).join('');
 }
@@ -752,8 +821,8 @@ function openModal() {
   document.getElementById('fAmt').value='';
   document.getElementById('fDesc').value='';
   document.getElementById('fPay').value='현금';
-  photoData=null;
-  document.getElementById('photoPreview').style.display='none';
+  photosData=[];
+  renderPhotoGrid();
   document.getElementById('newCatBox').classList.remove('show');
   setType('expense');
   document.getElementById('modal').classList.add('show');
@@ -769,9 +838,8 @@ function fillModal(t, titleText) {
   document.getElementById('fPay').value = t.payment || '현금';
   // 카테고리 선택 (커스텀 포함)
   setTimeout(()=>{ document.getElementById('fCat').value = t.category; }, 0);
-  photoData = t.photo || null;
-  document.getElementById('photoImg').src = photoData || '';
-  document.getElementById('photoPreview').style.display = photoData ? 'block' : 'none';
+  photosData = Array.isArray(t.photos) ? [...t.photos] : (t.photo ? [t.photo] : []);
+  renderPhotoGrid();
   document.getElementById('newCatBox').classList.remove('show');
   document.getElementById('modal').classList.add('show');
 }
@@ -818,17 +886,28 @@ function onPhotoSelect(input) {
   const file = input.files[0];
   const reader = new FileReader();
   reader.onload = e => {
-    photoData = e.target.result;
-    document.getElementById('photoImg').src = photoData;
-    document.getElementById('photoPreview').style.display = 'block';
+    photosData.push(e.target.result);
+    renderPhotoGrid();
   };
   reader.readAsDataURL(file);
-  input.value='';
+  input.value = '';
 }
-function removePhoto() {
-  photoData=null;
-  document.getElementById('photoPreview').style.display='none';
-  document.getElementById('photoImg').src='';
+function removePhoto(idx) {
+  photosData.splice(idx, 1);
+  renderPhotoGrid();
+}
+function renderPhotoGrid() {
+  const grid = document.getElementById('photoGrid');
+  const items = document.getElementById('photoGridItems');
+  if (!photosData.length) { grid.style.display = 'none'; items.innerHTML = ''; return; }
+  grid.style.display = 'block';
+  items.innerHTML = photosData.map((src, i) =>
+    `<div class="photo-grid-item">
+      <img src="${src}" alt="" onclick="openPhoto('${src}')">
+      <button class="photo-grid-x" onclick="removePhoto(${i})">✕</button>
+    </div>`
+  ).join('') +
+  `<div class="photo-add-btn" onclick="document.getElementById('photoInput').click()">＋</div>`;
 }
 function openPhoto(src) {
   document.getElementById('photoViewerImg').src = src;
@@ -847,14 +926,12 @@ function saveTx() {
   if (editingTxId) {
     const idx = txs.findIndex(t => t.id === editingTxId);
     if (idx !== -1) {
-      txs[idx] = { ...txs[idx], type:curType, amount:amt, category:cat, description:desc||cat, date, payment:pay };
-      if (photoData) txs[idx].photo = photoData; else delete txs[idx].photo;
+      txs[idx] = { ...txs[idx], type:curType, amount:amt, category:cat, description:desc||cat, date, payment:pay, photos:[...photosData] };
+      delete txs[idx].photo; // 구버전 필드 제거
     }
     editingTxId = null;
   } else {
-    const tx = { id:Date.now()+Math.random().toString(36).slice(2), type:curType, amount:amt, category:cat, description:desc||cat, date, payment:pay };
-    if (photoData) tx.photo = photoData;
-    txs.push(tx);
+    txs.push({ id:Date.now()+Math.random().toString(36).slice(2), type:curType, amount:amt, category:cat, description:desc||cat, date, payment:pay, photos:[...photosData] });
   }
   persist();
   closeModal();
@@ -867,6 +944,7 @@ function openTxAction(id) {
   activeTxId = id;
   const t = txs.find(x => x.id === id);
   if (!t) return;
+  const photos = Array.isArray(t.photos) ? t.photos : (t.photo ? [t.photo] : []);
   document.getElementById('txaSummary').innerHTML = `
     <div class="txa-summary">
       <div class="txa-icon">${getIcon(t.category)}</div>
@@ -876,8 +954,9 @@ function openTxAction(id) {
       </div>
       <div class="txa-amt ${t.type}">${t.type==='income'?'+':'-'}${fmt(t.amount)}</div>
     </div>
-    ${t.photo?`<img class="txa-photo" src="${t.photo}" alt="첨부사진" onclick="openPhoto('${t.photo}')" style="display:block;margin:10px 20px;width:calc(100% - 40px);max-height:120px;object-fit:cover;border-radius:10px;cursor:zoom-in">`:''}
+    ${photos.length ? buildCarousel(photos, 'txa') : ''}
   `;
+  if (photos.length > 1) initCarousel('txa');
   document.getElementById('txaOverlay').classList.add('show');
 }
 function closeTxaOverlay(e) {
@@ -895,10 +974,12 @@ function showTxDetail() {
     <div class="detail-row"><span class="detail-key">내용</span><span class="detail-val">${esc(t.description||'-')}</span></div>
     <div class="detail-row"><span class="detail-key">결제수단</span><span class="detail-val">${esc(t.payment||'-')}</span></div>
     <div class="detail-row"><span class="detail-key">날짜</span><span class="detail-val">${t.date}</span></div>
-    ${t.photo?`<div class="detail-photo-wrap"><img src="${t.photo}" alt="첨부사진" onclick="openPhoto('${t.photo}')"></div>`:''}
+    ${(()=>{ const ph=Array.isArray(t.photos)?t.photos:(t.photo?[t.photo]:[]); return ph.length?buildCarousel(ph,'det'):''; })()}
   `;
   document.getElementById('txaOverlay').classList.remove('show');
   document.getElementById('detailOverlay').classList.add('show');
+  const ph2=Array.isArray(t.photos)?t.photos:(t.photo?[t.photo]:[]);
+  if (ph2.length > 1) initCarousel('det');
 }
 function editTx() {
   const t = txs.find(x => x.id === activeTxId);
