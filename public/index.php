@@ -196,7 +196,13 @@ body {
 .detail-key { font-size: 13px; color: #9e9e9e; }
 .detail-val { font-size: 14px; font-weight: 600; color: #212121; text-align: right; max-width: 60%; }
 .detail-photo-wrap { padding: 14px 20px 0; }
-.detail-photo-wrap img { width: 100%; max-height: 200px; object-fit: cover; border-radius: 10px; }
+.detail-photo-wrap img { width: 100%; max-height: 200px; object-fit: cover; border-radius: 10px; cursor: zoom-in; }
+
+/* ── 사진 풀스크린 뷰어 ── */
+.photo-viewer { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.92); z-index: 900; align-items: center; justify-content: center; }
+.photo-viewer.show { display: flex; }
+.photo-viewer img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 6px; }
+.photo-viewer-x { position: absolute; top: 16px; right: 18px; background: rgba(255,255,255,.15); border: none; color: #fff; font-size: 28px; width: 42px; height: 42px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
 /* ── 모달 ── */
 .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 500; align-items: flex-end; justify-content: center; }
@@ -368,6 +374,12 @@ body {
     </div>
     <div id="detailBody"></div>
   </div>
+</div>
+
+<!-- 사진 풀스크린 뷰어 -->
+<div class="photo-viewer" id="photoViewer" onclick="document.getElementById('photoViewer').classList.remove('show')">
+  <img id="photoViewerImg" src="" alt="사진">
+  <button class="photo-viewer-x" onclick="document.getElementById('photoViewer').classList.remove('show')">×</button>
 </div>
 
 <!-- 하단 탭바 -->
@@ -618,7 +630,7 @@ function openDaySheet(dateStr) {
         </div>
         <div class="tx-right">
           <div class="tx-amt ${t.type}">${t.type==='income'?'+':'-'}${fmt(t.amount)}</div>
-          ${t.photo?`<img class="tx-thumb" src="${t.photo}" alt="">`:''}
+          ${t.photo?`<img class="tx-thumb" src="${t.photo}" alt="" onclick="event.stopPropagation();openPhoto('${t.photo}')" style="cursor:zoom-in">`:''}
         </div>
       </div>`).join('');
   }
@@ -669,7 +681,7 @@ function renderLedger() {
         </div>
         <div class="tx-right">
           <div class="tx-amt ${t.type}">${t.type==='income'?'+':'-'}${fmt(t.amount)}</div>
-          ${t.photo?`<img class="tx-thumb" src="${t.photo}" alt="">`:''}
+          ${t.photo?`<img class="tx-thumb" src="${t.photo}" alt="" onclick="event.stopPropagation();openPhoto('${t.photo}')" style="cursor:zoom-in">`:''}
         </div>
       </div>`).join('')}
     </div>`;
@@ -818,6 +830,10 @@ function removePhoto() {
   document.getElementById('photoPreview').style.display='none';
   document.getElementById('photoImg').src='';
 }
+function openPhoto(src) {
+  document.getElementById('photoViewerImg').src = src;
+  document.getElementById('photoViewer').classList.add('show');
+}
 
 // ── 저장 ─────────────────────────────────────────────────────
 function saveTx() {
@@ -860,7 +876,7 @@ function openTxAction(id) {
       </div>
       <div class="txa-amt ${t.type}">${t.type==='income'?'+':'-'}${fmt(t.amount)}</div>
     </div>
-    ${t.photo?`<img class="txa-photo" src="${t.photo}" alt="첨부사진" style="display:block;margin:10px 20px;width:calc(100%-40px);max-height:120px;object-fit:cover;border-radius:10px">`:''}
+    ${t.photo?`<img class="txa-photo" src="${t.photo}" alt="첨부사진" onclick="openPhoto('${t.photo}')" style="display:block;margin:10px 20px;width:calc(100% - 40px);max-height:120px;object-fit:cover;border-radius:10px;cursor:zoom-in">`:''}
   `;
   document.getElementById('txaOverlay').classList.add('show');
 }
@@ -879,7 +895,7 @@ function showTxDetail() {
     <div class="detail-row"><span class="detail-key">내용</span><span class="detail-val">${esc(t.description||'-')}</span></div>
     <div class="detail-row"><span class="detail-key">결제수단</span><span class="detail-val">${esc(t.payment||'-')}</span></div>
     <div class="detail-row"><span class="detail-key">날짜</span><span class="detail-val">${t.date}</span></div>
-    ${t.photo?`<div class="detail-photo-wrap"><img src="${t.photo}" alt="첨부사진"></div>`:''}
+    ${t.photo?`<div class="detail-photo-wrap"><img src="${t.photo}" alt="첨부사진" onclick="openPhoto('${t.photo}')"></div>`:''}
   `;
   document.getElementById('txaOverlay').classList.remove('show');
   document.getElementById('detailOverlay').classList.add('show');
