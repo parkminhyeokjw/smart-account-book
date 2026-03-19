@@ -1,7 +1,7 @@
 <?php
 // transaction/create.php — 거래 내역 등록
 
-require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../config/auth.php';
 
 function insertTransaction(
     int    $userId,
@@ -37,7 +37,7 @@ function insertTransaction(
 if (php_sapi_name() !== 'cli' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Content-Type: application/json; charset=utf-8');
 
-    $userId        = (int) ($_POST['user_id'] ?? 1);
+    $userId        = requireLogin(true);
     $categoryId    = isset($_POST['category_id']) && $_POST['category_id'] !== ''
                       ? (int) $_POST['category_id'] : null;
     $amount        = (int) ($_POST['amount'] ?? 0);

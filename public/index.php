@@ -1,9 +1,9 @@
 <?php
-require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../config/auth.php';
 require_once __DIR__ . '/../config/google_oauth.php';
 require_once __DIR__ . '/../transaction/list.php';
 
-$userId    = 1;
+$userId    = requireLogin();
 $yearMonth = $_GET['ym']  ?? date('Y-m');
 $activeTab = $_GET['tab'] ?? 'expense';
 
@@ -576,7 +576,7 @@ $cChartDataJson = json_encode([
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>민혁가계부</title>
+<title>똑똑가계부</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <script src="design_apply.js"></script>
 <script src="currency_apply.js"></script>
@@ -879,11 +879,41 @@ button{font-family:inherit;}
 <body>
 
 <!-- ══ 사이드 드로어 ══ -->
+<style>
+.drawer-user-card{display:flex;align-items:center;gap:12px;padding:20px 16px 16px;position:relative;}
+.drawer-user-info{flex:1;min-width:0;}
+.drawer-user-name{font-size:16px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.drawer-user-email{font-size:12px;color:rgba(255,255,255,.75);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;}
+.drawer-user-more{background:none;border:none;color:rgba(255,255,255,.85);cursor:pointer;padding:6px 10px;border-radius:8px;font-size:18px;font-weight:700;letter-spacing:2px;flex-shrink:0;line-height:1;}
+.drawer-user-more:active{background:rgba(255,255,255,.15);}
+.drawer-user-popup{display:none;position:absolute;top:calc(100% - 8px);right:12px;background:#fff;border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,.2);min-width:150px;z-index:500;overflow:hidden;}
+.drawer-user-popup.show{display:block;}
+.drawer-popup-item{display:flex;align-items:center;gap:10px;padding:13px 16px;font-size:14px;color:#212121;cursor:pointer;}
+.drawer-popup-item:active{background:#f5f5f5;}
+.drawer-popup-item i{font-size:18px;color:#555;}
+.drawer-popup-sep{height:1px;background:#f0f0f0;}
+</style>
 <div class="side-drawer-overlay" id="sideDrawer" onclick="closeSideDrawer(event)">
   <div class="side-drawer">
     <div class="drawer-top">
+      <!-- 유저 카드 -->
+      <div class="drawer-user-card" id="drawerUserCard">
+        <div class="drawer-user-info">
+          <div class="drawer-user-name"><?=htmlspecialchars($_SESSION['user_name'] ?? '사용자')?>님</div>
+          <div class="drawer-user-email"><?=htmlspecialchars($_SESSION['user_email'] ?? '')?></div>
+        </div>
+        <button class="drawer-user-more" onclick="toggleUserPopup(event)">···</button>
+        <div class="drawer-user-popup" id="drawerUserPopup">
+          <div class="drawer-popup-item" onclick="location.href='settings.php'">
+            <span class="material-icons">manage_accounts</span> 계정 설정
+          </div>
+          <div class="drawer-popup-sep"></div>
+          <div class="drawer-popup-item" onclick="location.href='logout.php'" style="color:#e53935;">
+            <span class="material-icons" style="color:#e53935;">logout</span> 로그아웃
+          </div>
+        </div>
+      </div>
       <div class="drawer-top-item" onclick="location.href='settings.php'"><i class="bi bi-gear-fill"></i> 설정</div>
-      <div class="drawer-top-item" onclick="location.href='premium.php'"><i class="bi bi-lock-fill"></i> 광고 제거</div>
       <div class="drawer-top-item" onclick="location.href='help.php'"><i class="bi bi-question-circle-fill"></i> 도움말</div>
       <div class="drawer-top-item" onclick="closeSideDrawer(event);openBkSheet()"><i class="bi bi-cloud-arrow-up-fill"></i> 백업과 복구</div>
     </div>
@@ -895,11 +925,21 @@ button{font-family:inherit;}
     </div>
   </div>
 </div>
+<script>
+function toggleUserPopup(e) {
+  e.stopPropagation();
+  document.getElementById('drawerUserPopup').classList.toggle('show');
+}
+document.addEventListener('click', function() {
+  var p = document.getElementById('drawerUserPopup');
+  if (p) p.classList.remove('show');
+});
+</script>
 
 <!-- ══ 헤더 ══ -->
 <header class="hd">
   <span class="hd-menu" onclick="openSideDrawer()"><i class="bi bi-list"></i></span>
-  <span class="hd-title">민혁가계부</span>
+  <span class="hd-title">똑똑가계부</span>
   <div class="hd-icons">
     <i class="bi bi-search" onclick="openSearchModal()"></i>
     <i class="bi bi-three-dots-vertical" onclick="toggleMoreMenu(event)"></i>

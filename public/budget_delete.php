@@ -1,7 +1,7 @@
 <?php
 // public/budget_delete.php — 예산 삭제 엔드포인트
 header('Content-Type: application/json; charset=utf-8');
-require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../config/auth.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
@@ -9,8 +9,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-$id     = (int)($_POST['id']      ?? 0);
-$userId = (int)($_POST['user_id'] ?? 1);
+$userId = requireLogin(true);
+$id     = (int)($_POST['id'] ?? 0);
 
 if ($id <= 0) {
     http_response_code(400);

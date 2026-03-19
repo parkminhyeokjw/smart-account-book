@@ -2,7 +2,7 @@
 // public/update.php — 거래 수정 엔드포인트
 
 header('Content-Type: application/json; charset=utf-8');
-require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../config/auth.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
@@ -10,8 +10,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+$userId        = requireLogin(true);
 $id            = (int) ($_POST['id']      ?? 0);
-$userId        = (int) ($_POST['user_id'] ?? 1);
 $categoryId    = isset($_POST['category_id']) && $_POST['category_id'] !== ''
                   ? (int) $_POST['category_id'] : null;
 $amount        = (int) ($_POST['amount']  ?? 0);

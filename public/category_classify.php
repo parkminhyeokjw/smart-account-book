@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/../config/db.php';
-$userId = 1;
+require_once __DIR__ . '/../config/auth.php';
+$userId = requireLogin();
 
 // 카테고리 없는 지출 내역 조회
 $pdo = getConnection();

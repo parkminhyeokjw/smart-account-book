@@ -8,7 +8,7 @@
 //   POST /api/?action=add    (form body: user_id, category_id, amount, description, tx_date)
 //   POST /api/?action=delete (form body: id, user_id)
 
-require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../config/auth.php';
 require_once __DIR__ . '/../transaction/create.php';
 require_once __DIR__ . '/../transaction/list.php';
 require_once __DIR__ . '/../transaction/delete.php';
@@ -17,7 +17,7 @@ header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Origin: *');
 
 $action = $_GET['action'] ?? '';
-$userId = (int) ($_GET['user_id'] ?? $_POST['user_id'] ?? 1);
+$userId = requireLogin(true);
 
 try {
     switch ($action) {
