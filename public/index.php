@@ -161,6 +161,41 @@ body {
 .fab { width: 52px; height: 52px; border-radius: 50%; background: #00BFA5; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 30px; line-height: 1; margin-top: -14px; box-shadow: 0 4px 14px rgba(0,191,165,.45); }
 .fab:active { transform: scale(.93); }
 
+/* ── 내역 액션 시트 ── */
+.txa-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 450; align-items: flex-end; justify-content: center; }
+.txa-overlay.show { display: flex; }
+.txa-sheet { background: #fff; border-radius: 20px 20px 0 0; width: 100%; max-width: 480px; padding-bottom: 28px; }
+.txa-hd { background: #455A64; border-radius: 20px 20px 0 0; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; }
+.txa-hd-title { color: #fff; font-size: 16px; font-weight: 700; }
+.txa-x { background: none; border: none; color: rgba(255,255,255,.8); font-size: 24px; cursor: pointer; }
+.txa-summary { display: flex; align-items: center; gap: 12px; padding: 16px 20px; border-bottom: 1px solid #f0f0f0; }
+.txa-icon { width: 44px; height: 44px; border-radius: 50%; background: #eceff1; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+.txa-mid { flex: 1; min-width: 0; }
+.txa-desc { font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.txa-sub  { font-size: 12px; color: #9e9e9e; margin-top: 3px; }
+.txa-amt  { font-size: 16px; font-weight: 700; white-space: nowrap; }
+.txa-amt.expense { color: #e53935; }
+.txa-amt.income  { color: #00BCD4; }
+.txa-photo { width: calc(100% - 40px); margin: 0 20px 0; max-height: 140px; object-fit: cover; border-radius: 10px; border-bottom: 1px solid #f0f0f0; }
+.txa-menu { margin-top: 4px; }
+.txa-item { display: flex; align-items: center; gap: 14px; padding: 15px 22px; font-size: 15px; cursor: pointer; border-bottom: 1px solid #f5f5f5; }
+.txa-item:active { background: #f5f5f5; }
+.txa-item .txa-ico { font-size: 20px; width: 24px; text-align: center; }
+.txa-item.danger { color: #e53935; }
+
+/* ── 상세정보 오버레이 ── */
+.detail-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 460; align-items: flex-end; justify-content: center; }
+.detail-overlay.show { display: flex; }
+.detail-sheet { background: #fff; border-radius: 20px 20px 0 0; width: 100%; max-width: 480px; padding-bottom: 32px; }
+.detail-hd { background: #455A64; border-radius: 20px 20px 0 0; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; }
+.detail-hd-title { color: #fff; font-size: 16px; font-weight: 700; }
+.detail-x { background: none; border: none; color: rgba(255,255,255,.8); font-size: 24px; cursor: pointer; }
+.detail-row { display: flex; justify-content: space-between; align-items: center; padding: 13px 20px; border-bottom: 1px solid #f5f5f5; }
+.detail-key { font-size: 13px; color: #9e9e9e; }
+.detail-val { font-size: 14px; font-weight: 600; color: #212121; text-align: right; max-width: 60%; }
+.detail-photo-wrap { padding: 14px 20px 0; }
+.detail-photo-wrap img { width: 100%; max-height: 200px; object-fit: cover; border-radius: 10px; }
+
 /* ── 모달 ── */
 .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 500; align-items: flex-end; justify-content: center; }
 .overlay.show { display: flex; }
@@ -302,6 +337,34 @@ body {
   </div>
 </div>
 
+<!-- 내역 액션 시트 -->
+<div class="txa-overlay" id="txaOverlay" onclick="closeTxaOverlay(event)">
+  <div class="txa-sheet">
+    <div class="txa-hd">
+      <span class="txa-hd-title">내역</span>
+      <button class="txa-x" onclick="document.getElementById('txaOverlay').classList.remove('show')">×</button>
+    </div>
+    <div id="txaSummary"></div>
+    <div class="txa-menu">
+      <div class="txa-item" onclick="showTxDetail()"><span class="txa-ico">📋</span> 상세정보</div>
+      <div class="txa-item" onclick="editTx()"><span class="txa-ico">✏️</span> 수정</div>
+      <div class="txa-item" onclick="copyTx()"><span class="txa-ico">📄</span> 복사</div>
+      <div class="txa-item danger" onclick="deleteTxFromAction()"><span class="txa-ico">🗑️</span> 삭제</div>
+    </div>
+  </div>
+</div>
+
+<!-- 상세정보 시트 -->
+<div class="detail-overlay" id="detailOverlay" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="detail-sheet">
+    <div class="detail-hd">
+      <span class="detail-hd-title">상세정보</span>
+      <button class="detail-x" onclick="document.getElementById('detailOverlay').classList.remove('show')">×</button>
+    </div>
+    <div id="detailBody"></div>
+  </div>
+</div>
+
 <!-- 하단 탭바 -->
 <div class="tab-bar">
   <button class="t-btn on" id="tb-ledger" onclick="goTab('ledger')"><span class="ico">📒</span>가계부</button>
@@ -315,7 +378,7 @@ body {
 <div class="overlay" id="modal" onclick="onOverlayClick(event)">
   <div class="modal">
     <div class="modal-hd">
-      <span class="modal-hd-title">내역 추가</span>
+      <span class="modal-hd-title" id="modalTitle">내역 추가</span>
       <button class="modal-x" onclick="closeModal()">×</button>
     </div>
     <div class="type-row">
@@ -395,6 +458,8 @@ let curType    = 'expense';
 let photoData  = null; // base64
 let calVisible = false;
 let prevTab    = 'ledger'; // 달력 닫을 때 돌아갈 탭
+let activeTxId = null;   // 액션 시트에서 선택된 tx
+let editingTxId = null;  // 수정 중인 tx (null이면 새 항목)
 
 // ── 로드 ──────────────────────────────────────────────────────
 function load() {
@@ -522,7 +587,7 @@ function openDaySheet(dateStr) {
     document.getElementById('daySheetBody').innerHTML = '<div class="empty-msg" style="padding:30px">내역이 없어요</div>';
   } else {
     document.getElementById('daySheetBody').innerHTML = rows.map(t=>`
-      <div class="tx-row" onclick="askDelete('${t.id}');document.getElementById('daySheet').classList.remove('show')">
+      <div class="tx-row" onclick="document.getElementById('daySheet').classList.remove('show');openTxAction('${t.id}')">
         <div class="tx-icon">${getIcon(t.category)}</div>
         <div class="tx-info">
           <div class="tx-desc">${esc(t.description||t.category)}</div>
@@ -573,7 +638,7 @@ function renderLedger() {
     return `<div class="date-group">
       <div class="date-header"><span>${parseInt(dd)}일 (${dow})</span><span>${dayTotal}</span></div>
       ${rows.map(t=>`
-      <div class="tx-row" onclick="askDelete('${t.id}')">
+      <div class="tx-row" onclick="openTxAction('${t.id}')">
         <div class="tx-icon">${getIcon(t.category)}</div>
         <div class="tx-info">
           <div class="tx-desc">${esc(t.description||t.category)}</div>
@@ -646,6 +711,8 @@ function renderReport() {
 
 // ── 모달 ─────────────────────────────────────────────────────
 function openModal() {
+  editingTxId = null;
+  document.getElementById('modalTitle').textContent = '내역 추가';
   document.getElementById('fDate').value=new Date().toISOString().slice(0,10);
   document.getElementById('fAmt').value='';
   document.getElementById('fDesc').value='';
@@ -656,6 +723,22 @@ function openModal() {
   setType('expense');
   document.getElementById('modal').classList.add('show');
   setTimeout(()=>document.getElementById('fAmt').focus(),150);
+}
+
+function fillModal(t, titleText) {
+  document.getElementById('modalTitle').textContent = titleText;
+  setType(t.type);
+  document.getElementById('fAmt').value = t.amount;
+  document.getElementById('fDesc').value = (t.description && t.description !== t.category) ? t.description : '';
+  document.getElementById('fDate').value = t.date;
+  document.getElementById('fPay').value = t.payment || '현금';
+  // 카테고리 선택 (커스텀 포함)
+  setTimeout(()=>{ document.getElementById('fCat').value = t.category; }, 0);
+  photoData = t.photo || null;
+  document.getElementById('photoImg').src = photoData || '';
+  document.getElementById('photoPreview').style.display = photoData ? 'block' : 'none';
+  document.getElementById('newCatBox').classList.remove('show');
+  document.getElementById('modal').classList.add('show');
 }
 function closeModal() { document.getElementById('modal').classList.remove('show'); }
 function onOverlayClick(e) { if(e.target===document.getElementById('modal')) closeModal(); }
@@ -722,13 +805,82 @@ function saveTx() {
   const pay  = document.getElementById('fPay').value;
   if (!amt||amt<=0) { alert('금액을 입력해주세요.'); return; }
   if (!date)        { alert('날짜를 선택해주세요.');  return; }
-  const tx = { id:Date.now()+Math.random().toString(36).slice(2), type:curType, amount:amt, category:cat, description:desc||cat, date, payment:pay };
-  if (photoData) tx.photo = photoData;
-  txs.push(tx);
+  if (editingTxId) {
+    const idx = txs.findIndex(t => t.id === editingTxId);
+    if (idx !== -1) {
+      txs[idx] = { ...txs[idx], type:curType, amount:amt, category:cat, description:desc||cat, date, payment:pay };
+      if (photoData) txs[idx].photo = photoData; else delete txs[idx].photo;
+    }
+    editingTxId = null;
+  } else {
+    const tx = { id:Date.now()+Math.random().toString(36).slice(2), type:curType, amount:amt, category:cat, description:desc||cat, date, payment:pay };
+    if (photoData) tx.photo = photoData;
+    txs.push(tx);
+  }
   persist();
   closeModal();
   if (date.slice(0,7)!==curMonth) { curMonth=date.slice(0,7); setMonthLabel(); }
   goTab('ledger');
+}
+
+// ── 내역 액션 시트 ───────────────────────────────────────────
+function openTxAction(id) {
+  activeTxId = id;
+  const t = txs.find(x => x.id === id);
+  if (!t) return;
+  document.getElementById('txaSummary').innerHTML = `
+    <div class="txa-summary">
+      <div class="txa-icon">${getIcon(t.category)}</div>
+      <div class="txa-mid">
+        <div class="txa-desc">${esc(t.description||t.category)}</div>
+        <div class="txa-sub">${esc(t.category)}${t.payment?' · '+esc(t.payment):''} · ${t.date}</div>
+      </div>
+      <div class="txa-amt ${t.type}">${t.type==='income'?'+':'-'}${fmt(t.amount)}</div>
+    </div>
+    ${t.photo?`<img class="txa-photo" src="${t.photo}" alt="첨부사진" style="display:block;margin:10px 20px;width:calc(100%-40px);max-height:120px;object-fit:cover;border-radius:10px">`:''}
+  `;
+  document.getElementById('txaOverlay').classList.add('show');
+}
+function closeTxaOverlay(e) {
+  if (e.target === document.getElementById('txaOverlay'))
+    document.getElementById('txaOverlay').classList.remove('show');
+}
+function showTxDetail() {
+  const t = txs.find(x => x.id === activeTxId);
+  if (!t) return;
+  const typeLabel = t.type==='expense'?'지출':'수입';
+  document.getElementById('detailBody').innerHTML = `
+    <div class="detail-row"><span class="detail-key">유형</span><span class="detail-val" style="color:${t.type==='expense'?'#e53935':'#00BCD4'}">${typeLabel}</span></div>
+    <div class="detail-row"><span class="detail-key">금액</span><span class="detail-val" style="color:${t.type==='expense'?'#e53935':'#00BCD4'}">${t.type==='income'?'+':'-'}${fmt(t.amount)}</span></div>
+    <div class="detail-row"><span class="detail-key">카테고리</span><span class="detail-val">${getIcon(t.category)} ${esc(t.category)}</span></div>
+    <div class="detail-row"><span class="detail-key">내용</span><span class="detail-val">${esc(t.description||'-')}</span></div>
+    <div class="detail-row"><span class="detail-key">결제수단</span><span class="detail-val">${esc(t.payment||'-')}</span></div>
+    <div class="detail-row"><span class="detail-key">날짜</span><span class="detail-val">${t.date}</span></div>
+    ${t.photo?`<div class="detail-photo-wrap"><img src="${t.photo}" alt="첨부사진"></div>`:''}
+  `;
+  document.getElementById('txaOverlay').classList.remove('show');
+  document.getElementById('detailOverlay').classList.add('show');
+}
+function editTx() {
+  const t = txs.find(x => x.id === activeTxId);
+  if (!t) return;
+  document.getElementById('txaOverlay').classList.remove('show');
+  editingTxId = activeTxId;
+  fillModal(t, '내역 수정');
+}
+function copyTx() {
+  const t = txs.find(x => x.id === activeTxId);
+  if (!t) return;
+  document.getElementById('txaOverlay').classList.remove('show');
+  editingTxId = null;
+  fillModal({...t, date: new Date().toISOString().slice(0,10)}, '내역 복사');
+}
+function deleteTxFromAction() {
+  document.getElementById('txaOverlay').classList.remove('show');
+  if (!confirm('이 내역을 삭제할까요?')) return;
+  txs = txs.filter(t => t.id !== activeTxId);
+  persist(); renderLedger();
+  if (calVisible) renderCalendar();
 }
 
 // ── 삭제 ─────────────────────────────────────────────────────
