@@ -116,6 +116,8 @@ body {
 }
 .day-sheet-title { color: #fff; font-size: 16px; font-weight: 700; }
 .day-sheet-x { background: none; border: none; color: rgba(255,255,255,.8); font-size: 24px; cursor: pointer; }
+.day-sheet-add { background: rgba(255,255,255,.25); border: none; color: #fff; font-size: 20px; font-weight: 700; width: 34px; height: 34px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; line-height: 1; }
+.day-sheet-add:active { background: rgba(255,255,255,.4); }
 
 /* ── 통계 ── */
 .section-box { margin: 10px 14px; background: #fff; border-radius: 12px; padding: 18px; box-shadow: 0 1px 4px rgba(0,0,0,.07); }
@@ -331,7 +333,10 @@ body {
   <div class="day-sheet">
     <div class="day-sheet-hd">
       <span class="day-sheet-title" id="daySheetTitle"></span>
-      <button class="day-sheet-x" onclick="document.getElementById('daySheet').classList.remove('show')">×</button>
+      <div style="display:flex;align-items:center;gap:8px">
+        <button class="day-sheet-add" onclick="openModalForDate()">＋</button>
+        <button class="day-sheet-x" onclick="document.getElementById('daySheet').classList.remove('show')">×</button>
+      </div>
     </div>
     <div id="daySheetBody"></div>
   </div>
@@ -458,8 +463,9 @@ let curType    = 'expense';
 let photoData  = null; // base64
 let calVisible = false;
 let prevTab    = 'ledger'; // 달력 닫을 때 돌아갈 탭
-let activeTxId = null;   // 액션 시트에서 선택된 tx
-let editingTxId = null;  // 수정 중인 tx (null이면 새 항목)
+let activeTxId  = null;   // 액션 시트에서 선택된 tx
+let editingTxId = null;   // 수정 중인 tx (null이면 새 항목)
+let daySheetDate = null;  // 달력에서 클릭한 날짜
 
 // ── 로드 ──────────────────────────────────────────────────────
 function load() {
@@ -578,7 +584,24 @@ function renderCalendar() {
 }
 
 // ── 날짜 내역 시트 ────────────────────────────────────────────
+function openModalForDate() {
+  document.getElementById('daySheet').classList.remove('show');
+  editingTxId = null;
+  document.getElementById('modalTitle').textContent = '내역 추가';
+  document.getElementById('fDate').value = daySheetDate || new Date().toISOString().slice(0,10);
+  document.getElementById('fAmt').value = '';
+  document.getElementById('fDesc').value = '';
+  document.getElementById('fPay').value = '현금';
+  photoData = null;
+  document.getElementById('photoPreview').style.display = 'none';
+  document.getElementById('newCatBox').classList.remove('show');
+  setType('expense');
+  document.getElementById('modal').classList.add('show');
+  setTimeout(() => document.getElementById('fAmt').focus(), 150);
+}
+
 function openDaySheet(dateStr) {
+  daySheetDate = dateStr;
   const [,, dd] = dateStr.split('-');
   const dow = ['일','월','화','수','목','금','토'][new Date(dateStr).getDay()];
   document.getElementById('daySheetTitle').textContent = parseInt(dd)+'일 ('+dow+')';
