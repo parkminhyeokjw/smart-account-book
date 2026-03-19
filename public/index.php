@@ -843,7 +843,7 @@ function saveTx() {
   persist();
   closeModal();
   if (date.slice(0,7)!==curMonth) { curMonth=date.slice(0,7); setMonthLabel(); }
-  goTab('ledger');
+  if (calVisible) { renderCalendar(); } else { goTab('ledger'); }
 }
 
 // ── 내역 액션 시트 ───────────────────────────────────────────
