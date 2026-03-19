@@ -352,6 +352,18 @@ body {
         <button class="photo-remove" onclick="removePhoto()">✕</button>
       </div>
 
+      <label class="mf-label">결제수단</label>
+      <select class="mf-select" id="fPay">
+        <option value="현금">💵 현금</option>
+        <option value="신용카드">💳 신용카드</option>
+        <option value="체크카드">🏦 체크카드</option>
+        <option value="계좌이체">🏧 계좌이체</option>
+        <option value="카카오페이">🟡 카카오페이</option>
+        <option value="네이버페이">🟢 네이버페이</option>
+        <option value="토스">🔵 토스</option>
+        <option value="기타">📌 기타</option>
+      </select>
+
       <label class="mf-label">날짜</label>
       <input class="mf-input" id="fDate" type="date">
     </div>
@@ -514,7 +526,7 @@ function openDaySheet(dateStr) {
         <div class="tx-icon">${getIcon(t.category)}</div>
         <div class="tx-info">
           <div class="tx-desc">${esc(t.description||t.category)}</div>
-          <div class="tx-cat">${esc(t.category)}</div>
+          <div class="tx-cat">${esc(t.category)}${t.payment?` · ${esc(t.payment)}`:''}</div>
         </div>
         <div class="tx-right">
           <div class="tx-amt ${t.type}">${t.type==='income'?'+':'-'}${fmt(t.amount)}</div>
@@ -565,7 +577,7 @@ function renderLedger() {
         <div class="tx-icon">${getIcon(t.category)}</div>
         <div class="tx-info">
           <div class="tx-desc">${esc(t.description||t.category)}</div>
-          <div class="tx-cat">${esc(t.category)}</div>
+          <div class="tx-cat">${esc(t.category)}${t.payment?` · ${esc(t.payment)}`:''}</div>
         </div>
         <div class="tx-right">
           <div class="tx-amt ${t.type}">${t.type==='income'?'+':'-'}${fmt(t.amount)}</div>
@@ -637,6 +649,7 @@ function openModal() {
   document.getElementById('fDate').value=new Date().toISOString().slice(0,10);
   document.getElementById('fAmt').value='';
   document.getElementById('fDesc').value='';
+  document.getElementById('fPay').value='현금';
   photoData=null;
   document.getElementById('photoPreview').style.display='none';
   document.getElementById('newCatBox').classList.remove('show');
@@ -706,9 +719,10 @@ function saveTx() {
   const cat  = document.getElementById('fCat').value;
   const desc = document.getElementById('fDesc').value.trim();
   const date = document.getElementById('fDate').value;
+  const pay  = document.getElementById('fPay').value;
   if (!amt||amt<=0) { alert('금액을 입력해주세요.'); return; }
   if (!date)        { alert('날짜를 선택해주세요.');  return; }
-  const tx = { id:Date.now()+Math.random().toString(36).slice(2), type:curType, amount:amt, category:cat, description:desc||cat, date };
+  const tx = { id:Date.now()+Math.random().toString(36).slice(2), type:curType, amount:amt, category:cat, description:desc||cat, date, payment:pay };
   if (photoData) tx.photo = photoData;
   txs.push(tx);
   persist();
