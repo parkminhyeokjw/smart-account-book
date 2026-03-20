@@ -10,6 +10,7 @@ $userEmail  = htmlspecialchars($_SESSION['user_email'] ?? '');
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>마이가계부</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 body {
@@ -139,12 +140,41 @@ body {
 /* ── 통계 ── */
 .section-box { margin: 10px 14px; background: #fff; border-radius: 12px; padding: 18px; box-shadow: 0 1px 4px rgba(0,0,0,.07); }
 .section-title { font-size: 14px; font-weight: 700; color: #424242; margin-bottom: 14px; }
-.cat-row { margin-bottom: 13px; }
-.cat-row-top { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 5px; }
-.cat-name { color: #424242; }
-.cat-amt  { font-weight: 700; color: #e53935; }
-.bar-track { height: 6px; background: #eceff1; border-radius: 3px; }
-.bar-fill  { height: 100%; background: #455A64; border-radius: 3px; transition: width .4s; }
+.stats-filter { display: flex; margin: 14px 16px 0; background: #eceff1; border-radius: 10px; padding: 3px; gap: 3px; }
+.stats-filter-btn { flex: 1; padding: 9px 0; border: none; background: none; border-radius: 8px; font-size: 14px; font-weight: 700; color: #9e9e9e; cursor: pointer; font-family: inherit; transition: all .2s; }
+.stats-filter-btn.on { background: #fff; color: #455A64; box-shadow: 0 1px 6px rgba(0,0,0,.13); }
+.donut-section { margin: 14px 16px 0; background: #fff; border-radius: 16px; padding: 20px 16px 16px; box-shadow: 0 1px 4px rgba(0,0,0,.07); }
+.donut-period-label { text-align: center; font-size: 12px; color: #9e9e9e; margin-bottom: 12px; }
+.donut-canvas-wrap { position: relative; width: 220px; margin: 0 auto; }
+.donut-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; }
+.donut-center-label { font-size: 11px; color: #9e9e9e; }
+.donut-center-amt { font-size: 19px; font-weight: 700; color: #212121; margin-top: 3px; }
+.donut-empty { text-align: center; padding: 50px 20px; color: #bdbdbd; font-size: 15px; line-height: 1.8; }
+.ranking-section { margin: 10px 16px 0; background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,.07); }
+.ranking-header { padding: 14px 16px 10px; font-size: 13px; font-weight: 700; color: #757575; border-bottom: 1px solid #f5f5f5; }
+.ranking-item { display: flex; align-items: center; gap: 12px; padding: 13px 16px; border-bottom: 1px solid #f5f5f5; cursor: pointer; }
+.ranking-item:last-child { border-bottom: none; }
+.ranking-item:active { background: #f5f5f5; }
+.rank-num { width: 18px; font-size: 12px; font-weight: 700; color: #bdbdbd; text-align: center; flex-shrink: 0; }
+.rank-num.top { color: #455A64; }
+.rank-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.rank-icon { font-size: 22px; width: 28px; text-align: center; flex-shrink: 0; }
+.rank-info { flex: 1; min-width: 0; }
+.rank-name { font-size: 14px; font-weight: 600; color: #212121; }
+.rank-bar-wrap { margin-top: 5px; height: 4px; background: #f0f0f0; border-radius: 2px; overflow: hidden; }
+.rank-bar { height: 100%; border-radius: 2px; transition: width .5s ease; }
+.rank-right { text-align: right; flex-shrink: 0; }
+.rank-pct { font-size: 11px; color: #9e9e9e; }
+.rank-amt { font-size: 14px; font-weight: 700; color: #e53935; }
+
+/* ── 카테고리 상세 시트 ── */
+.catdet-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 450; align-items: flex-end; justify-content: center; }
+.catdet-overlay.show { display: flex; }
+.catdet-sheet { background: #fff; border-radius: 20px 20px 0 0; width: 100%; max-width: 480px; max-height: 75vh; display: flex; flex-direction: column; }
+.catdet-hd { background: #455A64; border-radius: 20px 20px 0 0; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+.catdet-title { color: #fff; font-size: 16px; font-weight: 700; }
+.catdet-x { background: none; border: none; color: rgba(255,255,255,.8); font-size: 24px; cursor: pointer; }
+.catdet-body { overflow-y: auto; padding-bottom: 16px; }
 
 /* ── 보고서 ── */
 .compare-row { display: flex; align-items: center; gap: 8px; }
@@ -329,9 +359,29 @@ body {
 
 <!-- ③ 통계 탭 -->
 <div class="tab-pane" id="pane-stats">
-  <div class="section-box">
-    <div class="section-title" id="statsTitle"></div>
-    <div id="catBars"></div>
+  <!-- 기간 필터 -->
+  <div class="stats-filter">
+    <button class="stats-filter-btn" id="sf-week"  onclick="setStatsPeriod('week')">주</button>
+    <button class="stats-filter-btn on" id="sf-month" onclick="setStatsPeriod('month')">월</button>
+    <button class="stats-filter-btn" id="sf-year"  onclick="setStatsPeriod('year')">년</button>
+  </div>
+  <!-- 도넛 차트 -->
+  <div class="donut-section" id="donutSection">
+    <div class="donut-period-label" id="donutLabel"></div>
+    <div class="donut-canvas-wrap">
+      <canvas id="donutCanvas"></canvas>
+      <div class="donut-center">
+        <div class="donut-center-label">총 지출</div>
+        <div class="donut-center-amt" id="donutCenterAmt">₩0</div>
+      </div>
+    </div>
+  </div>
+  <!-- 비어있을 때 -->
+  <div class="donut-empty" id="statsEmpty" style="display:none">지출 내역이 없어요 😊<br>내역을 추가해 보세요!</div>
+  <!-- 랭킹 리스트 -->
+  <div class="ranking-section" id="rankingSection" style="margin-bottom:20px">
+    <div class="ranking-header">카테고리별 지출 순위</div>
+    <div id="rankingList"></div>
   </div>
 </div>
 
@@ -414,6 +464,17 @@ body {
       <button class="detail-x" onclick="document.getElementById('detailOverlay').classList.remove('show')">×</button>
     </div>
     <div id="detailBody"></div>
+  </div>
+</div>
+
+<!-- 카테고리 상세 시트 -->
+<div class="catdet-overlay" id="catdetOverlay" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="catdet-sheet">
+    <div class="catdet-hd">
+      <span class="catdet-title" id="catdetTitle"></span>
+      <button class="catdet-x" onclick="document.getElementById('catdetOverlay').classList.remove('show')">×</button>
+    </div>
+    <div class="catdet-body" id="catdetBody"></div>
   </div>
 </div>
 
@@ -526,9 +587,11 @@ let curType    = 'expense';
 let photosData = []; // base64 array
 let calVisible = false;
 let prevTab    = 'ledger'; // 달력 닫을 때 돌아갈 탭
-let activeTxId  = null;   // 액션 시트에서 선택된 tx
-let editingTxId = null;   // 수정 중인 tx (null이면 새 항목)
-let daySheetDate = null;  // 달력에서 클릭한 날짜
+let activeTxId   = null;
+let editingTxId  = null;
+let daySheetDate = null;
+let statsPeriod  = 'month';
+let donutChart   = null;
 
 // ── 로드 ──────────────────────────────────────────────────────
 function load() {
@@ -787,28 +850,128 @@ function renderLedger() {
   }).join('');
 }
 
-// ── 통계 렌더 ────────────────────────────────────────────────
-function renderStats() {
+// ── 통계 ─────────────────────────────────────────────────────
+const DONUT_COLORS = [
+  '#FF6384','#36A2EB','#FFCE56','#4BC0C0','#9966FF',
+  '#FF9F40','#C9CBCF','#F06292','#AED581','#4DD0E1',
+  '#FFB74D','#BA68C8'
+];
+
+function setStatsPeriod(p) {
+  statsPeriod = p;
+  ['week','month','year'].forEach(k =>
+    document.getElementById('sf-'+k).classList.toggle('on', k===p)
+  );
+  renderStats();
+}
+
+function getStatsTxs() {
+  if (statsPeriod === 'month') return monthOf(curMonth);
+  if (statsPeriod === 'year') {
+    const y = curMonth.slice(0,4);
+    return txs.filter(t => t.date.startsWith(y));
+  }
+  // week: 최근 7일
+  const today = new Date();
+  const from  = new Date(today); from.setDate(from.getDate()-6);
+  const fromStr = from.toISOString().slice(0,10);
+  const toStr   = today.toISOString().slice(0,10);
+  return txs.filter(t => t.date >= fromStr && t.date <= toStr);
+}
+
+function getStatsPeriodLabel() {
   const [y,m] = curMonth.split('-');
-  document.getElementById('statsTitle').textContent = `${y}년 ${parseInt(m)}월 카테고리별 지출`;
-  const exps = monthOf(curMonth).filter(t=>t.type==='expense');
-  if (!exps.length) {
-    document.getElementById('catBars').innerHTML='<div class="empty-msg" style="padding:30px 0">지출 내역이 없어요</div>';
+  if (statsPeriod === 'month') return `${y}년 ${parseInt(m)}월`;
+  if (statsPeriod === 'year')  return `${y}년 전체`;
+  const today = new Date();
+  const from  = new Date(today); from.setDate(from.getDate()-6);
+  return `${from.getMonth()+1}/${from.getDate()} ~ ${today.getMonth()+1}/${today.getDate()}`;
+}
+
+function renderStats() {
+  const exps = getStatsTxs().filter(t => t.type === 'expense');
+  const totalExp = exps.reduce((s,t) => s+t.amount, 0);
+
+  const totals = {};
+  exps.forEach(t => totals[t.category] = (totals[t.category]||0) + t.amount);
+  const sorted = Object.entries(totals).sort((a,b) => b[1]-a[1]);
+
+  const emptyEl    = document.getElementById('statsEmpty');
+  const donutSec   = document.getElementById('donutSection');
+  const rankingSec = document.getElementById('rankingSection');
+
+  document.getElementById('donutLabel').textContent = getStatsPeriodLabel();
+
+  if (!sorted.length) {
+    emptyEl.style.display  = 'block';
+    donutSec.style.display = 'none';
+    rankingSec.style.display = 'none';
+    if (donutChart) { donutChart.destroy(); donutChart = null; }
     return;
   }
-  const totals={};
-  exps.forEach(t=>totals[t.category]=(totals[t.category]||0)+t.amount);
-  const max=Math.max(...Object.values(totals));
-  document.getElementById('catBars').innerHTML=Object.entries(totals)
-    .sort((a,b)=>b[1]-a[1])
-    .map(([cat,amt])=>`
-      <div class="cat-row">
-        <div class="cat-row-top">
-          <span class="cat-name">${getIcon(cat)} ${cat}</span>
-          <span class="cat-amt">${fmt(amt)}</span>
-        </div>
-        <div class="bar-track"><div class="bar-fill" style="width:${Math.round(amt/max*100)}%"></div></div>
-      </div>`).join('');
+  emptyEl.style.display    = 'none';
+  donutSec.style.display   = 'block';
+  rankingSec.style.display = 'block';
+
+  document.getElementById('donutCenterAmt').textContent = fmt(totalExp);
+
+  const labels = sorted.map(([cat]) => cat);
+  const amounts = sorted.map(([,amt]) => amt);
+  const colors  = sorted.map((_,i) => DONUT_COLORS[i % DONUT_COLORS.length]);
+
+  const ctx = document.getElementById('donutCanvas').getContext('2d');
+  if (donutChart) donutChart.destroy();
+  donutChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels,
+      datasets: [{ data: amounts, backgroundColor: colors, borderWidth: 2, borderColor: '#fff' }]
+    },
+    options: {
+      cutout: '70%',
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: c => ` ${c.label}: ${fmt(c.raw)} (${Math.round(c.raw/totalExp*100)}%)`
+          }
+        }
+      },
+      animation: { animateRotate: true, duration: 700 }
+    }
+  });
+
+  // 랭킹 리스트
+  document.getElementById('rankingList').innerHTML = sorted.map(([cat, amt], i) => {
+    const pct   = Math.round(amt / totalExp * 100);
+    const color = colors[i];
+    const numClass = i < 3 ? 'rank-num top' : 'rank-num';
+    return `<div class="ranking-item" onclick="openCatDetail('${esc(cat)}')">
+      <div class="${numClass}">${i+1}</div>
+      <div class="rank-dot" style="background:${color}"></div>
+      <div class="rank-icon">${getIcon(cat)}</div>
+      <div class="rank-info">
+        <div class="rank-name">${esc(cat)}</div>
+        <div class="rank-bar-wrap"><div class="rank-bar" style="width:${pct}%;background:${color}"></div></div>
+      </div>
+      <div class="rank-right">
+        <div class="rank-pct">${pct}%</div>
+        <div class="rank-amt">${fmt(amt)}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openCatDetail(cat) {
+  const rows = getStatsTxs()
+    .filter(t => t.type === 'expense' && t.category === cat)
+    .sort((a,b) => b.date.localeCompare(a.date));
+  const total = rows.reduce((s,t) => s+t.amount, 0);
+  document.getElementById('catdetTitle').textContent = `${getIcon(cat)} ${cat}  ${fmt(total)}`;
+  document.getElementById('catdetBody').innerHTML = rows.length
+    ? rows.map(t => txRowHtml(t)).join('')
+    : '<div class="search-empty">내역이 없어요</div>';
+  document.getElementById('catdetOverlay').classList.add('show');
 }
 
 // ── 보고서 렌더 ──────────────────────────────────────────────
