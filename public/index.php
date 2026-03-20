@@ -707,7 +707,7 @@ function goTab(name) {
     if (b) b.classList.toggle('on', t===name);
   });
   document.getElementById('monthNav').style.display = name==='me' ? 'none' : 'flex';
-  document.getElementById('headerActions').style.display = name==='me' ? 'none' : 'flex';
+  document.getElementById('headerActions').style.display = (name==='me' || name==='stats') ? 'none' : 'flex';
   if (name==='ledger')   { prevTab='ledger';   renderLedger(); }
   if (name==='calendar') { prevTab='calendar'; renderCalendar(); }
   if (name==='stats')    renderStats();
@@ -968,6 +968,7 @@ function renderStats() {
     },
     options: {
       cutout: '70%',
+      rotation: -90,   // 12시 방향에서 시작 → 리스트 1위와 일치
       plugins: {
         legend: { display: false },
         tooltip: {
