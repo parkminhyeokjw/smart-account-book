@@ -23,10 +23,11 @@ body {
   position: sticky; top: 0; z-index: 100;
   background: #455A64; color: #fff;
   height: 56px; padding: 0 14px;
-  display: flex; align-items: center; justify-content: space-between;
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
 }
-.header-title { font-size: 18px; font-weight: 700; }
-.month-nav { display: flex; align-items: center; gap: 4px; }
+.header-title { font-size: 18px; font-weight: 700; justify-self: start; }
+.month-nav { display: flex; align-items: center; gap: 4px; justify-self: center; }
+.header-actions { display: flex; align-items: center; gap: 2px; justify-self: end; }
 .month-btn {
   background: none; border: none; color: #fff;
   font-size: 22px; cursor: pointer; padding: 2px 7px; border-radius: 4px; line-height: 1;
@@ -38,6 +39,11 @@ body {
   cursor: pointer; padding: 4px 6px; border-radius: 4px; line-height: 1;
 }
 .cal-btn:active { background: rgba(255,255,255,.2); }
+.search-btn {
+  background: none; border: none; color: #fff; font-size: 18px;
+  cursor: pointer; padding: 4px 6px; border-radius: 4px; line-height: 1;
+}
+.search-btn:active { background: rgba(255,255,255,.2); }
 
 /* ── 탭 패인 ── */
 .tab-pane { display: none; padding-bottom: 72px; }
@@ -221,6 +227,15 @@ body {
 .detail-photo-wrap { padding: 14px 20px 0; }
 .detail-photo-wrap img { width: 100%; max-height: 200px; object-fit: cover; border-radius: 10px; cursor: zoom-in; }
 
+/* ── 검색 오버레이 ── */
+.search-overlay { display: none; position: fixed; inset: 0; background: #fff; z-index: 600; flex-direction: column; }
+.search-overlay.show { display: flex; }
+.search-bar { display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: #455A64; }
+.search-input { flex: 1; border: none; border-radius: 8px; padding: 10px 14px; font-size: 15px; outline: none; font-family: inherit; }
+.search-close { background: none; border: none; color: #fff; font-size: 15px; font-weight: 700; cursor: pointer; white-space: nowrap; padding: 4px 8px; }
+.search-results { flex: 1; overflow-y: auto; padding-bottom: 20px; }
+.search-empty { text-align: center; padding: 60px 20px; color: #bdbdbd; font-size: 15px; }
+
 /* ── 사진 풀스크린 뷰어 ── */
 .photo-viewer { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.92); z-index: 900; align-items: center; justify-content: center; }
 .photo-viewer.show { display: flex; }
@@ -281,6 +296,9 @@ body {
     <button class="month-btn" onclick="changeMonth(-1)">‹</button>
     <span id="monthLabel"></span>
     <button class="month-btn" onclick="changeMonth(1)">›</button>
+  </div>
+  <div class="header-actions" id="headerActions">
+    <button class="search-btn" onclick="openSearch()" title="검색">🔍</button>
     <button class="cal-btn" onclick="toggleCalendar()" title="달력">📅</button>
   </div>
 </div>
@@ -396,6 +414,17 @@ body {
       <button class="detail-x" onclick="document.getElementById('detailOverlay').classList.remove('show')">×</button>
     </div>
     <div id="detailBody"></div>
+  </div>
+</div>
+
+<!-- 검색 오버레이 -->
+<div class="search-overlay" id="searchOverlay">
+  <div class="search-bar">
+    <input class="search-input" id="searchInput" type="text" placeholder="내용, 카테고리, 금액 검색..." oninput="doSearch(this.value)">
+    <button class="search-close" onclick="closeSearch()">닫기</button>
+  </div>
+  <div class="search-results" id="searchResults">
+    <div class="search-empty">검색어를 입력하세요</div>
   </div>
 </div>
 
@@ -543,12 +572,12 @@ function txRowHtml(t, extraOnclick) {
     : '';
   return `<div class="tx-row" onclick="${extraOnclick||''}openTxAction('${t.id}')">
     <div class="tx-icon">${getIcon(t.category)}</div>
-    ${thumb}
     <div class="tx-info">
       <div class="tx-desc">${esc(t.description||t.category)}</div>
       <div class="tx-cat">${esc(t.category)}${t.payment?` · ${esc(t.payment)}`:''}</div>
     </div>
     <div class="tx-right">
+      ${thumb}
       <div class="tx-amt ${t.type}">${t.type==='income'?'+':'-'}${fmt(t.amount)}</div>
     </div>
   </div>`;
@@ -602,6 +631,7 @@ function goTab(name) {
     if (b) b.classList.toggle('on', t===name);
   });
   document.getElementById('monthNav').style.display = name==='me' ? 'none' : 'flex';
+  document.getElementById('headerActions').style.display = name==='me' ? 'none' : 'flex';
   if (name==='ledger')   { prevTab='ledger';   renderLedger(); }
   if (name==='calendar') { prevTab='calendar'; renderCalendar(); }
   if (name==='stats')    renderStats();
@@ -912,6 +942,30 @@ function renderPhotoGrid() {
 function openPhoto(src) {
   document.getElementById('photoViewerImg').src = src;
   document.getElementById('photoViewer').classList.add('show');
+}
+
+// ── 검색 ──────────────────────────────────────────────────────
+function openSearch() {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('searchResults').innerHTML = '<div class="search-empty">검색어를 입력하세요</div>';
+  document.getElementById('searchOverlay').classList.add('show');
+  setTimeout(() => document.getElementById('searchInput').focus(), 150);
+}
+function closeSearch() {
+  document.getElementById('searchOverlay').classList.remove('show');
+}
+function doSearch(q) {
+  q = q.trim().toLowerCase();
+  const el = document.getElementById('searchResults');
+  if (!q) { el.innerHTML = '<div class="search-empty">검색어를 입력하세요</div>'; return; }
+  const results = txs.filter(t =>
+    (t.description||'').toLowerCase().includes(q) ||
+    (t.category||'').toLowerCase().includes(q) ||
+    String(t.amount).includes(q) ||
+    (t.payment||'').toLowerCase().includes(q)
+  ).sort((a,b) => b.date.localeCompare(a.date));
+  if (!results.length) { el.innerHTML = '<div class="search-empty">검색 결과가 없어요</div>'; return; }
+  el.innerHTML = results.map(t => txRowHtml(t)).join('');
 }
 
 // ── 저장 ─────────────────────────────────────────────────────
