@@ -143,9 +143,33 @@ body {
 /* 지출/수입 토글 */
 .stats-type-toggle { display: flex; margin: 14px 16px 0; border-radius: 10px; overflow: hidden; border: 1.5px solid #e0e0e0; }
 .st-btn { flex: 1; padding: 11px 0; border: none; background: #f5f5f5; font-size: 15px; font-weight: 700; color: #9e9e9e; cursor: pointer; font-family: inherit; transition: all .2s; }
-.st-btn.on.expense { background: #e53935; color: #fff; }
-.st-btn.on.income  { background: #00BCD4; color: #fff; }
+.st-btn.on.expense { background: #00BFA5; color: #fff; }
+.st-btn.on.income  { background: #36A2EB; color: #fff; }
+/* 카테고리/결제수단 그룹 토글 */
+.stats-group-toggle { display: flex; margin: 8px 16px 0; gap: 6px; }
+.sg-btn { flex: 1; padding: 8px 0; border: 1.5px solid #e0e0e0; border-radius: 8px; background: #fff; font-size: 13px; font-weight: 600; color: #9e9e9e; cursor: pointer; font-family: inherit; transition: all .2s; }
+.sg-btn.on { border-color: #455A64; color: #455A64; background: #eceff1; }
 .stats-filter { display: flex; margin: 8px 16px 0; background: #eceff1; border-radius: 10px; padding: 3px; gap: 3px; }
+/* monthLabel 클릭 가능 모드 */
+#monthLabel.picker-mode { background: rgba(255,255,255,.2); border-radius: 6px; padding: 3px 8px; cursor: pointer; }
+#monthLabel.picker-mode::after { content: ' ▾'; font-size: 10px; opacity: .8; }
+/* 기간 선택 모달 */
+.daterange-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 600; align-items: center; justify-content: center; padding: 20px; }
+.daterange-overlay.show { display: flex; }
+.daterange-modal { background: #fff; border-radius: 16px; width: 100%; max-width: 340px; overflow: hidden; }
+.daterange-hd { background: #455A64; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; }
+.daterange-hd-title { color: #fff; font-size: 16px; font-weight: 700; }
+.daterange-x { background: none; border: none; color: rgba(255,255,255,.8); font-size: 24px; cursor: pointer; }
+.daterange-body { padding: 20px; }
+.daterange-row { margin-bottom: 14px; }
+.daterange-row label { display: block; font-size: 12px; font-weight: 700; color: #757575; margin-bottom: 6px; }
+.daterange-row input { width: 100%; border: 1px solid #e0e0e0; border-radius: 8px; padding: 10px 12px; font-size: 15px; outline: none; font-family: inherit; }
+.daterange-row input:focus { border-color: #455A64; }
+.daterange-presets { display: flex; gap: 6px; margin-bottom: 4px; }
+.preset-btn { flex: 1; padding: 7px 0; border: 1px solid #e0e0e0; border-radius: 6px; background: #f5f5f5; font-size: 12px; font-weight: 600; color: #616161; cursor: pointer; font-family: inherit; }
+.preset-btn:active { background: #eceff1; }
+.daterange-apply { display: block; width: calc(100% - 40px); margin: 0 20px 20px; background: #455A64; color: #fff; border: none; border-radius: 10px; padding: 13px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; }
+.daterange-apply:active { opacity: .85; }
 .stats-filter-btn { flex: 1; padding: 9px 0; border: none; background: none; border-radius: 8px; font-size: 14px; font-weight: 700; color: #9e9e9e; cursor: pointer; font-family: inherit; transition: all .2s; }
 .stats-filter-btn.on { background: #fff; color: #455A64; box-shadow: 0 1px 6px rgba(0,0,0,.13); }
 .donut-section { margin: 14px 16px 0; background: #fff; border-radius: 16px; padding: 20px 16px 16px; box-shadow: 0 1px 4px rgba(0,0,0,.07); }
@@ -331,7 +355,7 @@ body {
   <div class="header-title">마이가계부</div>
   <div class="month-nav" id="monthNav">
     <button class="month-btn" onclick="changeMonth(-1)">‹</button>
-    <span id="monthLabel"></span>
+    <span id="monthLabel" onclick="onMonthLabelClick()"></span>
     <button class="month-btn" onclick="changeMonth(1)">›</button>
   </div>
   <div class="header-actions" id="headerActions">
@@ -370,6 +394,11 @@ body {
   <div class="stats-type-toggle">
     <button id="st-expense" class="st-btn on expense" onclick="setStatsType('expense')">지출</button>
     <button id="st-income"  class="st-btn income"     onclick="setStatsType('income')">수입</button>
+  </div>
+  <!-- 카테고리/결제수단 토글 -->
+  <div class="stats-group-toggle">
+    <button id="sg-category" class="sg-btn on" onclick="setStatsGroup('category')">카테고리별</button>
+    <button id="sg-payment"  class="sg-btn"    onclick="setStatsGroup('payment')">결제수단별</button>
   </div>
   <!-- 기간 필터 -->
   <div class="stats-filter">
@@ -476,6 +505,26 @@ body {
       <button class="detail-x" onclick="document.getElementById('detailOverlay').classList.remove('show')">×</button>
     </div>
     <div id="detailBody"></div>
+  </div>
+</div>
+
+<!-- 기간 선택 모달 -->
+<div class="daterange-overlay" id="daterangeOverlay" onclick="if(event.target===this)closeDateRange()">
+  <div class="daterange-modal">
+    <div class="daterange-hd">
+      <span class="daterange-hd-title">기간 선택</span>
+      <button class="daterange-x" onclick="closeDateRange()">×</button>
+    </div>
+    <div class="daterange-body">
+      <div class="daterange-row"><label>시작일</label><input type="date" id="drFrom"></div>
+      <div class="daterange-row"><label>종료일</label><input type="date" id="drTo"></div>
+      <div class="daterange-presets">
+        <button class="preset-btn" onclick="setPreset('week')">이번 주</button>
+        <button class="preset-btn" onclick="setPreset('month')">이번 달</button>
+        <button class="preset-btn" onclick="setPreset('last-month')">지난 달</button>
+      </div>
+    </div>
+    <button class="daterange-apply" onclick="applyDateRange()">적용</button>
   </div>
 </div>
 
@@ -602,9 +651,13 @@ let prevTab    = 'ledger'; // 달력 닫을 때 돌아갈 탭
 let activeTxId   = null;
 let editingTxId  = null;
 let daySheetDate = null;
-let statsPeriod  = 'month';
-let statsType    = 'expense';
-let donutChart   = null;
+let statsPeriod      = 'month';
+let statsType        = 'expense';
+let statsGroupBy     = 'category';   // 'category' | 'payment'
+let statsCustomActive = false;
+let statsCustomFrom  = '';
+let statsCustomTo    = '';
+let donutChart       = null;
 
 // ── 로드 ──────────────────────────────────────────────────────
 function load() {
@@ -708,6 +761,7 @@ function goTab(name) {
   });
   document.getElementById('monthNav').style.display = name==='me' ? 'none' : 'flex';
   document.getElementById('headerActions').style.display = (name==='me' || name==='stats') ? 'none' : 'flex';
+  document.getElementById('monthLabel').classList.toggle('picker-mode', name==='stats');
   if (name==='ledger')   { prevTab='ledger';   renderLedger(); }
   if (name==='calendar') { prevTab='calendar'; renderCalendar(); }
   if (name==='stats')    renderStats();
@@ -877,6 +931,11 @@ const COLORS_INCOME = [
   '#4DB6AC','#4FC3F7'
 ];
 
+const PAYMENT_ICONS = {
+  '현금':'💵','신용카드':'💳','체크카드':'🏦','계좌이체':'🏧',
+  '카카오페이':'🟡','네이버페이':'🟢','토스':'🔵','기타':'📌'
+};
+
 function setStatsType(type) {
   statsType = type;
   document.getElementById('st-expense').classList.toggle('on', type === 'expense');
@@ -884,8 +943,16 @@ function setStatsType(type) {
   renderStats();
 }
 
+function setStatsGroup(g) {
+  statsGroupBy = g;
+  document.getElementById('sg-category').classList.toggle('on', g === 'category');
+  document.getElementById('sg-payment').classList.toggle('on',  g === 'payment');
+  renderStats();
+}
+
 function setStatsPeriod(p) {
   statsPeriod = p;
+  statsCustomActive = false;
   ['week','month','year'].forEach(k =>
     document.getElementById('sf-'+k).classList.toggle('on', k===p)
   );
@@ -893,6 +960,9 @@ function setStatsPeriod(p) {
 }
 
 function getStatsTxs() {
+  if (statsCustomActive && statsCustomFrom && statsCustomTo) {
+    return txs.filter(t => t.date >= statsCustomFrom && t.date <= statsCustomTo);
+  }
   if (statsPeriod === 'month') return monthOf(curMonth);
   if (statsPeriod === 'year') {
     const y = curMonth.slice(0,4);
@@ -900,12 +970,12 @@ function getStatsTxs() {
   }
   const today = new Date();
   const from  = new Date(today); from.setDate(from.getDate()-6);
-  const fromStr = from.toISOString().slice(0,10);
-  const toStr   = today.toISOString().slice(0,10);
-  return txs.filter(t => t.date >= fromStr && t.date <= toStr);
+  return txs.filter(t => t.date >= from.toISOString().slice(0,10) && t.date <= today.toISOString().slice(0,10));
 }
 
 function getStatsPeriodLabel() {
+  if (statsCustomActive && statsCustomFrom && statsCustomTo)
+    return `${statsCustomFrom} ~ ${statsCustomTo}`;
   const [y,m] = curMonth.split('-');
   if (statsPeriod === 'month') return `${y}년 ${parseInt(m)}월`;
   if (statsPeriod === 'year')  return `${y}년 전체`;
@@ -915,28 +985,32 @@ function getStatsPeriodLabel() {
 }
 
 function renderStats() {
-  const typeLabel  = statsType === 'expense' ? '지출' : '수입';
-  const palette    = statsType === 'expense' ? COLORS_EXPENSE : COLORS_INCOME;
-  const amtColor   = statsType === 'expense' ? '#e53935' : '#00BCD4';
+  const typeLabel = statsType === 'expense' ? '지출' : '수입';
+  const grpLabel  = statsGroupBy === 'category' ? '카테고리' : '결제수단';
+  const palette   = statsType === 'expense' ? COLORS_EXPENSE : COLORS_INCOME;
+  const amtColor  = statsType === 'expense' ? '#e53935' : '#36A2EB';
 
-  const filtered   = getStatsTxs().filter(t => t.type === statsType);
-  const total      = filtered.reduce((s,t) => s+t.amount, 0);
-  const totals     = {};
-  filtered.forEach(t => totals[t.category] = (totals[t.category]||0) + t.amount);
-  const sorted     = Object.entries(totals).sort((a,b) => b[1]-a[1]);
+  const getKey  = t => statsGroupBy === 'payment' ? (t.payment || '기타') : t.category;
+  const getIco  = k => statsGroupBy === 'payment' ? (PAYMENT_ICONS[k]||'💳') : getIcon(k);
+
+  const filtered = getStatsTxs().filter(t => t.type === statsType);
+  const total    = filtered.reduce((s,t) => s+t.amount, 0);
+  const totals   = {};
+  filtered.forEach(t => { const k=getKey(t); totals[k]=(totals[k]||0)+t.amount; });
+  const sorted   = Object.entries(totals).sort((a,b) => b[1]-a[1]);
 
   const emptyEl    = document.getElementById('statsEmpty');
   const donutSec   = document.getElementById('donutSection');
   const rankingSec = document.getElementById('rankingSection');
 
-  document.getElementById('donutLabel').textContent      = getStatsPeriodLabel();
+  document.getElementById('donutLabel').textContent       = getStatsPeriodLabel();
   document.getElementById('donutCenterLabel').textContent = '총 ' + typeLabel;
-  document.querySelector('.ranking-header').textContent   = `카테고리별 ${typeLabel} 순위`;
+  document.querySelector('.ranking-header').textContent   = `${grpLabel}별 ${typeLabel} 순위`;
 
   if (!sorted.length) {
-    emptyEl.innerHTML       = `${typeLabel} 내역이 없어요 😊<br>내역을 추가해 보세요!`;
-    emptyEl.style.display   = 'block';
-    donutSec.style.display  = 'none';
+    emptyEl.innerHTML        = `${typeLabel} 내역이 없어요 😊<br>내역을 추가해 보세요!`;
+    emptyEl.style.display    = 'block';
+    donutSec.style.display   = 'none';
     rankingSec.style.display = 'none';
     if (donutChart) { donutChart.destroy(); donutChart = null; }
     return;
@@ -947,8 +1021,8 @@ function renderStats() {
 
   document.getElementById('donutCenterAmt').textContent = fmt(total);
 
-  const labels  = sorted.map(([cat]) => cat);
-  const amounts = sorted.map(([,amt]) => amt);
+  const labels  = sorted.map(([k]) => k);
+  const amounts = sorted.map(([,v]) => v);
   const colors  = sorted.map((_,i) => palette[i % palette.length]);
 
   const ctx = document.getElementById('donutCanvas').getContext('2d');
@@ -957,45 +1031,31 @@ function renderStats() {
     type: 'doughnut',
     data: {
       labels,
-      datasets: [{
-        data: amounts,
-        backgroundColor: colors,
-        borderWidth: 2,
-        borderColor: '#fff',
-        hoverOffset: 14,
-        hoverBorderWidth: 3
-      }]
+      datasets: [{ data: amounts, backgroundColor: colors, borderWidth: 2, borderColor: '#fff', hoverOffset: 14, hoverBorderWidth: 3 }]
     },
     options: {
       cutout: '70%',
-      rotation: -90,   // 12시 방향에서 시작 → 리스트 1위와 일치
+      rotation: -90,
       plugins: {
         legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: c => ` ${c.label}: ${fmt(c.raw)} (${Math.round(c.raw/total*100)}%)`
-          }
-        }
+        tooltip: { callbacks: { label: c => ` ${c.label}: ${fmt(c.raw)} (${Math.round(c.raw/total*100)}%)` } }
       },
-      onClick: (_e, elements) => {
-        if (elements.length > 0) highlightRankItem(elements[0].index);
-      },
+      onClick: (_e, els) => { if (els.length > 0) highlightRankItem(els[0].index); },
       animation: { animateRotate: true, duration: 700 }
     }
   });
 
-  // 랭킹 리스트
-  document.getElementById('rankingList').innerHTML = sorted.map(([cat, amt], i) => {
+  document.getElementById('rankingList').innerHTML = sorted.map(([k, amt], i) => {
     const pct      = Math.round(amt / total * 100);
     const color    = colors[i];
     const numClass = i < 3 ? 'rank-num top' : 'rank-num';
-    return `<div class="ranking-item" id="rank-item-${i}" data-idx="${i}"
-        onclick="highlightChartSlice(${i});openCatDetail('${esc(cat)}')">
+    return `<div class="ranking-item" id="rank-item-${i}"
+        onclick="highlightChartSlice(${i});openGroupDetail('${esc(k)}')">
       <div class="${numClass}">${i+1}</div>
       <div class="rank-dot" style="background:${color}"></div>
-      <div class="rank-icon">${getIcon(cat)}</div>
+      <div class="rank-icon">${getIco(k)}</div>
       <div class="rank-info">
-        <div class="rank-name">${esc(cat)}</div>
+        <div class="rank-name">${esc(k)}</div>
         <div class="rank-bar-wrap"><div class="rank-bar" style="width:${pct}%;background:${color}"></div></div>
       </div>
       <div class="rank-right">
@@ -1006,20 +1066,18 @@ function renderStats() {
   }).join('');
 }
 
-// 차트 → 리스트 강조
 function highlightRankItem(idx) {
-  document.querySelectorAll('.ranking-item').forEach((el, i) => {
-    el.classList.toggle('highlighted', i === idx);
-  });
-  const target = document.getElementById('rank-item-'+idx);
-  if (target) target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  document.querySelectorAll('.ranking-item').forEach((el, i) =>
+    el.classList.toggle('highlighted', i === idx)
+  );
+  const t = document.getElementById('rank-item-'+idx);
+  if (t) t.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   clearTimeout(window._rankHL);
   window._rankHL = setTimeout(() =>
     document.querySelectorAll('.ranking-item').forEach(el => el.classList.remove('highlighted'))
   , 2500);
 }
 
-// 리스트 → 차트 강조
 function highlightChartSlice(idx) {
   if (!donutChart) return;
   donutChart.setActiveElements([{ datasetIndex: 0, index: idx }]);
@@ -1027,16 +1085,72 @@ function highlightChartSlice(idx) {
   donutChart.update('active');
 }
 
-function openCatDetail(cat) {
+function openGroupDetail(key) {
+  const getKey = t => statsGroupBy === 'payment' ? (t.payment || '기타') : t.category;
+  const getIco = k => statsGroupBy === 'payment' ? (PAYMENT_ICONS[k]||'💳') : getIcon(k);
   const rows = getStatsTxs()
-    .filter(t => t.type === statsType && t.category === cat)
+    .filter(t => t.type === statsType && getKey(t) === key)
     .sort((a,b) => b.date.localeCompare(a.date));
   const total = rows.reduce((s,t) => s+t.amount, 0);
-  document.getElementById('catdetTitle').textContent = `${getIcon(cat)} ${cat}  ${fmt(total)}`;
+  document.getElementById('catdetTitle').textContent = `${getIco(key)} ${key}  ${fmt(total)}`;
   document.getElementById('catdetBody').innerHTML = rows.length
     ? rows.map(t => txRowHtml(t)).join('')
     : '<div class="search-empty">내역이 없어요</div>';
   document.getElementById('catdetOverlay').classList.add('show');
+}
+
+// 하위 호환
+function openCatDetail(cat) { openGroupDetail(cat); }
+
+// ── 기간 선택 ────────────────────────────────────────────────
+function onMonthLabelClick() {
+  const active = TABS.find(t => document.getElementById('pane-'+t)?.classList.contains('active'));
+  if (active === 'stats') openDateRangePicker();
+}
+
+function openDateRangePicker() {
+  const today = new Date().toISOString().slice(0,10);
+  document.getElementById('drFrom').value = statsCustomActive ? statsCustomFrom : curMonth + '-01';
+  document.getElementById('drTo').value   = statsCustomActive ? statsCustomTo   : today;
+  document.getElementById('daterangeOverlay').classList.add('show');
+}
+
+function closeDateRange() {
+  document.getElementById('daterangeOverlay').classList.remove('show');
+}
+
+function setPreset(p) {
+  const today = new Date();
+  const toStr = today.toISOString().slice(0,10);
+  if (p === 'week') {
+    const from = new Date(today); from.setDate(from.getDate()-6);
+    document.getElementById('drFrom').value = from.toISOString().slice(0,10);
+    document.getElementById('drTo').value   = toStr;
+  } else if (p === 'month') {
+    document.getElementById('drFrom').value = curMonth + '-01';
+    document.getElementById('drTo').value   = toStr;
+  } else if (p === 'last-month') {
+    const prev = prevMonth(curMonth);
+    const lastDay = new Date(parseInt(prev.slice(0,4)), parseInt(prev.slice(5,7)), 0).getDate();
+    document.getElementById('drFrom').value = prev + '-01';
+    document.getElementById('drTo').value   = prev + '-' + String(lastDay).padStart(2,'0');
+  }
+}
+
+function applyDateRange() {
+  const from = document.getElementById('drFrom').value;
+  const to   = document.getElementById('drTo').value;
+  if (!from || !to) { alert('시작일과 종료일을 선택해주세요.'); return; }
+  if (from > to) { alert('종료일이 시작일보다 빠를 수 없어요.'); return; }
+  statsCustomFrom   = from;
+  statsCustomTo     = to;
+  statsCustomActive = true;
+  // 기간 버튼 선택 해제
+  ['week','month','year'].forEach(k =>
+    document.getElementById('sf-'+k).classList.remove('on')
+  );
+  closeDateRange();
+  renderStats();
 }
 
 // ── 보고서 렌더 ──────────────────────────────────────────────
