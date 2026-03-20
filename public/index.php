@@ -1222,6 +1222,9 @@ function saveTx() {
 
 // ── 내역 액션 시트 ───────────────────────────────────────────
 function openTxAction(id) {
+  // 다른 열린 시트 먼저 닫기
+  document.getElementById('catdetOverlay').classList.remove('show');
+  document.getElementById('daySheet').classList.remove('show');
   activeTxId = id;
   const t = txs.find(x => x.id === id);
   if (!t) return;
