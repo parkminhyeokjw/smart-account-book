@@ -145,11 +145,22 @@ body {
 .st-btn { flex: 1; padding: 11px 0; border: none; background: #f5f5f5; font-size: 15px; font-weight: 700; color: #9e9e9e; cursor: pointer; font-family: inherit; transition: all .2s; }
 .st-btn.on.expense { background: #00BFA5; color: #fff; }
 .st-btn.on.income  { background: #36A2EB; color: #fff; }
-/* 카테고리/결제수단 그룹 토글 */
-.stats-group-toggle { display: flex; margin: 8px 16px 0; gap: 6px; }
-.sg-btn { flex: 1; padding: 8px 0; border: 1.5px solid #e0e0e0; border-radius: 8px; background: #fff; font-size: 13px; font-weight: 600; color: #9e9e9e; cursor: pointer; font-family: inherit; transition: all .2s; }
-.sg-btn.on { border-color: #455A64; color: #455A64; background: #eceff1; }
-.stats-filter { display: flex; margin: 8px 16px 0; background: #eceff1; border-radius: 10px; padding: 3px; gap: 3px; }
+/* 헤더 우측 기간 필터 버튼 (통계 탭 전용) */
+.header-period-filter { display: flex; gap: 2px; background: rgba(255,255,255,.15); border-radius: 8px; padding: 2px; }
+.hpf-btn { background: none; border: none; color: rgba(255,255,255,.7); font-size: 12px; font-weight: 700; padding: 5px 9px; border-radius: 6px; cursor: pointer; font-family: inherit; }
+.hpf-btn.on { background: rgba(255,255,255,.28); color: #fff; }
+.hpf-btn:active { background: rgba(255,255,255,.2); }
+/* 랭킹 헤더 인라인 그룹 토글 */
+.ranking-header { padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f5f5f5; }
+.ranking-header-title { font-size: 13px; font-weight: 700; color: #757575; }
+.rank-group-toggle { display: flex; gap: 3px; }
+.rg-btn { padding: 4px 9px; border: 1px solid #e0e0e0; border-radius: 6px; background: #fff; font-size: 12px; font-weight: 600; color: #9e9e9e; cursor: pointer; font-family: inherit; }
+.rg-btn.on { border-color: #455A64; color: #455A64; background: #eceff1; }
+/* 빈 상태 */
+.stats-empty-state { text-align: center; padding: 52px 24px 36px; }
+.stats-empty-icon { font-size: 50px; margin-bottom: 14px; }
+.stats-empty-title { font-size: 16px; font-weight: 700; color: #424242; margin-bottom: 8px; }
+.stats-empty-sub { font-size: 13px; color: #9e9e9e; line-height: 1.7; }
 /* monthLabel 클릭 가능 모드 */
 #monthLabel.picker-mode { background: rgba(255,255,255,.2); border-radius: 6px; padding: 3px 8px; cursor: pointer; }
 #monthLabel.picker-mode::after { content: ' ▾'; font-size: 10px; opacity: .8; }
@@ -359,8 +370,15 @@ body {
     <button class="month-btn" onclick="changeMonth(1)">›</button>
   </div>
   <div class="header-actions" id="headerActions">
-    <button class="search-btn" onclick="openSearch()" title="검색">🔍</button>
-    <button class="cal-btn" onclick="toggleCalendar()" title="달력">📅</button>
+    <div id="haDefault" style="display:flex;align-items:center;gap:2px">
+      <button class="search-btn" onclick="openSearch()" title="검색">🔍</button>
+      <button class="cal-btn" onclick="toggleCalendar()" title="달력">📅</button>
+    </div>
+    <div id="haStats" class="header-period-filter" style="display:none">
+      <button class="hpf-btn" id="hpf-week"  onclick="setStatsPeriod('week')">주</button>
+      <button class="hpf-btn on" id="hpf-month" onclick="setStatsPeriod('month')">월</button>
+      <button class="hpf-btn" id="hpf-year"  onclick="setStatsPeriod('year')">년</button>
+    </div>
   </div>
 </div>
 
@@ -395,20 +413,8 @@ body {
     <button id="st-expense" class="st-btn on expense" onclick="setStatsType('expense')">지출</button>
     <button id="st-income"  class="st-btn income"     onclick="setStatsType('income')">수입</button>
   </div>
-  <!-- 카테고리/결제수단 토글 -->
-  <div class="stats-group-toggle">
-    <button id="sg-category" class="sg-btn on" onclick="setStatsGroup('category')">카테고리별</button>
-    <button id="sg-payment"  class="sg-btn"    onclick="setStatsGroup('payment')">결제수단별</button>
-  </div>
-  <!-- 기간 필터 -->
-  <div class="stats-filter">
-    <button class="stats-filter-btn" id="sf-week"  onclick="setStatsPeriod('week')">주</button>
-    <button class="stats-filter-btn on" id="sf-month" onclick="setStatsPeriod('month')">월</button>
-    <button class="stats-filter-btn" id="sf-year"  onclick="setStatsPeriod('year')">년</button>
-  </div>
   <!-- 도넛 차트 -->
   <div class="donut-section" id="donutSection">
-    <div class="donut-period-label" id="donutLabel"></div>
     <div class="donut-canvas-wrap">
       <canvas id="donutCanvas"></canvas>
       <div class="donut-center">
@@ -418,10 +424,16 @@ body {
     </div>
   </div>
   <!-- 비어있을 때 -->
-  <div class="donut-empty" id="statsEmpty" style="display:none">지출 내역이 없어요 😊<br>내역을 추가해 보세요!</div>
+  <div id="statsEmpty" style="display:none"></div>
   <!-- 랭킹 리스트 -->
   <div class="ranking-section" id="rankingSection" style="margin-bottom:20px">
-    <div class="ranking-header">카테고리별 지출 순위</div>
+    <div class="ranking-header">
+      <span class="ranking-header-title" id="rankingHeaderTitle">카테고리별 지출 순위</span>
+      <div class="rank-group-toggle">
+        <button id="sg-category" class="rg-btn on" onclick="setStatsGroup('category')">카테고리</button>
+        <button id="sg-payment"  class="rg-btn"    onclick="setStatsGroup('payment')">결제수단</button>
+      </div>
+    </div>
     <div id="rankingList"></div>
   </div>
 </div>
@@ -759,9 +771,16 @@ function goTab(name) {
     const b = document.getElementById('tb-'+t);
     if (b) b.classList.toggle('on', t===name);
   });
-  document.getElementById('monthNav').style.display = name==='me' ? 'none' : 'flex';
-  document.getElementById('headerActions').style.display = (name==='me' || name==='stats') ? 'none' : 'flex';
-  document.getElementById('monthLabel').classList.toggle('picker-mode', name==='stats');
+  const isMe    = name === 'me';
+  const isStats = name === 'stats';
+  document.getElementById('monthNav').style.display     = isMe ? 'none' : 'flex';
+  document.getElementById('headerActions').style.display = isMe ? 'none' : 'flex';
+  if (!isMe) {
+    document.getElementById('haDefault').style.display = isStats ? 'none' : 'flex';
+    document.getElementById('haStats').style.display   = isStats ? 'flex' : 'none';
+  }
+  document.getElementById('monthLabel').classList.toggle('picker-mode', isStats);
+  setMonthLabel();
   if (name==='ledger')   { prevTab='ledger';   renderLedger(); }
   if (name==='calendar') { prevTab='calendar'; renderCalendar(); }
   if (name==='stats')    renderStats();
@@ -789,7 +808,27 @@ function changeMonth(d) {
   if (active==='stats')    renderStats();
   if (active==='report')   renderReport();
 }
+function getStatsHeaderLabel() {
+  if (statsCustomActive && statsCustomFrom && statsCustomTo) {
+    const f = statsCustomFrom.slice(5).replace('-','.');
+    const t = statsCustomTo.slice(5).replace('-','.');
+    return `${f}~${t}`;
+  }
+  const [y,m] = curMonth.split('-');
+  if (statsPeriod === 'month') return `${y}년 ${parseInt(m)}월`;
+  if (statsPeriod === 'year')  return `${y}년 전체`;
+  const today = new Date();
+  const from  = new Date(today); from.setDate(from.getDate()-6);
+  const pad   = d => String(d).padStart(2,'0');
+  return `${pad(from.getMonth()+1)}.${pad(from.getDate())}~${pad(today.getMonth()+1)}.${pad(today.getDate())}`;
+}
+
 function setMonthLabel() {
+  const active = TABS.find(t => document.getElementById('pane-'+t)?.classList.contains('active'));
+  if (active === 'stats') {
+    document.getElementById('monthLabel').textContent = getStatsHeaderLabel();
+    return;
+  }
   const [y,m] = curMonth.split('-');
   document.getElementById('monthLabel').textContent = y+'년 '+parseInt(m)+'월';
 }
@@ -947,6 +986,10 @@ function setStatsGroup(g) {
   statsGroupBy = g;
   document.getElementById('sg-category').classList.toggle('on', g === 'category');
   document.getElementById('sg-payment').classList.toggle('on',  g === 'payment');
+  // rg-btn 동기화
+  document.querySelectorAll('.rg-btn').forEach(b =>
+    b.classList.toggle('on', b.id === 'sg-' + (g === 'category' ? 'category' : 'payment'))
+  );
   renderStats();
 }
 
@@ -954,8 +997,9 @@ function setStatsPeriod(p) {
   statsPeriod = p;
   statsCustomActive = false;
   ['week','month','year'].forEach(k =>
-    document.getElementById('sf-'+k).classList.toggle('on', k===p)
+    document.getElementById('hpf-'+k).classList.toggle('on', k===p)
   );
+  setMonthLabel();
   renderStats();
 }
 
@@ -1003,12 +1047,17 @@ function renderStats() {
   const donutSec   = document.getElementById('donutSection');
   const rankingSec = document.getElementById('rankingSection');
 
-  document.getElementById('donutLabel').textContent       = getStatsPeriodLabel();
+  // 헤더 라벨 동기화
+  setMonthLabel();
   document.getElementById('donutCenterLabel').textContent = '총 ' + typeLabel;
-  document.querySelector('.ranking-header').textContent   = `${grpLabel}별 ${typeLabel} 순위`;
+  document.getElementById('rankingHeaderTitle').textContent = `${grpLabel}별 ${typeLabel} 순위`;
 
   if (!sorted.length) {
-    emptyEl.innerHTML        = `${typeLabel} 내역이 없어요 😊<br>내역을 추가해 보세요!`;
+    emptyEl.innerHTML = `<div class="stats-empty-state">
+      <div class="stats-empty-icon">📊</div>
+      <div class="stats-empty-title">이 기간에는 내역이 없어요!</div>
+      <div class="stats-empty-sub">${getStatsHeaderLabel()} 기간의<br>${typeLabel} 내역을 추가해 보세요</div>
+    </div>`;
     emptyEl.style.display    = 'block';
     donutSec.style.display   = 'none';
     rankingSec.style.display = 'none';
@@ -1147,7 +1196,7 @@ function applyDateRange() {
   statsCustomActive = true;
   // 기간 버튼 선택 해제
   ['week','month','year'].forEach(k =>
-    document.getElementById('sf-'+k).classList.remove('on')
+    document.getElementById('hpf-'+k).classList.remove('on')
   );
   closeDateRange();
   renderStats();
