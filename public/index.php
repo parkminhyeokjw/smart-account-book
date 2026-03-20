@@ -140,7 +140,12 @@ body {
 /* ── 통계 ── */
 .section-box { margin: 10px 14px; background: #fff; border-radius: 12px; padding: 18px; box-shadow: 0 1px 4px rgba(0,0,0,.07); }
 .section-title { font-size: 14px; font-weight: 700; color: #424242; margin-bottom: 14px; }
-.stats-filter { display: flex; margin: 14px 16px 0; background: #eceff1; border-radius: 10px; padding: 3px; gap: 3px; }
+/* 지출/수입 토글 */
+.stats-type-toggle { display: flex; margin: 14px 16px 0; border-radius: 10px; overflow: hidden; border: 1.5px solid #e0e0e0; }
+.st-btn { flex: 1; padding: 11px 0; border: none; background: #f5f5f5; font-size: 15px; font-weight: 700; color: #9e9e9e; cursor: pointer; font-family: inherit; transition: all .2s; }
+.st-btn.on.expense { background: #e53935; color: #fff; }
+.st-btn.on.income  { background: #00BCD4; color: #fff; }
+.stats-filter { display: flex; margin: 8px 16px 0; background: #eceff1; border-radius: 10px; padding: 3px; gap: 3px; }
 .stats-filter-btn { flex: 1; padding: 9px 0; border: none; background: none; border-radius: 8px; font-size: 14px; font-weight: 700; color: #9e9e9e; cursor: pointer; font-family: inherit; transition: all .2s; }
 .stats-filter-btn.on { background: #fff; color: #455A64; box-shadow: 0 1px 6px rgba(0,0,0,.13); }
 .donut-section { margin: 14px 16px 0; background: #fff; border-radius: 16px; padding: 20px 16px 16px; box-shadow: 0 1px 4px rgba(0,0,0,.07); }
@@ -152,9 +157,11 @@ body {
 .donut-empty { text-align: center; padding: 50px 20px; color: #bdbdbd; font-size: 15px; line-height: 1.8; }
 .ranking-section { margin: 10px 16px 0; background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,.07); }
 .ranking-header { padding: 14px 16px 10px; font-size: 13px; font-weight: 700; color: #757575; border-bottom: 1px solid #f5f5f5; }
-.ranking-item { display: flex; align-items: center; gap: 12px; padding: 13px 16px; border-bottom: 1px solid #f5f5f5; cursor: pointer; }
+.ranking-item { display: flex; align-items: center; gap: 12px; padding: 13px 16px; border-bottom: 1px solid #f5f5f5; cursor: pointer; transition: background .2s; }
 .ranking-item:last-child { border-bottom: none; }
 .ranking-item:active { background: #f5f5f5; }
+.ranking-item.highlighted { background: #e8f4fd; }
+.ranking-item.highlighted .rank-name { color: #1565C0; font-weight: 700; }
 .rank-num { width: 18px; font-size: 12px; font-weight: 700; color: #bdbdbd; text-align: center; flex-shrink: 0; }
 .rank-num.top { color: #455A64; }
 .rank-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
@@ -359,6 +366,11 @@ body {
 
 <!-- ③ 통계 탭 -->
 <div class="tab-pane" id="pane-stats">
+  <!-- 지출/수입 토글 -->
+  <div class="stats-type-toggle">
+    <button id="st-expense" class="st-btn on expense" onclick="setStatsType('expense')">지출</button>
+    <button id="st-income"  class="st-btn income"     onclick="setStatsType('income')">수입</button>
+  </div>
   <!-- 기간 필터 -->
   <div class="stats-filter">
     <button class="stats-filter-btn" id="sf-week"  onclick="setStatsPeriod('week')">주</button>
@@ -371,7 +383,7 @@ body {
     <div class="donut-canvas-wrap">
       <canvas id="donutCanvas"></canvas>
       <div class="donut-center">
-        <div class="donut-center-label">총 지출</div>
+        <div class="donut-center-label" id="donutCenterLabel">총 지출</div>
         <div class="donut-center-amt" id="donutCenterAmt">₩0</div>
       </div>
     </div>
@@ -591,6 +603,7 @@ let activeTxId   = null;
 let editingTxId  = null;
 let daySheetDate = null;
 let statsPeriod  = 'month';
+let statsType    = 'expense';
 let donutChart   = null;
 
 // ── 로드 ──────────────────────────────────────────────────────
@@ -851,11 +864,25 @@ function renderLedger() {
 }
 
 // ── 통계 ─────────────────────────────────────────────────────
-const DONUT_COLORS = [
-  '#FF6384','#36A2EB','#FFCE56','#4BC0C0','#9966FF',
-  '#FF9F40','#C9CBCF','#F06292','#AED581','#4DD0E1',
-  '#FFB74D','#BA68C8'
+// 지출 팔레트 (웜톤)
+const COLORS_EXPENSE = [
+  '#FF6384','#FF9F40','#FFCE56','#FF6347','#F06292',
+  '#E57373','#FFB74D','#FF8A65','#FFAB40','#FF80AB',
+  '#FFA726','#EF5350'
 ];
+// 수입 팔레트 (쿨톤/민트)
+const COLORS_INCOME = [
+  '#36A2EB','#4BC0C0','#26C6DA','#66BB6A','#42A5F5',
+  '#26A69A','#80DEEA','#80CBC4','#81D4FA','#A5D6A7',
+  '#4DB6AC','#4FC3F7'
+];
+
+function setStatsType(type) {
+  statsType = type;
+  document.getElementById('st-expense').classList.toggle('on', type === 'expense');
+  document.getElementById('st-income').classList.toggle('on',  type === 'income');
+  renderStats();
+}
 
 function setStatsPeriod(p) {
   statsPeriod = p;
@@ -871,7 +898,6 @@ function getStatsTxs() {
     const y = curMonth.slice(0,4);
     return txs.filter(t => t.date.startsWith(y));
   }
-  // week: 최근 7일
   const today = new Date();
   const from  = new Date(today); from.setDate(from.getDate()-6);
   const fromStr = from.toISOString().slice(0,10);
@@ -889,22 +915,28 @@ function getStatsPeriodLabel() {
 }
 
 function renderStats() {
-  const exps = getStatsTxs().filter(t => t.type === 'expense');
-  const totalExp = exps.reduce((s,t) => s+t.amount, 0);
+  const typeLabel  = statsType === 'expense' ? '지출' : '수입';
+  const palette    = statsType === 'expense' ? COLORS_EXPENSE : COLORS_INCOME;
+  const amtColor   = statsType === 'expense' ? '#e53935' : '#00BCD4';
 
-  const totals = {};
-  exps.forEach(t => totals[t.category] = (totals[t.category]||0) + t.amount);
-  const sorted = Object.entries(totals).sort((a,b) => b[1]-a[1]);
+  const filtered   = getStatsTxs().filter(t => t.type === statsType);
+  const total      = filtered.reduce((s,t) => s+t.amount, 0);
+  const totals     = {};
+  filtered.forEach(t => totals[t.category] = (totals[t.category]||0) + t.amount);
+  const sorted     = Object.entries(totals).sort((a,b) => b[1]-a[1]);
 
   const emptyEl    = document.getElementById('statsEmpty');
   const donutSec   = document.getElementById('donutSection');
   const rankingSec = document.getElementById('rankingSection');
 
-  document.getElementById('donutLabel').textContent = getStatsPeriodLabel();
+  document.getElementById('donutLabel').textContent      = getStatsPeriodLabel();
+  document.getElementById('donutCenterLabel').textContent = '총 ' + typeLabel;
+  document.querySelector('.ranking-header').textContent   = `카테고리별 ${typeLabel} 순위`;
 
   if (!sorted.length) {
-    emptyEl.style.display  = 'block';
-    donutSec.style.display = 'none';
+    emptyEl.innerHTML       = `${typeLabel} 내역이 없어요 😊<br>내역을 추가해 보세요!`;
+    emptyEl.style.display   = 'block';
+    donutSec.style.display  = 'none';
     rankingSec.style.display = 'none';
     if (donutChart) { donutChart.destroy(); donutChart = null; }
     return;
@@ -913,11 +945,11 @@ function renderStats() {
   donutSec.style.display   = 'block';
   rankingSec.style.display = 'block';
 
-  document.getElementById('donutCenterAmt').textContent = fmt(totalExp);
+  document.getElementById('donutCenterAmt').textContent = fmt(total);
 
-  const labels = sorted.map(([cat]) => cat);
+  const labels  = sorted.map(([cat]) => cat);
   const amounts = sorted.map(([,amt]) => amt);
-  const colors  = sorted.map((_,i) => DONUT_COLORS[i % DONUT_COLORS.length]);
+  const colors  = sorted.map((_,i) => palette[i % palette.length]);
 
   const ctx = document.getElementById('donutCanvas').getContext('2d');
   if (donutChart) donutChart.destroy();
@@ -925,7 +957,14 @@ function renderStats() {
     type: 'doughnut',
     data: {
       labels,
-      datasets: [{ data: amounts, backgroundColor: colors, borderWidth: 2, borderColor: '#fff' }]
+      datasets: [{
+        data: amounts,
+        backgroundColor: colors,
+        borderWidth: 2,
+        borderColor: '#fff',
+        hoverOffset: 14,
+        hoverBorderWidth: 3
+      }]
     },
     options: {
       cutout: '70%',
@@ -933,9 +972,12 @@ function renderStats() {
         legend: { display: false },
         tooltip: {
           callbacks: {
-            label: c => ` ${c.label}: ${fmt(c.raw)} (${Math.round(c.raw/totalExp*100)}%)`
+            label: c => ` ${c.label}: ${fmt(c.raw)} (${Math.round(c.raw/total*100)}%)`
           }
         }
+      },
+      onClick: (_e, elements) => {
+        if (elements.length > 0) highlightRankItem(elements[0].index);
       },
       animation: { animateRotate: true, duration: 700 }
     }
@@ -943,10 +985,11 @@ function renderStats() {
 
   // 랭킹 리스트
   document.getElementById('rankingList').innerHTML = sorted.map(([cat, amt], i) => {
-    const pct   = Math.round(amt / totalExp * 100);
-    const color = colors[i];
+    const pct      = Math.round(amt / total * 100);
+    const color    = colors[i];
     const numClass = i < 3 ? 'rank-num top' : 'rank-num';
-    return `<div class="ranking-item" onclick="openCatDetail('${esc(cat)}')">
+    return `<div class="ranking-item" id="rank-item-${i}" data-idx="${i}"
+        onclick="highlightChartSlice(${i});openCatDetail('${esc(cat)}')">
       <div class="${numClass}">${i+1}</div>
       <div class="rank-dot" style="background:${color}"></div>
       <div class="rank-icon">${getIcon(cat)}</div>
@@ -956,15 +999,36 @@ function renderStats() {
       </div>
       <div class="rank-right">
         <div class="rank-pct">${pct}%</div>
-        <div class="rank-amt">${fmt(amt)}</div>
+        <div class="rank-amt" style="color:${amtColor}">${fmt(amt)}</div>
       </div>
     </div>`;
   }).join('');
 }
 
+// 차트 → 리스트 강조
+function highlightRankItem(idx) {
+  document.querySelectorAll('.ranking-item').forEach((el, i) => {
+    el.classList.toggle('highlighted', i === idx);
+  });
+  const target = document.getElementById('rank-item-'+idx);
+  if (target) target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  clearTimeout(window._rankHL);
+  window._rankHL = setTimeout(() =>
+    document.querySelectorAll('.ranking-item').forEach(el => el.classList.remove('highlighted'))
+  , 2500);
+}
+
+// 리스트 → 차트 강조
+function highlightChartSlice(idx) {
+  if (!donutChart) return;
+  donutChart.setActiveElements([{ datasetIndex: 0, index: idx }]);
+  donutChart.tooltip.setActiveElements([{ datasetIndex: 0, index: idx }], { x: 0, y: 0 });
+  donutChart.update('active');
+}
+
 function openCatDetail(cat) {
   const rows = getStatsTxs()
-    .filter(t => t.type === 'expense' && t.category === cat)
+    .filter(t => t.type === statsType && t.category === cat)
     .sort((a,b) => b.date.localeCompare(a.date));
   const total = rows.reduce((s,t) => s+t.amount, 0);
   document.getElementById('catdetTitle').textContent = `${getIcon(cat)} ${cat}  ${fmt(total)}`;
