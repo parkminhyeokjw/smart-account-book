@@ -146,7 +146,8 @@ body {
 .stats-header-month {
   font-size: 22px; font-weight: 800; color: #fff; display: none; letter-spacing: -.3px;
 }
-/* 나 탭 — 배경은 기본 네이비 유지, 가운데 타이틀 흰 글씨 */
+/* 나 탭 — 헤더+배너 한 덩어리 */
+.app-header.me-mode { background: #364A6D; box-shadow: none; }
 .app-header.me-mode .header-center-title { color: #fff; font-size: 20px; font-weight: 800; }
 /* 가계부/달력 탭 — 진한 네이비 헤더 */
 .app-header.ledger-mode {
@@ -584,7 +585,14 @@ body {
 
 /* ── 나 ── */
 /* ── 나 탭 ── */
-.me-wrap { padding-bottom: 40px; }
+#pane-me { overflow: hidden; height: calc(100vh - 56px - 64px); padding-bottom: 0 !important; }
+.me-wrap { position: relative; height: 100%; overflow: hidden; }
+.me-subpage { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg); opacity: 0; pointer-events: none; transition: opacity .18s ease; overflow-y: auto; z-index: 10; }
+.me-subpage.active { opacity: 1; pointer-events: auto; }
+.me-subpage-hd { display: flex; align-items: center; padding: 0 16px; height: 56px; background: #364A6D; flex-shrink: 0; position: sticky; top: 0; z-index: 1; }
+.me-subpage-back { background: none; border: none; cursor: pointer; padding: 4px; color: #fff; display: flex; align-items: center; margin-right: 8px; }
+.me-subpage-back svg { width: 22px; height: 22px; stroke-width: 2; color: #fff; }
+.me-subpage-title { font-size: 17px; font-weight: 700; color: #fff; }
 .me-profile { background: var(--bg); padding: 0 20px 20px; display: flex; flex-direction: column; align-items: center; gap: 0; }
 .me-profile-banner { width: calc(100% + 40px); height: 80px; background: #364A6D; margin: 0 -20px; flex-shrink: 0; }
 .me-app-title { display: none; }
@@ -610,6 +618,12 @@ body {
 .me-row-value { font-size: 12px; color: #9e9e9e; }
 .me-row-arrow { font-size: 16px; color: #c8c8c8; }
 .me-row.danger .me-row-label { color: #EF4444; }
+.me-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 20px 16px 0; }
+.me-grid-item { background: var(--surface); border-radius: 16px; padding: 20px 8px 16px; display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; box-shadow: var(--shadow); border: 1px solid var(--border); transition: background .12s; }
+.me-grid-item:active { background: #eef2ff; }
+.me-grid-icon { width: 48px; height: 48px; border-radius: 50%; background: #EEF1FB; display: flex; align-items: center; justify-content: center; }
+.me-grid-icon svg { width: 22px; height: 22px; stroke-width: 1.75; color: #364B6D; }
+.me-grid-label { font-size: 13px; font-weight: 700; color: var(--text1); text-align: center; }
 .me-footer { text-align: center; padding: 28px 20px 16px; font-size: 12px; color: #bdbdbd; line-height: 1.7; }
 
 /* ── 하단 탭바 ── */
@@ -806,6 +820,11 @@ body.dark .me-row:active { background:#1a2638; }
 body.dark .me-row-label { color:#cbd5e1; }
 body.dark .me-section-title { color:#475569; }
 body.dark .me-footer { color:#334155; }
+body.dark .me-grid-item { background:#131c27; border-color:#1e293b; }
+body.dark .me-grid-item:active { background:#1a2638; }
+body.dark .me-grid-icon { background:#1e2d42; }
+body.dark .me-grid-icon svg { color:#94a3b8; }
+body.dark .me-grid-label { color:#cbd5e1; }
 body.dark .widget-card { background:#131c27; }
 body.dark .edit-row { border-bottom-color:#1e293b; background:#131c27; }
 body.dark .edit-row-label { color:#c0c0c0; }
@@ -1141,100 +1160,119 @@ body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C;
 <!-- ⑤ 나 탭 -->
 <div class="tab-pane" id="pane-me">
   <div class="me-wrap">
-    <!-- 프로필 -->
-    <div class="me-profile">
-      <div class="me-profile-banner"></div>
-      <div class="me-avatar">
-        <svg viewBox="0 0 90 90" width="90" height="90" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="45" cy="34" r="17" fill="#9CA3AF"/>
-          <ellipse cx="45" cy="78" rx="28" ry="22" fill="#9CA3AF"/>
-        </svg>
-      </div>
-      <?php if ($isLoggedIn): ?>
-        <div class="me-name">
-          <?=$userName?>님
-          <?php if ($dbStats['badge']): ?>
-            <span style="font-size:12px;font-weight:700;background:#FEF3C7;color:#92400E;border-radius:20px;padding:3px 10px;margin-left:6px;vertical-align:middle"><?=$dbStats['badge']?></span>
-          <?php endif; ?>
+
+    <!-- 홈 화면 -->
+    <div id="meHome" style="height:100%;overflow:hidden">
+      <div class="me-profile">
+        <div class="me-profile-banner"></div>
+        <div class="me-avatar">
+          <svg viewBox="0 0 90 90" width="90" height="90" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="45" cy="34" r="17" fill="#9CA3AF"/>
+            <ellipse cx="45" cy="78" rx="28" ry="22" fill="#9CA3AF"/>
+          </svg>
         </div>
-        <div class="me-email"><?=$userEmail?></div>
-        <div class="me-stats-row">
-          <div class="me-stat-col">
-            <div class="me-stat-num"><?=$dbStats['month_count']?></div>
-            <div class="me-stat-label">이번 달 기록</div>
+        <?php if ($isLoggedIn): ?>
+          <div class="me-name">
+            <?=$userName?>님
+            <?php if ($dbStats['badge']): ?>
+              <span style="font-size:12px;font-weight:700;background:#FEF3C7;color:#92400E;border-radius:20px;padding:3px 10px;margin-left:6px;vertical-align:middle"><?=$dbStats['badge']?></span>
+            <?php endif; ?>
           </div>
-          <div class="me-stat-col">
-            <div class="me-stat-streak-text" id="meStreak"><?= $dbStats['streak'] > 0 ? $dbStats['streak'].'일 연속 🔥' : '아직 기록을 시작해봐요! 🔥'?></div>
-            <div class="me-stat-label">연속 기록일</div>
+          <div class="me-email"><?=$userEmail?></div>
+          <div class="me-stats-row">
+            <div class="me-stat-col">
+              <div class="me-stat-num"><?=$dbStats['month_count']?></div>
+              <div class="me-stat-label">이번 달 기록</div>
+            </div>
+            <div class="me-stat-col">
+              <div class="me-stat-streak-text" id="meStreak"><?= $dbStats['streak'] > 0 ? $dbStats['streak'].'일 연속 🔥' : '아직 기록을 시작해봐요! 🔥'?></div>
+              <div class="me-stat-label">연속 기록일</div>
+            </div>
           </div>
+        <?php else: ?>
+          <div class="me-name">비로그인</div>
+          <div class="me-email">로그인하면 서버에 동기화됩니다</div>
+          <a href="login.php" class="me-login-btn">로그인 / 회원가입</a>
+        <?php endif; ?>
+      </div>
+
+      <div class="me-grid">
+        <div class="me-grid-item" onclick="openMePage('appSettings')">
+          <div class="me-grid-icon"><i data-lucide="settings"></i></div>
+          <span class="me-grid-label">앱 설정</span>
         </div>
-      <?php else: ?>
-        <div class="me-name">비로그인</div>
-        <div class="me-email">로그인하면 서버에 동기화됩니다</div>
-        <a href="login.php" class="me-login-btn">로그인 / 회원가입</a>
-      <?php endif; ?>
-    </div>
-
-    <!-- 기록 관리 -->
-    <div class="me-section">
-      <div class="me-section-title">기록 관리</div>
-      <div class="me-row" onclick="openFixedModal()">
-        <span class="me-row-ico"><i data-lucide="pin"></i></span><span class="me-row-label">고정 지출 설정</span><span class="me-row-arrow">›</span>
-      </div>
-      <div class="me-row" onclick="openCatEditModal()">
-        <span class="me-row-ico"><i data-lucide="tag"></i></span><span class="me-row-label">카테고리 편집</span><span class="me-row-arrow">›</span>
-      </div>
-      <div class="me-row" onclick="openPayEditModal()">
-        <span class="me-row-ico"><i data-lucide="credit-card"></i></span><span class="me-row-label">결제수단 편집</span><span class="me-row-arrow">›</span>
+        <div class="me-grid-item" onclick="showToast('준비 중이에요')">
+          <div class="me-grid-icon"><i data-lucide="zap"></i></div>
+          <span class="me-grid-label">업그레이드</span>
+        </div>
+        <div class="me-grid-item" onclick="openHelpModal()">
+          <div class="me-grid-icon"><i data-lucide="help-circle"></i></div>
+          <span class="me-grid-label">도움말</span>
+        </div>
+        <div class="me-grid-item" onclick="openMePage('data')">
+          <div class="me-grid-icon"><i data-lucide="database"></i></div>
+          <span class="me-grid-label">데이터</span>
+        </div>
+        <div class="me-grid-item" onclick="showToast('준비 중이에요')">
+          <div class="me-grid-icon"><i data-lucide="message-circle"></i></div>
+          <span class="me-grid-label">문의하기</span>
+        </div>
       </div>
     </div>
 
-    <!-- 앱 환경 -->
-    <div class="me-section">
-      <div class="me-section-title">앱 환경</div>
-      <div class="me-row" onclick="openNotifModal()">
-        <span class="me-row-ico"><i data-lucide="bell"></i></span><span class="me-row-label">푸시 알림</span><span class="me-row-value" id="notifRowValue">꺼짐</span><span class="me-row-arrow">›</span>
+    <!-- 앱 설정 페이지 -->
+    <div id="mePageAppSettings" class="me-subpage">
+      <div class="me-subpage-hd">
+        <button class="me-subpage-back" onclick="closeMePage()"><i data-lucide="chevron-left"></i></button>
+        <span class="me-subpage-title">앱 설정</span>
       </div>
-      <div class="me-row" onclick="toggleDarkMode()">
-        <span class="me-row-ico"><i data-lucide="moon"></i></span><span class="me-row-label">다크 모드</span>
-        <label class="toggle-wrap" style="margin-left:auto;pointer-events:none">
-          <input type="checkbox" class="toggle-input" id="darkToggle" style="pointer-events:none">
-          <span class="toggle-slider"></span>
-        </label>
+      <div class="me-section">
+        <div class="me-section-title">기록 관리</div>
+        <div class="me-row" onclick="openFixedModal()">
+          <span class="me-row-ico"><i data-lucide="pin"></i></span><span class="me-row-label">고정 지출 설정</span><span class="me-row-arrow">›</span>
+        </div>
+        <div class="me-row" onclick="openCatEditModal()">
+          <span class="me-row-ico"><i data-lucide="tag"></i></span><span class="me-row-label">카테고리 편집</span><span class="me-row-arrow">›</span>
+        </div>
+        <div class="me-row" onclick="openPayEditModal()">
+          <span class="me-row-ico"><i data-lucide="credit-card"></i></span><span class="me-row-label">결제수단 편집</span><span class="me-row-arrow">›</span>
+        </div>
+      </div>
+      <div class="me-section">
+        <div class="me-section-title">앱 환경</div>
+        <div class="me-row" onclick="openNotifModal()">
+          <span class="me-row-ico"><i data-lucide="bell"></i></span><span class="me-row-label">푸시 알림</span><span class="me-row-value" id="notifRowValue">꺼짐</span><span class="me-row-arrow">›</span>
+        </div>
+        <div class="me-row" onclick="toggleDarkMode()">
+          <span class="me-row-ico"><i data-lucide="moon"></i></span><span class="me-row-label">다크 모드</span>
+          <label class="toggle-wrap" style="margin-left:auto;pointer-events:none">
+            <input type="checkbox" class="toggle-input" id="darkToggle" style="pointer-events:none">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
       </div>
     </div>
 
-    <!-- 데이터 -->
-    <div class="me-section">
-      <div class="me-section-title">데이터</div>
-      <div class="me-row" onclick="openBackupModal()">
-        <span class="me-row-ico"><i data-lucide="cloud"></i></span><span class="me-row-label">백업 및 복구</span><span class="me-row-arrow">›</span>
+    <!-- 데이터 페이지 -->
+    <div id="mePageData" class="me-subpage">
+      <div class="me-subpage-hd">
+        <button class="me-subpage-back" onclick="closeMePage()"><i data-lucide="chevron-left"></i></button>
+        <span class="me-subpage-title">데이터</span>
       </div>
-      <div class="me-row" onclick="openExportModal()">
-        <span class="me-row-ico"><i data-lucide="download"></i></span><span class="me-row-label">엑셀로 내보내기</span><span class="me-row-arrow">›</span>
-      </div>
-      <div class="me-row danger" onclick="doDeleteAll()">
-        <span class="me-row-ico"><i data-lucide="trash-2"></i></span><span class="me-row-label">전체 내역 삭제</span><span class="me-row-arrow">›</span>
+      <div class="me-section">
+        <div class="me-section-title">데이터 관리</div>
+        <div class="me-row" onclick="openBackupModal()">
+          <span class="me-row-ico"><i data-lucide="cloud"></i></span><span class="me-row-label">백업 및 복구</span><span class="me-row-arrow">›</span>
+        </div>
+        <div class="me-row" onclick="openExportModal()">
+          <span class="me-row-ico"><i data-lucide="download"></i></span><span class="me-row-label">엑셀로 내보내기</span><span class="me-row-arrow">›</span>
+        </div>
+        <div class="me-row danger" onclick="doDeleteAll()">
+          <span class="me-row-ico"><i data-lucide="trash-2"></i></span><span class="me-row-label">전체 내역 삭제</span><span class="me-row-arrow">›</span>
+        </div>
       </div>
     </div>
 
-    <!-- 정보 -->
-    <div class="me-section">
-      <div class="me-section-title">정보</div>
-      <div class="me-row" onclick="showToast('마이가계부 v1.0')">
-        <span class="me-row-ico"><i data-lucide="info"></i></span><span class="me-row-label">버전 정보</span><span class="me-row-value">v1.0</span>
-      </div>
-      <div class="me-row" onclick="openHelpModal()">
-        <span class="me-row-ico"><i data-lucide="help-circle"></i></span><span class="me-row-label">도움말</span><span class="me-row-arrow">›</span>
-      </div>
-      <?php if ($isLoggedIn): ?>
-      <div class="me-row danger" onclick="location.href='logout.php'">
-        <span class="me-row-ico"><i data-lucide="log-out"></i></span><span class="me-row-label">로그아웃</span>
-      </div>
-      <?php endif; ?>
-    </div>
-
-    <div class="me-footer">마이가계부와 함께 현명한 소비를 이어가세요 ✨</div>
   </div>
 </div>
 
@@ -1990,6 +2028,7 @@ function goTab(name) {
   appHeader.classList.toggle('stats-mode', isStats);
   appHeader.classList.toggle('me-mode', isMe);
   appHeader.classList.toggle('ledger-mode', isLedger);
+  appHeader.style.position = isMe ? 'relative' : '';
   document.querySelector('.header-title').style.visibility = isMe ? 'hidden' : 'visible';
   document.getElementById('headerCenterTitle').style.display = isMe ? 'block' : 'none';
   document.getElementById('statsHeaderMonth').style.display = 'none';
@@ -4298,6 +4337,14 @@ function addCatEdit() {
 // ── 결제수단 편집 모달 ─────────────────────────────────────
 let _payEditIcon = { lu: 'credit-card', bg: '#607D8B' };
 
+function openMePage(name) {
+  const id = name === 'appSettings' ? 'mePageAppSettings' : 'mePageData';
+  document.getElementById(id).classList.add('active');
+  refreshIcons();
+}
+function closeMePage() {
+  document.querySelectorAll('.me-subpage').forEach(p => p.classList.remove('active'));
+}
 function openPayEditModal() {
   _payEditIcon = { lu: 'credit-card', bg: '#607D8B' };
   const prev = document.getElementById('peIconPreview');
