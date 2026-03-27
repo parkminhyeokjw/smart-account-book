@@ -9,7 +9,7 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --theme-primary: #455A64;
+    --theme-primary: #1D2C55;
     --theme-border: rgba(69, 90, 100, 0.35);
   }
 
@@ -28,7 +28,7 @@
     display: flex;
     align-items: center;
     height: 56px;
-    background: var(--theme-primary, #455A64);
+    background: var(--theme-primary, #1D2C55);
     color: #fff;
     padding: 0 4px;
     flex-shrink: 0;
@@ -76,7 +76,7 @@
     color: #212121;
     line-height: 1.2;
     display: inline-block;
-    border-right: 2px solid var(--theme-primary, #455A64);
+    border-right: 2px solid var(--theme-primary, #1D2C55);
     padding-right: 4px;
     min-height: 44px;
   }
@@ -106,7 +106,7 @@
     cursor: pointer;
     user-select: none;
     -webkit-user-select: none;
-    color: var(--theme-primary, #455A64);
+    color: var(--theme-primary, #1D2C55);
     background: #fff;
     border: 1px solid var(--theme-border, rgba(69,90,100,0.35));
     transition: background 0.1s;
@@ -130,11 +130,11 @@
   .key-number { color: #212121; }
 
   /* Operator keys */
-  .key-operator { color: var(--theme-primary, #455A64); font-weight: 500; }
+  .key-operator { color: var(--theme-primary, #1D2C55); font-weight: 500; }
 
   /* Equals key */
   .key-equals {
-    background: var(--theme-primary, #455A64);
+    background: var(--theme-primary, #1D2C55);
     color: #fff;
     font-size: 32px;
     font-weight: 600;

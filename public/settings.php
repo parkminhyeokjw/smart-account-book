@@ -23,7 +23,7 @@ body {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: var(--theme-primary,#455A64);
+  background: var(--theme-primary,#1D2C55);
   display: flex;
   align-items: center;
   padding: 0 4px;
@@ -111,8 +111,8 @@ body {
   transition: background .15s, border-color .15s;
 }
 .s-checkbox.checked {
-  background: var(--theme-primary,#455A64);
-  border-color: var(--theme-primary,#455A64);
+  background: var(--theme-primary,#1D2C55);
+  border-color: var(--theme-primary,#1D2C55);
 }
 .s-checkbox.checked::after {
   content: '';

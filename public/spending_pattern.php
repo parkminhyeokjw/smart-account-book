@@ -9,7 +9,7 @@
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  :root { --theme-primary: #455A64; }
+  :root { --theme-primary: #1D2C55; }
 
   body {
     font-family: 'Segoe UI', sans-serif;
@@ -22,7 +22,7 @@
     display: flex;
     align-items: center;
     height: 56px;
-    background: var(--theme-primary, #455A64);
+    background: var(--theme-primary, #1D2C55);
     color: #fff;
     padding: 0 4px;
     position: sticky; top: 0; z-index: 100;
@@ -52,8 +52,8 @@
     transition: color 0.15s, border-color 0.15s;
   }
   .tab.active {
-    color: var(--theme-primary, #455A64);
-    border-bottom-color: var(--theme-primary, #455A64);
+    color: var(--theme-primary, #1D2C55);
+    border-bottom-color: var(--theme-primary, #1D2C55);
   }
 
   /* ── Empty state ── */
@@ -92,7 +92,7 @@
   .fab {
     position: fixed; bottom: 24px; right: 20px;
     width: 60px; height: 60px;
-    background: var(--theme-primary, #455A64);
+    background: var(--theme-primary, #1D2C55);
     color: #fff; font-size: 32px;
     border: none; border-radius: 16px;
     cursor: pointer;
@@ -122,7 +122,7 @@
   }
   .dialog-header {
     padding: 14px 16px;
-    background: var(--theme-primary, #455A64);
+    background: var(--theme-primary, #1D2C55);
     color: #fff; font-size: 16px; font-weight: 500;
   }
   .dialog-body { padding: 16px; }
@@ -133,7 +133,7 @@
     border-radius: 4px; padding: 9px 12px;
     font-size: 15px; outline: none;
   }
-  .dialog-input:focus { border-color: var(--theme-primary, #455A64); }
+  .dialog-input:focus { border-color: var(--theme-primary, #1D2C55); }
   .dialog-footer {
     display: flex;
     border-top: 1px solid #eeeeee;
@@ -145,11 +145,11 @@
   }
   .btn-cancel {
     background: #fff;
-    color: var(--theme-primary, #455A64);
+    color: var(--theme-primary, #1D2C55);
     border-right: 1px solid #eeeeee !important;
   }
   .btn-confirm {
-    background: var(--theme-primary, #455A64);
+    background: var(--theme-primary, #1D2C55);
     color: #fff;
   }
   .btn-cancel:active, .btn-confirm:active { filter: brightness(0.9); }

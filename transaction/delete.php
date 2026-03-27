@@ -13,20 +13,4 @@ function deleteTransaction(int $txId, int $userId): bool
     return $stmt->rowCount() > 0;
 }
 
-// ---------- HTTP POST 처리 ----------
-if (php_sapi_name() !== 'cli' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    header('Content-Type: application/json; charset=utf-8');
-
-    $userId = requireLogin(true);
-    $txId   = (int) ($_POST['id'] ?? 0);
-
-    if ($txId <= 0) {
-        http_response_code(400);
-        echo json_encode(['status' => 'error', 'message' => '유효하지 않은 ID입니다.']);
-        exit;
-    }
-
-    $ok = deleteTransaction($txId, $userId);
-    echo json_encode(['status' => $ok ? 'ok' : 'error',
-                      'message' => $ok ? '삭제되었습니다.' : '해당 내역을 찾을 수 없습니다.']);
-}
+// HTTP 처리는 api/index.php 에서 담당합니다.

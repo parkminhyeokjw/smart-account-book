@@ -134,8 +134,18 @@ if not ensure_cookie():
 
 # Step 1: deploy changed files
 to_deploy = [
-    ('public/index.php', 'public/index.php'),
-    ('api/index.php',    'api/index.php'),
+    ('public/index.php',          'public/index.php'),
+    ('public/login.php',          'public/login.php'),
+    ('public/register.php',       'public/register.php'),
+    ('public/forgot_password.php','public/forgot_password.php'),
+    ('public/design_apply.js',    'public/design_apply.js'),
+    ('public/design_settings.php','public/design_settings.php'),
+    ('public/settings.php',       'public/settings.php'),
+    ('public/balance.php',        'public/balance.php'),
+    ('public/spending_pattern.php','public/spending_pattern.php'),
+    ('public/calculator.php',     'public/calculator.php'),
+    ('public/currency.php',       'public/currency.php'),
+    ('api/index.php',             'api/index.php'),
 ]
 ok = 0
 for local_rel, remote_rel in to_deploy:

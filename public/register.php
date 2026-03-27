@@ -45,9 +45,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header('Location: index.php');
             exit;
         } catch (PDOException $e) {
-            $error = ($e->getCode() == 23000)
-                ? '이미 사용 중인 이메일입니다.'
-                : '회원가입 중 오류가 발생했습니다.';
+            $code = (string)$e->getCode();
+            if ($code === '23000' || strpos($e->getMessage(), 'Duplicate') !== false) {
+                $error = '이미 사용 중인 이메일입니다.';
+            } else {
+                $error = '회원가입 중 오류가 발생했습니다. (' . htmlspecialchars($e->getMessage()) . ')';
+            }
+            error_log('Register PDO error: ' . $e->getMessage());
         }
     }
 }
@@ -63,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
   font-family: -apple-system, 'Malgun Gothic', '맑은 고딕', sans-serif;
-  background: #f5f5f5;
+  background: #F3F5FA;
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -72,32 +76,43 @@ body {
 }
 .card {
   background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 2px 16px rgba(0,0,0,.1);
-  padding: 40px 28px 32px;
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(29,44,85,.12);
   width: 100%;
   max-width: 360px;
+  overflow: hidden;
 }
 .logo {
+  background: linear-gradient(135deg, #1D2C55 0%, #2A3D6E 100%);
   text-align: center;
-  margin-bottom: 32px;
+  padding: 32px 28px 28px;
 }
-.logo .material-icons { font-size: 48px; color: #455A64; }
-.logo h1 { font-size: 22px; font-weight: 700; color: #212121; margin-top: 8px; }
-.logo p  { font-size: 13px; color: #9e9e9e; margin-top: 4px; }
+.logo-icon {
+  width: 64px; height: 64px;
+  background: rgba(255,255,255,.15);
+  border-radius: 20px;
+  display: inline-flex; align-items: center; justify-content: center;
+  margin-bottom: 12px;
+}
+.logo-icon .material-icons { font-size: 34px; color: #fff; }
+.logo h1 { font-size: 22px; font-weight: 700; color: #fff; margin-top: 0; }
+.logo p  { font-size: 13px; color: rgba(255,255,255,.65); margin-top: 5px; }
+
+.card-body { padding: 24px 28px 32px; }
 
 .field { margin-bottom: 16px; }
-.field label { display: block; font-size: 13px; font-weight: 600; color: #424242; margin-bottom: 6px; }
+.field label { display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 6px; }
 .field input {
   width: 100%;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
+  border: 1.5px solid #E4E8F2;
+  border-radius: 10px;
   padding: 12px 14px;
   font-size: 15px;
   outline: none;
   transition: border-color .2s;
+  background: #FAFBFD;
 }
-.field input:focus { border-color: #455A64; }
+.field input:focus { border-color: #2979FF; background: #fff; }
 .pw-wrap { position: relative; }
 .pw-wrap input { padding-right: 44px; }
 .pw-eye {
@@ -105,36 +120,38 @@ body {
   background: none; border: none; cursor: pointer; padding: 4px;
   color: #9e9e9e; display: flex; align-items: center;
 }
-.pw-eye:hover { color: #455A64; }
+.pw-eye:hover { color: #1D2C55; }
 
 .error {
-  background: #ffebee;
-  color: #c62828;
-  border-radius: 8px;
+  background: #FFF0F0;
+  color: #C62828;
+  border-radius: 10px;
   padding: 10px 14px;
   font-size: 13px;
   margin-bottom: 16px;
+  border-left: 3px solid #EF4444;
 }
 .btn-primary {
   width: 100%;
-  background: #455A64;
+  background: linear-gradient(135deg, #1D2C55 0%, #2A3D6E 100%);
   color: #fff;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 14px;
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
   margin-top: 4px;
+  box-shadow: 0 4px 12px rgba(29,44,85,.3);
 }
-.btn-primary:active { opacity: .85; }
-.divider { text-align: center; color: #bdbdbd; font-size: 13px; margin: 20px 0; }
+.btn-primary:active { opacity: .88; }
+.divider { text-align: center; color: #C8D0E0; font-size: 13px; margin: 20px 0; }
 .btn-secondary {
   display: block;
   text-align: center;
-  background: #eceff1;
-  color: #455A64;
-  border-radius: 8px;
+  background: #EEF1FB;
+  color: #1D2C55;
+  border-radius: 10px;
   padding: 13px;
   font-size: 15px;
   font-weight: 600;
@@ -146,11 +163,12 @@ body {
 <body>
 <div class="card">
   <div class="logo">
-    <span class="material-icons">account_balance_wallet</span>
+    <div class="logo-icon"><span class="material-icons">account_balance_wallet</span></div>
     <h1>회원가입</h1>
     <p>나만의 가계부를 시작하세요</p>
   </div>
 
+  <div class="card-body">
   <?php if ($error): ?>
   <div class="error"><?=htmlspecialchars($error)?></div>
   <?php endif; ?>
@@ -189,6 +207,7 @@ body {
 
   <div class="divider">이미 계정이 있으신가요?</div>
   <a href="login.php" class="btn-secondary">로그인</a>
+  </div>
 </div>
 <script>
 function togglePw(id, btn) {

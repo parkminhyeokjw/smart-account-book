@@ -5,8 +5,8 @@
  */
 (function () {
   var THEMES = {
-    '화이트': '#455A64',
-    '다크':   '#263238',
+    '화이트': '#1D2C55',
+    '다크':   '#141E3C',
     '핑크':   '#E91E63',
     '브라운': '#6D4C41',
     '옐로우': '#F57F17',
@@ -30,7 +30,7 @@
     var colorMinus = localStorage.getItem('design_color_minus') || '빨간색';
     var colorPlus  = localStorage.getItem('design_color_plus')  || '파란색';
 
-    var primary = THEMES[theme]       || '#455A64';
+    var primary = THEMES[theme]       || '#1D2C55';
     var minus   = AMOUNTS[colorMinus] || '#E53935';
     var plus    = AMOUNTS[colorPlus]  || '#1565C0';
 

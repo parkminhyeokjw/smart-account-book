@@ -9,7 +9,7 @@
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  :root { --theme-primary: #455A64; }
+  :root { --theme-primary: #1D2C55; }
 
   body {
     font-family: 'Segoe UI', sans-serif;
@@ -22,7 +22,7 @@
     display: flex;
     align-items: center;
     height: 56px;
-    background: var(--theme-primary, #455A64);
+    background: var(--theme-primary, #1D2C55);
     color: #fff;
     padding: 0 4px;
     position: sticky;
@@ -50,7 +50,7 @@
     border-bottom: 1px solid #e0e0e0;
   }
   .total-label { color: #212121; }
-  .total-amount { color: var(--theme-primary, #455A64); }
+  .total-amount { color: var(--theme-primary, #1D2C55); }
 
   .separator { height: 8px; background: #f0f0f0; }
 
@@ -67,7 +67,7 @@
   .group-left { display: flex; align-items: center; gap: 8px; }
   .group-arrow { font-size: 14px; color: #757575; width: 18px; text-align: center; }
   .group-name { color: #212121; }
-  .group-amount { color: #455A64; font-weight: 500; }
+  .group-amount { color: #1D2C55; font-weight: 500; }
 
   .item-row {
     display: flex; align-items: center; justify-content: space-between;
@@ -85,7 +85,7 @@
   .fab {
     position: fixed; bottom: 24px; right: 20px;
     width: 60px; height: 60px;
-    background: var(--theme-primary, #455A64);
+    background: var(--theme-primary, #1D2C55);
     color: #fff; font-size: 32px;
     border: none; border-radius: 16px;
     cursor: pointer;
@@ -116,12 +116,12 @@
   }
   .sheet-header {
     padding: 14px 16px;
-    background: var(--theme-primary, #455A64);
+    background: var(--theme-primary, #1D2C55);
     color: #fff; font-size: 16px; font-weight: 500;
   }
   .sheet-section-divider {
     padding: 8px 16px;
-    background: var(--theme-primary, #455A64);
+    background: var(--theme-primary, #1D2C55);
     color: #fff; font-size: 13px; font-weight: 500;
   }
   .sheet-item {
@@ -135,7 +135,7 @@
   .sheet-cancel {
     display: block; width: 100%;
     padding: 15px; font-size: 15px;
-    background: var(--theme-primary, #455A64);
+    background: var(--theme-primary, #1D2C55);
     color: #fff; border: none;
     cursor: pointer; font-weight: 500;
   }
@@ -150,7 +150,7 @@
   }
   .dialog-header {
     padding: 14px 16px;
-    background: var(--theme-primary, #455A64);
+    background: var(--theme-primary, #1D2C55);
     color: #fff; font-size: 16px; font-weight: 500;
   }
   .dialog-body { padding: 20px 16px 8px; }
@@ -159,7 +159,7 @@
     border-radius: 4px; padding: 10px 12px;
     font-size: 16px; outline: none;
   }
-  .dialog-body input:focus { border-color: var(--theme-primary, #455A64); }
+  .dialog-body input:focus { border-color: var(--theme-primary, #1D2C55); }
   .dialog-footer {
     display: flex; gap: 0;
     border-top: 1px solid #eeeeee;
@@ -170,8 +170,8 @@
     font-size: 15px; border: none;
     cursor: pointer; font-weight: 500;
   }
-  .btn-cancel { background: #fff; color: var(--theme-primary, #455A64); border-right: 1px solid #eeeeee !important; }
-  .btn-confirm { background: var(--theme-primary, #455A64); color: #fff; }
+  .btn-cancel { background: #fff; color: var(--theme-primary, #1D2C55); border-right: 1px solid #eeeeee !important; }
+  .btn-confirm { background: var(--theme-primary, #1D2C55); color: #fff; }
   .btn-cancel:active, .btn-confirm:active { filter: brightness(0.9); }
 
   /* Tip dialog */
@@ -181,12 +181,12 @@
     font-size: 14px; color: #424242;
     cursor: pointer;
   }
-  .tip-checkbox-row input { width: 18px; height: 18px; accent-color: var(--theme-primary, #455A64); }
+  .tip-checkbox-row input { width: 18px; height: 18px; accent-color: var(--theme-primary, #1D2C55); }
   .tip-body { padding: 16px; font-size: 14px; color: #424242; line-height: 1.7; white-space: pre-line; }
   .tip-confirm-btn {
     display: block; width: 100%;
     padding: 13px; font-size: 15px;
-    background: var(--theme-primary, #455A64);
+    background: var(--theme-primary, #1D2C55);
     color: #fff; border: none;
     cursor: pointer; font-weight: 500;
   }

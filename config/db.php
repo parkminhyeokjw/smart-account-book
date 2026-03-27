@@ -4,7 +4,7 @@
 define('DB_HOST',    'sql100.infinityfree.com');
 define('DB_NAME',    'if0_41427872_db');
 define('DB_USER',    'if0_41427872');
-define('DB_PASS',    'Oy7H125r8sEchW');
+define('DB_PASS',    'park20061226');
 define('DB_CHARSET', 'utf8mb4');
 
 function getConnection(): PDO

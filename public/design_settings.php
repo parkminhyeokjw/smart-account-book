@@ -21,7 +21,7 @@ body {
 /* ── 헤더 ── */
 .s-header {
   position: sticky; top: 0; z-index: 100;
-  background: var(--theme-primary,#455A64);
+  background: var(--theme-primary,#1D2C55);
   display: flex; align-items: center;
   padding: 0 4px; height: 56px;
 }
@@ -71,7 +71,7 @@ body {
 }
 
 .popup-hd {
-  background: var(--theme-primary,#455A64);
+  background: var(--theme-primary,#1D2C55);
   padding: 18px 20px;
   font-size: 18px; font-weight: 700; color: #fff;
   flex-shrink: 0;
@@ -99,18 +99,18 @@ body {
   transition: border-color .15s;
 }
 .popup-radio.selected {
-  border-color: var(--theme-primary,#455A64);
+  border-color: var(--theme-primary,#1D2C55);
 }
 .popup-radio.selected::after {
   content: '';
   width: 12px; height: 12px;
   border-radius: 50%;
-  background: var(--theme-primary,#455A64);
+  background: var(--theme-primary,#1D2C55);
 }
 
 .popup-cancel {
   width: 100%; padding: 16px 0;
-  background: var(--theme-primary,#455A64); color: #fff;
+  background: var(--theme-primary,#1D2C55); color: #fff;
   border: none; font-size: 17px; font-weight: 700;
   cursor: pointer; flex-shrink: 0;
 }
