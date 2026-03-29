@@ -1013,6 +1013,16 @@ body.dark .backup-option-title { color:#e0e0e0; }
 body.dark .export-option { border-bottom-color:#2a2a2a; }
 body.dark .export-option-title { color:#e0e0e0; }
 
+/* ── 업그레이드 ── */
+.upgrade-feature-list { display:flex; flex-direction:column; gap:12px; }
+.upgrade-feature-item { display:flex; align-items:center; gap:12px; padding:10px 12px; background:#fafafa; border-radius:12px; }
+.upgrade-feat-ico { font-size:22px; width:30px; text-align:center; flex-shrink:0; }
+.upgrade-feat-text { flex:1; min-width:0; }
+.upgrade-feat-name { font-size:14px; font-weight:700; color:#212121; }
+.upgrade-feat-sub { font-size:11px; color:#9e9e9e; margin-top:1px; }
+.upgrade-badge-soon { background:#EDE9FE; color:#7C3AED; font-size:10px; font-weight:800; padding:3px 8px; border-radius:10px; white-space:nowrap; flex-shrink:0; }
+body.dark .upgrade-feature-item { background:#1a2638; }
+body.dark .upgrade-feat-name { color:#e0e0e0; }
 /* ── 도움말 ── */
 .help-section { margin-bottom:20px; }
 .help-section-title { font-size:13px; font-weight:800; color:var(--p); margin-bottom:8px; display:flex; align-items:center; gap:6px; }
@@ -1202,7 +1212,7 @@ body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C;
           <div class="me-grid-icon"><i data-lucide="settings"></i></div>
           <span class="me-grid-label" data-i18n="grid.settings">앱 설정</span>
         </div>
-        <div class="me-grid-item" onclick="showToast(tr('toast.coming'))">
+        <div class="me-grid-item" onclick="openUpgradeModal()">
           <div class="me-grid-icon"><i data-lucide="zap"></i></div>
           <span class="me-grid-label" data-i18n="grid.upgrade">업그레이드</span>
         </div>
@@ -1214,7 +1224,7 @@ body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C;
           <div class="me-grid-icon"><i data-lucide="database"></i></div>
           <span class="me-grid-label" data-i18n="grid.data">데이터</span>
         </div>
-        <div class="me-grid-item" onclick="showToast(tr('toast.coming'))">
+        <div class="me-grid-item" onclick="openContactModal()">
           <div class="me-grid-icon"><i data-lucide="message-circle"></i></div>
           <span class="me-grid-label" data-i18n="grid.contact">문의하기</span>
         </div>
@@ -1572,6 +1582,121 @@ body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C;
       <div id="langOpt일본어" onclick="setLang('일본어')" style="border:2px solid #e0e0e0;border-radius:12px;padding:14px;text-align:center;cursor:pointer;font-size:14px;font-weight:600">🇯🇵 日本語</div>
       <div id="langOpt중국어" onclick="setLang('중국어')" style="border:2px solid #e0e0e0;border-radius:12px;padding:14px;text-align:center;cursor:pointer;font-size:14px;font-weight:600">🇨🇳 中文</div>
       <div id="langOpt스페인어" onclick="setLang('스페인어')" style="border:2px solid #e0e0e0;border-radius:12px;padding:14px;text-align:center;cursor:pointer;font-size:14px;font-weight:600;grid-column:span 2">🇪🇸 Español</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 업그레이드 모달 ── -->
+<div class="center-overlay" id="upgradeModal" onclick="if(event.target===this)closeUpgradeModal()">
+  <div class="center-modal" style="max-width:420px">
+    <div class="center-modal-hd" style="background:linear-gradient(135deg,#7C3AED,#4F46E5);padding:20px">
+      <span class="center-modal-hd-title" style="font-size:18px">⚡ <span data-i18n="upgrade.title">프리미엄</span></span>
+      <button class="center-modal-x" onclick="closeUpgradeModal()">×</button>
+    </div>
+    <div class="center-modal-body" style="padding:0">
+      <!-- 현재 플랜 -->
+      <div style="padding:16px 20px;background:#f9f5ff;border-bottom:1px solid #ede9fe">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-size:13px;color:#7C3AED;font-weight:700" data-i18n="upgrade.currentPlan">현재 플랜</div>
+            <div style="font-size:16px;font-weight:800;color:#212121;margin-top:2px" data-i18n="upgrade.freePlan">무료 (Free)</div>
+          </div>
+          <div style="background:#e0e7ff;color:#4338CA;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px" data-i18n="upgrade.freeBadge">FREE</div>
+        </div>
+      </div>
+      <!-- 프리미엄 기능 목록 -->
+      <div style="padding:16px 20px">
+        <div style="font-size:12px;font-weight:800;color:#7C3AED;margin-bottom:12px;letter-spacing:.5px" data-i18n="upgrade.featuresTitle">PREMIUM 기능</div>
+        <div class="upgrade-feature-list">
+          <div class="upgrade-feature-item">
+            <span class="upgrade-feat-ico">📊</span>
+            <div class="upgrade-feat-text">
+              <div class="upgrade-feat-name" data-i18n="upgrade.feat1">PDF 리포트 내보내기</div>
+              <div class="upgrade-feat-sub" data-i18n="upgrade.feat1sub">월간 소비 리포트를 PDF로 저장</div>
+            </div>
+            <span class="upgrade-badge-soon" data-i18n="upgrade.soon">준비 중</span>
+          </div>
+          <div class="upgrade-feature-item">
+            <span class="upgrade-feat-ico">☁️</span>
+            <div class="upgrade-feat-text">
+              <div class="upgrade-feat-name" data-i18n="upgrade.feat2">멀티 디바이스 동기화</div>
+              <div class="upgrade-feat-sub" data-i18n="upgrade.feat2sub">여러 기기에서 실시간 데이터 공유</div>
+            </div>
+            <span class="upgrade-badge-soon" data-i18n="upgrade.soon">준비 중</span>
+          </div>
+          <div class="upgrade-feature-item">
+            <span class="upgrade-feat-ico">🔒</span>
+            <div class="upgrade-feat-text">
+              <div class="upgrade-feat-name" data-i18n="upgrade.feat3">PIN / 생체 인증 잠금</div>
+              <div class="upgrade-feat-sub" data-i18n="upgrade.feat3sub">앱 보안을 강화하세요</div>
+            </div>
+            <span class="upgrade-badge-soon" data-i18n="upgrade.soon">준비 중</span>
+          </div>
+          <div class="upgrade-feature-item">
+            <span class="upgrade-feat-ico">💳</span>
+            <div class="upgrade-feat-text">
+              <div class="upgrade-feat-name" data-i18n="upgrade.feat4">다중 지갑 / 계좌 관리</div>
+              <div class="upgrade-feat-sub" data-i18n="upgrade.feat4sub">현금, 카드, 계좌별 분리 관리</div>
+            </div>
+            <span class="upgrade-badge-soon" data-i18n="upgrade.soon">준비 중</span>
+          </div>
+          <div class="upgrade-feature-item">
+            <span class="upgrade-feat-ico">🎨</span>
+            <div class="upgrade-feat-text">
+              <div class="upgrade-feat-name" data-i18n="upgrade.feat5">프리미엄 테마 잠금 해제</div>
+              <div class="upgrade-feat-sub" data-i18n="upgrade.feat5sub">더 많은 컬러 & 폰트 선택</div>
+            </div>
+            <span class="upgrade-badge-soon" data-i18n="upgrade.soon">준비 중</span>
+          </div>
+          <div class="upgrade-feature-item">
+            <span class="upgrade-feat-ico">📈</span>
+            <div class="upgrade-feat-text">
+              <div class="upgrade-feat-name" data-i18n="upgrade.feat6">AI 소비 예측 & 조언</div>
+              <div class="upgrade-feat-sub" data-i18n="upgrade.feat6sub">지출 패턴 기반 맞춤 절약 팁</div>
+            </div>
+            <span class="upgrade-badge-soon" data-i18n="upgrade.soon">준비 중</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="center-modal-footer">
+      <button class="center-modal-btn" style="background:linear-gradient(135deg,#7C3AED,#4F46E5)" onclick="closeUpgradeModal()">
+        <span data-i18n="upgrade.closeBtn">확인했어요 👍</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 문의하기 모달 ── -->
+<div class="center-overlay" id="contactModal" onclick="if(event.target===this)closeContactModal()">
+  <div class="center-modal" style="max-width:420px">
+    <div class="center-modal-hd">
+      <span class="center-modal-hd-title">💬 <span data-i18n="grid.contact">문의하기</span></span>
+      <button class="center-modal-x" onclick="closeContactModal()">×</button>
+    </div>
+    <div class="center-modal-body">
+      <div style="font-size:13px;color:#9e9e9e;margin-bottom:14px;line-height:1.6" data-i18n="contact.desc">
+        궁금한 점이나 개선 사항을 알려주세요. 빠르게 확인하겠습니다 😊
+      </div>
+      <div style="margin-bottom:10px">
+        <input id="contactEmail" type="email" data-i18n-ph="contact.emailPh" placeholder="이메일 (선택)"
+          style="width:100%;box-sizing:border-box;border:1.5px solid #e0e0e0;border-radius:10px;padding:11px 14px;font-size:14px;outline:none;font-family:inherit">
+      </div>
+      <div style="margin-bottom:10px">
+        <input id="contactSubject" type="text" data-i18n-ph="contact.subjectPh" placeholder="제목"
+          style="width:100%;box-sizing:border-box;border:1.5px solid #e0e0e0;border-radius:10px;padding:11px 14px;font-size:14px;outline:none;font-family:inherit">
+      </div>
+      <div>
+        <textarea id="contactMsg" rows="5" data-i18n-ph="contact.msgPh" placeholder="내용을 입력하세요"
+          style="width:100%;box-sizing:border-box;border:1.5px solid #e0e0e0;border-radius:10px;padding:11px 14px;font-size:14px;outline:none;font-family:inherit;resize:vertical"></textarea>
+      </div>
+    </div>
+    <div class="center-modal-footer" style="display:flex;gap:8px">
+      <button onclick="closeContactModal()"
+        style="flex:1;background:#f5f5f5;color:#555;border:none;border-radius:var(--r);padding:13px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit"
+        data-i18n="del.cancel">취소</button>
+      <button onclick="submitContact()" style="flex:2;background:var(--p);color:#fff;border:none;border-radius:var(--r);padding:13px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit"
+        data-i18n="contact.send">보내기</button>
     </div>
   </div>
 </div>
@@ -4853,6 +4978,31 @@ function closeDeleteAllModal() {
     <button class="danger-modal-confirm" onclick="confirmDeleteAll()">모두 삭제</button>`;
 }
 
+// ── 업그레이드 ───────────────────────────────────────────────
+function openUpgradeModal()  { document.getElementById('upgradeModal').classList.add('show'); applyLang(); }
+function closeUpgradeModal() { document.getElementById('upgradeModal').classList.remove('show'); }
+
+// ── 문의하기 ─────────────────────────────────────────────────
+function openContactModal() {
+  document.getElementById('contactEmail').value = '';
+  document.getElementById('contactSubject').value = '';
+  document.getElementById('contactMsg').value = '';
+  document.getElementById('contactModal').classList.add('show');
+  applyLang();
+}
+function closeContactModal() { document.getElementById('contactModal').classList.remove('show'); }
+function submitContact() {
+  const subject = document.getElementById('contactSubject').value.trim();
+  const msg     = document.getElementById('contactMsg').value.trim();
+  const email   = document.getElementById('contactEmail').value.trim();
+  if (!subject || !msg) { showToast(tr('toast.inquiryEmpty')); return; }
+  const body = (email ? tr('contact.fromLabel') + ': ' + email + '\n\n' : '') + msg;
+  const mailto = 'mailto:?subject=' + encodeURIComponent('[마이가계부] ' + subject) + '&body=' + encodeURIComponent(body);
+  window.location.href = mailto;
+  closeContactModal();
+  showToast(tr('toast.inquirySent'));
+}
+
 // ── 도움말 ────────────────────────────────────────────────────
 function openHelpModal()  { document.getElementById('helpModal').classList.add('show'); }
 function closeHelpModal() { document.getElementById('helpModal').classList.remove('show'); }
@@ -5074,6 +5224,17 @@ const TRANSLATIONS = {
     'toast.allDeleted':'모든 내역이 삭제됐어요 🗑️','toast.deleteFail':'삭제에 실패했어요: {msg}',
     'toast.serverError':'서버 오류가 발생했어요',
     'toast.inquirySent':'문의가 접수됐어요 ✓','toast.inquiryEmpty':'제목과 내용을 입력해주세요',
+    'upgrade.title':'프리미엄','upgrade.currentPlan':'현재 플랜','upgrade.freePlan':'무료 (Free)','upgrade.freeBadge':'FREE',
+    'upgrade.featuresTitle':'PREMIUM 기능','upgrade.soon':'준비 중','upgrade.closeBtn':'확인했어요 👍',
+    'upgrade.feat1':'PDF 리포트 내보내기','upgrade.feat1sub':'월간 소비 리포트를 PDF로 저장',
+    'upgrade.feat2':'멀티 디바이스 동기화','upgrade.feat2sub':'여러 기기에서 실시간 데이터 공유',
+    'upgrade.feat3':'PIN / 생체 인증 잠금','upgrade.feat3sub':'앱 보안을 강화하세요',
+    'upgrade.feat4':'다중 지갑 / 계좌 관리','upgrade.feat4sub':'현금, 카드, 계좌별 분리 관리',
+    'upgrade.feat5':'프리미엄 테마 잠금 해제','upgrade.feat5sub':'더 많은 컬러 & 폰트 선택',
+    'upgrade.feat6':'AI 소비 예측 & 조언','upgrade.feat6sub':'지출 패턴 기반 맞춤 절약 팁',
+    'contact.desc':'궁금한 점이나 개선 사항을 알려주세요. 빠르게 확인하겠습니다 😊',
+    'contact.emailPh':'이메일 (선택)','contact.subjectPh':'제목','contact.msgPh':'내용을 입력하세요',
+    'contact.send':'보내기','contact.fromLabel':'보내는 분',
     'fx.loadingList':'불러오는 중...','fx.emptyList':'등록된 고정 항목이 없어요<br>아래에서 추가해보세요',
     'confirm.deleteLinked':'이번 달에 이미 기록된 "{name}" 내역 {count}건도 함께 삭제할까요?\n\n취소하면 고정 항목 설정만 삭제되고 내역은 유지됩니다.',
     'opt.selectCat':'카테고리 선택',
@@ -5255,6 +5416,17 @@ const TRANSLATIONS = {
     'toast.allDeleted':'All records deleted 🗑️','toast.deleteFail':'Deletion failed: {msg}',
     'toast.serverError':'Server error occurred',
     'toast.inquirySent':'Inquiry submitted ✓','toast.inquiryEmpty':'Enter title and content',
+    'upgrade.title':'Premium','upgrade.currentPlan':'Current Plan','upgrade.freePlan':'Free','upgrade.freeBadge':'FREE',
+    'upgrade.featuresTitle':'PREMIUM FEATURES','upgrade.soon':'Coming Soon','upgrade.closeBtn':'Got it 👍',
+    'upgrade.feat1':'PDF Report Export','upgrade.feat1sub':'Save monthly spending report as PDF',
+    'upgrade.feat2':'Multi-device Sync','upgrade.feat2sub':'Real-time data sharing across devices',
+    'upgrade.feat3':'PIN / Biometric Lock','upgrade.feat3sub':'Enhance your app security',
+    'upgrade.feat4':'Multi-wallet / Account','upgrade.feat4sub':'Manage cash, cards, and accounts separately',
+    'upgrade.feat5':'Premium Themes','upgrade.feat5sub':'More color & font choices',
+    'upgrade.feat6':'AI Spending Insights','upgrade.feat6sub':'Personalized saving tips based on patterns',
+    'contact.desc':'Tell us about any questions or suggestions. We will get back to you quickly 😊',
+    'contact.emailPh':'Email (optional)','contact.subjectPh':'Subject','contact.msgPh':'Enter your message',
+    'contact.send':'Send','contact.fromLabel':'From',
     'fx.loadingList':'Loading...','fx.emptyList':'No fixed items yet<br>Add one below',
     'confirm.deleteLinked':'"{name}" has {count} record(s) this month. Delete them too?\n\nCancel to remove only the fixed item setting.',
     'opt.selectCat':'Select category',
@@ -5436,6 +5608,17 @@ const TRANSLATIONS = {
     'toast.allDeleted':'全データが削除されました 🗑️','toast.deleteFail':'削除に失敗しました: {msg}',
     'toast.serverError':'サーバーエラーが発生しました',
     'toast.inquirySent':'お問合せを受け付けました ✓','toast.inquiryEmpty':'タイトルと内容を入力してください',
+    'upgrade.title':'プレミアム','upgrade.currentPlan':'現在のプラン','upgrade.freePlan':'無料 (Free)','upgrade.freeBadge':'FREE',
+    'upgrade.featuresTitle':'プレミアム機能','upgrade.soon':'準備中','upgrade.closeBtn':'確認しました 👍',
+    'upgrade.feat1':'PDFレポート書き出し','upgrade.feat1sub':'月次消費レポートをPDFで保存',
+    'upgrade.feat2':'マルチデバイス同期','upgrade.feat2sub':'複数端末でリアルタイムデータ共有',
+    'upgrade.feat3':'PIN / 生体認証ロック','upgrade.feat3sub':'アプリのセキュリティを強化',
+    'upgrade.feat4':'マルチ財布 / 口座管理','upgrade.feat4sub':'現金・カード・口座を別々に管理',
+    'upgrade.feat5':'プレミアムテーマ解放','upgrade.feat5sub':'より多くのカラー & フォント選択',
+    'upgrade.feat6':'AI消費予測 & アドバイス','upgrade.feat6sub':'支出パターン基づくカスタム節約ヒント',
+    'contact.desc':'ご不明な点や改善提案をお気軽にお知らせください 😊',
+    'contact.emailPh':'メールアドレス（任意）','contact.subjectPh':'件名','contact.msgPh':'内容を入力してください',
+    'contact.send':'送信','contact.fromLabel':'送信者',
     'fx.loadingList':'読み込み中...','fx.emptyList':'固定項目がまだありません<br>下で追加してください',
     'confirm.deleteLinked':'今月に記録された"{name}"の{count}件も一緒に削除しますか？\n\nキャンセルすると固定設定のみ削除され記録は保持されます。',
     'opt.selectCat':'カテゴリを選択',
@@ -5617,6 +5800,17 @@ const TRANSLATIONS = {
     'toast.allDeleted':'所有记录已删除 🗑️','toast.deleteFail':'删除失败: {msg}',
     'toast.serverError':'服务器发生错误',
     'toast.inquirySent':'问题已提交 ✓','toast.inquiryEmpty':'请输入标题和内容',
+    'upgrade.title':'高级版','upgrade.currentPlan':'当前方案','upgrade.freePlan':'免费 (Free)','upgrade.freeBadge':'FREE',
+    'upgrade.featuresTitle':'高级功能','upgrade.soon':'即将推出','upgrade.closeBtn':'知道了 👍',
+    'upgrade.feat1':'PDF报告导出','upgrade.feat1sub':'将月度消费报告保存为PDF',
+    'upgrade.feat2':'多设备同步','upgrade.feat2sub':'多台设备实时共享数据',
+    'upgrade.feat3':'PIN / 生物识别锁','upgrade.feat3sub':'加强应用安全性',
+    'upgrade.feat4':'多钱包 / 账户管理','upgrade.feat4sub':'分别管理现金、卡和账户',
+    'upgrade.feat5':'高级主题解锁','upgrade.feat5sub':'更多颜色和字体选择',
+    'upgrade.feat6':'AI消费预测 & 建议','upgrade.feat6sub':'基于支出模式的个性化省钱建议',
+    'contact.desc':'有任何问题或建议，请告诉我们，我们会尽快回复 😊',
+    'contact.emailPh':'邮箱（可选）','contact.subjectPh':'主题','contact.msgPh':'请输入内容',
+    'contact.send':'发送','contact.fromLabel':'发件人',
     'fx.loadingList':'加载中...','fx.emptyList':'还没有固定项目<br>在下方添加',
     'confirm.deleteLinked':'本月已有"{name}"的{count}条记录，一并删除吗？\n\n取消则只删除固定设置，记录保留。',
     'opt.selectCat':'选择分类',
@@ -5798,6 +5992,17 @@ const TRANSLATIONS = {
     'toast.allDeleted':'Todos los registros eliminados 🗑️','toast.deleteFail':'Error al eliminar: {msg}',
     'toast.serverError':'Error de servidor',
     'toast.inquirySent':'Consulta enviada ✓','toast.inquiryEmpty':'Introduce título y contenido',
+    'upgrade.title':'Premium','upgrade.currentPlan':'Plan actual','upgrade.freePlan':'Gratis (Free)','upgrade.freeBadge':'FREE',
+    'upgrade.featuresTitle':'FUNCIONES PREMIUM','upgrade.soon':'Próximamente','upgrade.closeBtn':'Entendido 👍',
+    'upgrade.feat1':'Exportar informe PDF','upgrade.feat1sub':'Guarda el informe mensual como PDF',
+    'upgrade.feat2':'Sincronización multi-dispositivo','upgrade.feat2sub':'Comparte datos en tiempo real entre dispositivos',
+    'upgrade.feat3':'Bloqueo PIN / Biométrico','upgrade.feat3sub':'Mejora la seguridad de tu app',
+    'upgrade.feat4':'Multi-cartera / Cuenta','upgrade.feat4sub':'Gestiona efectivo, tarjetas y cuentas por separado',
+    'upgrade.feat5':'Temas Premium','upgrade.feat5sub':'Más opciones de color y fuente',
+    'upgrade.feat6':'Predicciones AI & Consejos','upgrade.feat6sub':'Consejos personalizados basados en tus patrones',
+    'contact.desc':'Cuéntanos tus dudas o sugerencias. Te responderemos pronto 😊',
+    'contact.emailPh':'Correo (opcional)','contact.subjectPh':'Asunto','contact.msgPh':'Escribe tu mensaje',
+    'contact.send':'Enviar','contact.fromLabel':'De',
     'fx.loadingList':'Cargando...','fx.emptyList':'Sin elementos fijos aún<br>Añade uno abajo',
     'confirm.deleteLinked':'"{name}" tiene {count} registro(s) este mes. ¿Eliminarlos también?\n\nCancelar para eliminar solo la configuración del elemento fijo.',
     'opt.selectCat':'Seleccionar categoría',
