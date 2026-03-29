@@ -149,7 +149,7 @@ body {
 }
 /* 나 탭 — 헤더+배너 한 덩어리 */
 .app-header.me-mode { background: #364A6D; box-shadow: none; }
-.app-header.me-mode .header-center-title { color: #fff; font-size: 20px; font-weight: 800; }
+.app-header.me-mode .header-center-title { color: #fff; font-size: 20px; font-weight: 800; transform: translateX(-50%) translateY(20px); }
 /* 가계부/달력 탭 — 진한 네이비 헤더 */
 .app-header.ledger-mode {
   background: #364B6D !important;
@@ -192,6 +192,7 @@ body {
 /* ── 탭 패인 ── */
 .tab-pane { display: none; padding-bottom: 72px; }
 .tab-pane.active { display: block; animation: fadeUp .22s ease; }
+#pane-me.active { animation: fadeIn .18s ease; }
 
 /* ── 요약 스트립 (헤더 아래 고정, 카드가 네이비 구간에 절반 걸치게) ── */
 .sum-strip {
@@ -621,8 +622,7 @@ body.dark .avatar-sheet-btn { color:#e0e0e0; }
 body.dark .avatar-sheet-btn:active { background:#263447; }
 body.dark .avatar-sheet-cancel { background:#263447; color:#64748b; }
 body.dark .avatar-sheet-sep { background:#334155; }
-.me-profile { background: var(--bg); padding: 0 20px 20px; display: flex; flex-direction: column; align-items: center; gap: 0; }
-.me-profile-banner { width: calc(100% + 40px); height: 80px; background: #364A6D; margin: 0 -20px; flex-shrink: 0; }
+.me-profile { background: linear-gradient(to bottom, #364A6D 80px, var(--bg) 80px); padding: 80px 20px 20px; display: flex; flex-direction: column; align-items: center; gap: 0; }
 .me-app-title { display: none; }
 .me-avatar { width: 90px; height: 90px; border-radius: 50%; background: #D1D5DB; border: 3px solid #fff; display: flex; align-items: center; justify-content: center; margin-top: -45px; margin-bottom: 12px; box-shadow: 0 2px 10px rgba(0,0,0,.15); overflow: hidden; }
 .me-name  { font-size: 18px; font-weight: 800; color: var(--text1); margin-bottom: 4px; text-align: center; }
@@ -817,6 +817,7 @@ body.dark .cat-cs-option.selected { background: #1e2d3f; }
 body.dark { background:#0d1117; color:#cbd5e1; }
 body.dark .app-header { background:linear-gradient(135deg,#0F172A,#1e293b); }
 body.dark .app-header.ledger-mode { background: #0F172A !important; }
+body.dark .app-header.me-mode { background: #1e293b !important; box-shadow: none !important; }
 body.dark .summary-card { background:linear-gradient(135deg,#1e293b,#0f172a); }
 body.dark .tx-row { background:#131c27; border-bottom-color:#1e293b; }
 body.dark .tx-row:active { background:#1a2638; }
@@ -830,7 +831,7 @@ body.dark .sum-strip #monthLabel { color:#cbd5e1; }
 body.dark .sum-col { background:#1a2638; border-color:#263447; }
 body.dark .sum-col-label { color:#64748b; }
 body.dark .sum-col-value { color:#e0e0e0; }
-body.dark .me-profile { background:#131c27; border-bottom-color:#1e293b; }
+body.dark .me-profile { background: linear-gradient(to bottom, #1e293b 80px, #131c27 80px); }
 body.dark .me-app-title { background:linear-gradient(135deg,#1e293b,#0f172a); }
 body.dark .me-avatar { background:#263447; border-color:#1e293b; }
 body.dark .me-name { color:#e0e0e0; }
@@ -943,6 +944,19 @@ body.dark .day-sheet-overlay { background:rgba(0,0,0,.7); }
 body.dark .center-modal { background:#131c27; }
 body.dark .center-modal-hd { background:linear-gradient(135deg,#1e293b,#0f172a); }
 body.dark .center-modal-body { background:#131c27; }
+/* 분석 탭 온보딩 */
+.report-ob-hero { background:linear-gradient(135deg,#1D2C55,#364A6D); padding:28px 20px 20px; text-align:center; }
+.report-ob-icon { font-size:44px; margin-bottom:10px; }
+.report-ob-title { font-size:19px; font-weight:800; color:#fff; margin-bottom:4px; }
+.report-ob-sub { font-size:13px; color:rgba(255,255,255,.75); }
+.ob-item { display:flex; align-items:flex-start; gap:14px; padding:13px 0; border-bottom:1px solid #f5f5f5; }
+.ob-item:last-child { border-bottom:none; }
+.ob-ico { font-size:20px; width:28px; text-align:center; flex-shrink:0; margin-top:1px; font-weight:700; color:#364A6D; }
+.ob-item b { font-size:14px; color:#212121; display:block; margin-bottom:2px; }
+.ob-item p { font-size:12px; color:#9e9e9e; margin:0; }
+body.dark .ob-item { border-bottom-color:#1e293b; }
+body.dark .ob-item b { color:#e0e0e0; }
+body.dark .ob-ico { color:#7bafd4; }
 
 /* ── 고정 지출 ── */
 .fixed-item { display:flex; align-items:center; gap:10px; padding:12px 0; border-bottom:1px solid #f5f5f5; }
@@ -1203,7 +1217,6 @@ body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C;
     <!-- 홈 화면 -->
     <div id="meHome" style="height:100%;overflow:hidden">
       <div class="me-profile">
-        <div class="me-profile-banner"></div>
         <div class="me-avatar" id="meHomeAvatarWrap">
           <img id="meHomeAvatarImg" style="display:none;width:100%;height:100%;object-fit:cover">
           <svg id="meHomeAvatarSvg" viewBox="0 0 90 90" width="90" height="90" xmlns="http://www.w3.org/2000/svg">
@@ -1242,7 +1255,7 @@ body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C;
           <span class="me-grid-label" data-i18n="grid.settings">앱 설정</span>
         </div>
         <div class="me-grid-item" onclick="openUpgradeModal()">
-          <div class="me-grid-icon"><i data-lucide="zap"></i></div>
+          <div class="me-grid-icon"><i data-lucide="rocket"></i></div>
           <span class="me-grid-label" data-i18n="grid.upgrade">업그레이드</span>
         </div>
         <div class="me-grid-item" onclick="openHelpModal()">
@@ -1783,6 +1796,26 @@ body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C;
         data-i18n="del.cancel">취소</button>
       <button onclick="submitContact()" style="flex:2;background:var(--p);color:#fff;border:none;border-radius:var(--r);padding:13px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit"
         data-i18n="contact.send">보내기</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 분석 탭 온보딩 ── -->
+<div class="center-overlay" id="reportOnboarding">
+  <div class="center-modal" style="max-width:360px">
+    <div class="report-ob-hero">
+      <div class="report-ob-icon">📊</div>
+      <div class="report-ob-title" data-i18n="ob.title">분석 탭 가이드</div>
+      <div class="report-ob-sub" data-i18n="ob.sub">위젯으로 내 소비를 한눈에!</div>
+    </div>
+    <div class="center-modal-body" style="padding:0 20px 4px">
+      <div class="ob-item"><span class="ob-ico">📦</span><div><b data-i18n="ob.w1">6가지 위젯 제공</b><p data-i18n="ob.w1s">요약·챔피언·요일·예산·MBTI·TOP3</p></div></div>
+      <div class="ob-item"><span class="ob-ico">✏️</span><div><b data-i18n="ob.w2">편집 버튼으로 추가/삭제</b><p data-i18n="ob.w2s">우측 하단 편집 버튼을 눌러보세요</p></div></div>
+      <div class="ob-item"><span class="ob-ico">↕️</span><div><b data-i18n="ob.w3">드래그로 순서 변경</b><p data-i18n="ob.w3s">편집 모드에서 위젯을 길게 눌러 이동</p></div></div>
+      <div class="ob-item"><span class="ob-ico">•••</span><div><b data-i18n="ob.w4">위젯 개별 옵션</b><p data-i18n="ob.w4s">각 위젯 우상단 ··· 버튼으로 이동·삭제</p></div></div>
+    </div>
+    <div class="center-modal-footer">
+      <button class="center-modal-btn" onclick="closeReportOnboarding()" data-i18n="ob.start">시작하기</button>
     </div>
   </div>
 </div>
@@ -3046,6 +3079,18 @@ function editPanelHTML() {
   </div>`;
 }
 
+// ── 분석 탭 온보딩 ────────────────────────────────────────
+function showReportOnboardingIfNeeded() {
+  if (localStorage.getItem('report_ob_shown')) return;
+  const el = document.getElementById('reportOnboarding');
+  if (el) { el.classList.add('show'); applyLang(); }
+}
+function closeReportOnboarding() {
+  localStorage.setItem('report_ob_shown', '1');
+  const el = document.getElementById('reportOnboarding');
+  if (el) el.classList.remove('show');
+}
+
 // ── 결산 렌더 ──────────────────────────────────────────────
 function renderReport() {
   const wrap = document.getElementById('reportWrap');
@@ -3065,6 +3110,7 @@ function renderReport() {
   wrap.innerHTML = html;
   renderReportEditBar();
   applyLang();
+  showReportOnboardingIfNeeded();
 
   // 데이터 채우기
   const prev     = prevMonth(curMonth);
@@ -5373,6 +5419,12 @@ const TRANSLATIONS = {
     'stats.noData':'이 기간에는 내역이 없어요!',
     'stats.noDataSub':'{period} 기간의<br>{type} 내역을 추가해 보세요',
     'wpop.moveUp':'↑ 위로 이동','wpop.moveDown':'↓ 아래로 이동','wpop.delete':'🗑️ 삭제',
+    'ob.title':'분석 탭 가이드','ob.sub':'위젯으로 내 소비를 한눈에!',
+    'ob.w1':'6가지 위젯 제공','ob.w1s':'요약·챔피언·요일·예산·MBTI·TOP3',
+    'ob.w2':'편집 버튼으로 추가/삭제','ob.w2s':'우측 하단 편집 버튼을 눌러보세요',
+    'ob.w3':'드래그로 순서 변경','ob.w3s':'편집 모드에서 위젯을 길게 눌러 이동',
+    'ob.w4':'위젯 개별 옵션','ob.w4s':'각 위젯 우상단 ··· 버튼으로 이동·삭제',
+    'ob.start':'시작하기',
     'report.editDone':'✅ 편집 완료','report.editStart':'✏️ 분석 항목 편집',
     'toast.feelOk':'좋은 선택이었어요! 😊','toast.feelRegret':'다음엔 조금만 참아봐요! 💪',
     'report.empty':'아직 분석 항목이 없어요.<br>아래 토글을 켜서 추가해보세요! ✨',
@@ -5570,6 +5622,12 @@ const TRANSLATIONS = {
     'stats.noData':'No records in this period!',
     'stats.noDataSub':'Add {type} records<br>for {period}',
     'wpop.moveUp':'↑ Move up','wpop.moveDown':'↓ Move down','wpop.delete':'🗑️ Delete',
+    'ob.title':'Report Tab Guide','ob.sub':'See your spending at a glance!',
+    'ob.w1':'6 Widgets Available','ob.w1s':'Summary·Champion·Weekday·Budget·MBTI·TOP3',
+    'ob.w2':'Add/Remove via Edit Button','ob.w2s':'Tap the edit button at the bottom right',
+    'ob.w3':'Drag to Reorder','ob.w3s':'Long press a widget to move it in edit mode',
+    'ob.w4':'Per-Widget Options','ob.w4s':'Tap ··· on each widget to move or delete',
+    'ob.start':'Get Started',
     'report.editDone':'✅ Done Editing','report.editStart':'✏️ Edit Widgets',
     'toast.feelOk':'Great choice! 😊','toast.feelRegret':'Try to hold back next time! 💪',
     'report.empty':'No widgets yet.<br>Toggle items below to add them! ✨',
@@ -5767,6 +5825,12 @@ const TRANSLATIONS = {
     'stats.noData':'この期間に記録はありません！',
     'stats.noDataSub':'{period}の<br>{type}記録を追加してください',
     'wpop.moveUp':'↑ 上に移動','wpop.moveDown':'↓ 下に移動','wpop.delete':'🗑️ 削除',
+    'ob.title':'分析タブガイド','ob.sub':'ウィジェットで支出を一目で！',
+    'ob.w1':'6種のウィジェット','ob.w1s':'要約·チャンピオン·曜日·予算·MBTI·TOP3',
+    'ob.w2':'編集ボタンで追加/削除','ob.w2s':'右下の編集ボタンをタップ',
+    'ob.w3':'ドラッグで順序変更','ob.w3s':'編集モードでウィジェットを長押し',
+    'ob.w4':'ウィジェット個別オプション','ob.w4s':'各ウィジェット右上の···ボタンで移動·削除',
+    'ob.start':'はじめる',
     'report.editDone':'✅ 編集完了','report.editStart':'✏️ 分析項目を編集',
     'toast.feelOk':'良い選択でした！ 😊','toast.feelRegret':'次は少し我慢してみましょう！ 💪',
     'report.empty':'まだ分析項目がありません。<br>トグルをオンにして追加してください！ ✨',
@@ -5964,6 +6028,12 @@ const TRANSLATIONS = {
     'stats.noData':'此期间没有记录！',
     'stats.noDataSub':'请添加{period}的<br>{type}记录',
     'wpop.moveUp':'↑ 上移','wpop.moveDown':'↓ 下移','wpop.delete':'🗑️ 删除',
+    'ob.title':'分析标签指南','ob.sub':'用小组件一目了然掌握消费！',
+    'ob.w1':'6种小组件','ob.w1s':'摘要·冠军·星期·预算·MBTI·TOP3',
+    'ob.w2':'通过编辑按钮添加/删除','ob.w2s':'点击右下角的编辑按钮',
+    'ob.w3':'拖动更改顺序','ob.w3s':'在编辑模式下长按小组件移动',
+    'ob.w4':'小组件单独选项','ob.w4s':'点击各小组件右上角···按钮移动·删除',
+    'ob.start':'开始',
     'report.editDone':'✅ 完成编辑','report.editStart':'✏️ 编辑分析项目',
     'toast.feelOk':'好的选择！ 😊','toast.feelRegret':'下次稍微忍一忍！ 💪',
     'report.empty':'还没有分析项目。<br>打开下方开关来添加吧！ ✨',
@@ -6161,6 +6231,12 @@ const TRANSLATIONS = {
     'stats.noData':'¡Sin registros en este período!',
     'stats.noDataSub':'Añade registros de {type}<br>para {period}',
     'wpop.moveUp':'↑ Subir','wpop.moveDown':'↓ Bajar','wpop.delete':'🗑️ Eliminar',
+    'ob.title':'Guía de Análisis','ob.sub':'¡Ve tu gasto de un vistazo!',
+    'ob.w1':'6 Widgets Disponibles','ob.w1s':'Resumen·Campeón·Día·Presupuesto·MBTI·TOP3',
+    'ob.w2':'Agregar/Eliminar con Editar','ob.w2s':'Toca el botón editar abajo a la derecha',
+    'ob.w3':'Arrastrar para reordenar','ob.w3s':'Mantén presionado un widget en modo edición',
+    'ob.w4':'Opciones por Widget','ob.w4s':'Toca ··· en cada widget para mover o eliminar',
+    'ob.start':'Comenzar',
     'report.editDone':'✅ Listo','report.editStart':'✏️ Editar Widgets',
     'toast.feelOk':'¡Buena elección! 😊','toast.feelRegret':'¡Intenta aguantar la próxima vez! 💪',
     'report.empty':'Aún no hay elementos.<br>¡Activa los elementos de abajo para añadirlos! ✨',
