@@ -1,5 +1,6 @@
 <?php
 if (session_status() === PHP_SESSION_NONE) session_start();
+if (isset($_GET['logout'])) { session_unset(); session_destroy(); header('Location: login.php'); exit; }
 $isLoggedIn = !empty($_SESSION['user_id']);
 $userName   = htmlspecialchars($_SESSION['user_name']  ?? '');
 $userEmail  = htmlspecialchars($_SESSION['user_email'] ?? '');
@@ -593,6 +594,33 @@ body {
 .me-subpage-back { background: none; border: none; cursor: pointer; padding: 4px; color: #fff; display: flex; align-items: center; margin-right: 8px; }
 .me-subpage-back svg { width: 22px; height: 22px; stroke-width: 2; color: #fff; }
 .me-subpage-title { font-size: 17px; font-weight: 700; color: #fff; }
+.prof-avatar-section { display:flex; flex-direction:column; align-items:center; padding:28px 20px 16px; }
+.prof-avatar-circle { width:90px; height:90px; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 14px rgba(0,0,0,.18); flex-shrink:0; overflow:hidden; }
+.prof-avatar-circle span { font-size:34px; font-weight:700; color:#fff; user-select:none; line-height:1; }
+.prof-action-section { padding:8px 16px 24px; display:flex; flex-direction:column; gap:10px; }
+.prof-btn { width:100%; padding:14px 0; border-radius:14px; border:none; font-size:15px; font-weight:600; cursor:pointer; transition:opacity .15s; }
+.prof-btn:active { opacity:.75; }
+.prof-btn-logout { background:#f5f5f5; color:#424242; }
+.prof-btn-delete { background:#FFF0F0; color:#d32f2f; }
+.prof-btn-login { display:block; text-align:center; text-decoration:none; background:var(--theme-primary,#1D2C55); color:#fff; }
+body.dark .prof-btn-logout { background:#263447; color:#e0e0e0; }
+body.dark .prof-btn-delete { background:#3b1a1a; color:#ef9a9a; }
+/* 아바타 액션 시트 */
+.avatar-sheet-backdrop { position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:9100; display:none; }
+.avatar-sheet-backdrop.show { display:block; }
+.avatar-action-sheet { position:fixed; bottom:0; left:0; right:0; background:#fff; border-radius:20px 20px 0 0; z-index:9101; padding:8px 16px 28px; transform:translateY(100%); transition:transform .26s cubic-bezier(.32,1,.46,1); }
+.avatar-action-sheet.show { transform:translateY(0); }
+.avatar-sheet-title { text-align:center; font-size:13px; color:#9e9e9e; padding:10px 0 12px; font-weight:500; }
+.avatar-sheet-btn { padding:15px 0; text-align:center; font-size:16px; cursor:pointer; border-radius:12px; color:#212121; transition:background .12s; }
+.avatar-sheet-btn:active { background:#f5f5f5; }
+.avatar-sheet-danger { color:#d32f2f; }
+.avatar-sheet-cancel { color:#9e9e9e; background:#f5f5f5; margin-top:6px; }
+.avatar-sheet-sep { height:1px; background:#f0f0f0; margin:2px 0; }
+body.dark .avatar-action-sheet { background:#1e293b; }
+body.dark .avatar-sheet-btn { color:#e0e0e0; }
+body.dark .avatar-sheet-btn:active { background:#263447; }
+body.dark .avatar-sheet-cancel { background:#263447; color:#64748b; }
+body.dark .avatar-sheet-sep { background:#334155; }
 .me-profile { background: var(--bg); padding: 0 20px 20px; display: flex; flex-direction: column; align-items: center; gap: 0; }
 .me-profile-banner { width: calc(100% + 40px); height: 80px; background: #364A6D; margin: 0 -20px; flex-shrink: 0; }
 .me-app-title { display: none; }
@@ -1176,8 +1204,9 @@ body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C;
     <div id="meHome" style="height:100%;overflow:hidden">
       <div class="me-profile">
         <div class="me-profile-banner"></div>
-        <div class="me-avatar">
-          <svg viewBox="0 0 90 90" width="90" height="90" xmlns="http://www.w3.org/2000/svg">
+        <div class="me-avatar" id="meHomeAvatarWrap">
+          <img id="meHomeAvatarImg" style="display:none;width:100%;height:100%;object-fit:cover">
+          <svg id="meHomeAvatarSvg" viewBox="0 0 90 90" width="90" height="90" xmlns="http://www.w3.org/2000/svg">
             <circle cx="45" cy="34" r="17" fill="#9CA3AF"/>
             <ellipse cx="45" cy="78" rx="28" ry="22" fill="#9CA3AF"/>
           </svg>
@@ -1251,6 +1280,9 @@ body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C;
       </div>
       <div class="me-section">
         <div class="me-section-title" data-i18n="section.environment">앱 환경</div>
+        <div class="me-row" onclick="openMePage('profile')">
+          <span class="me-row-ico"><i data-lucide="user-circle-2"></i></span><span class="me-row-label" data-i18n="row.profile">프로필</span><span class="me-row-value" id="profileRowValue"></span><span class="me-row-arrow">›</span>
+        </div>
         <div class="me-row" onclick="openCurrencyModal()">
           <span class="me-row-ico"><i data-lucide="coins"></i></span><span class="me-row-label" data-i18n="row.currency">기본 통화</span><span class="me-row-value" id="currencyRowValue">₩ KRW</span><span class="me-row-arrow">›</span>
         </div>
@@ -1293,7 +1325,61 @@ body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C;
       </div>
     </div>
 
+    <!-- 프로필 페이지 -->
+    <div id="mePageProfile" class="me-subpage">
+      <div class="me-subpage-hd">
+        <button class="me-subpage-back" onclick="closeMePage()"><i data-lucide="chevron-left"></i></button>
+        <span class="me-subpage-title" data-i18n="page.profile">프로필</span>
+      </div>
+      <div class="prof-avatar-section">
+        <div class="prof-avatar-circle" id="profAvatarCircle">
+          <img id="profAvatarImg" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:50%">
+          <span id="profAvatarInitial">?</span>
+        </div>
+      </div>
+      <input type="file" accept="image/*" capture="environment" id="profAvatarCamera" style="display:none" onchange="handleAvatarFile(this)">
+      <input type="file" accept="image/*" id="profAvatarAlbum" style="display:none" onchange="handleAvatarFile(this)">
+      <div class="me-section">
+        <div class="me-row" onclick="openAvatarPicker()">
+          <span class="me-row-ico"><i data-lucide="image"></i></span>
+          <span class="me-row-label" data-i18n="prof.myAvatar">내 아바타</span>
+          <span class="me-row-value" id="profAvatarThumb"></span>
+          <span class="me-row-arrow">›</span>
+        </div>
+        <div class="me-row" onclick="editNickname()">
+          <span class="me-row-ico"><i data-lucide="smile"></i></span>
+          <span class="me-row-label" data-i18n="prof.nickname">별명</span>
+          <span class="me-row-value" id="profNicknameVal">-</span>
+          <span class="me-row-arrow">›</span>
+        </div>
+        <div class="me-row">
+          <span class="me-row-ico"><i data-lucide="hash"></i></span>
+          <span class="me-row-label" data-i18n="prof.id">ID</span>
+          <span class="me-row-value" id="profIdVal"><?= $isLoggedIn ? $_SESSION['user_id'] : '-' ?></span>
+        </div>
+      </div>
+      <div class="prof-action-section">
+        <?php if ($isLoggedIn): ?>
+        <button class="prof-btn prof-btn-logout" onclick="doProfLogout()" data-i18n="prof.logout">로그아웃</button>
+        <button class="prof-btn prof-btn-delete" onclick="doProfDeleteAccount()" data-i18n="prof.deleteAccount">계정 삭제</button>
+        <?php else: ?>
+        <a href="login.php" class="prof-btn prof-btn-login" data-i18n="me.loginBtn">로그인 / 회원가입</a>
+        <?php endif; ?>
+      </div>
+    </div>
+
   </div>
+</div>
+
+<!-- 아바타 사진 선택 액션 시트 -->
+<div class="avatar-sheet-backdrop" id="avatarSheetBackdrop" onclick="closeAvatarPicker()"></div>
+<div class="avatar-action-sheet" id="avatarActionSheet">
+  <div class="avatar-sheet-title" data-i18n="prof.myAvatar">내 아바타</div>
+  <div class="avatar-sheet-btn" onclick="pickAvatarCamera()" data-i18n="prof.camera">카메라로 촬영</div>
+  <div class="avatar-sheet-btn" onclick="pickAvatarAlbum()" data-i18n="prof.album">앨범에서 선택</div>
+  <div class="avatar-sheet-btn avatar-sheet-danger" id="avatarRemoveBtn" onclick="removeAvatarPhoto()" data-i18n="prof.removePhoto" style="display:none">사진 삭제</div>
+  <div class="avatar-sheet-sep"></div>
+  <div class="avatar-sheet-btn avatar-sheet-cancel" onclick="closeAvatarPicker()" data-i18n="btn.cancel">취소</div>
 </div>
 
 <div class="widget-popover" id="widgetPopover"></div>
@@ -1937,6 +2023,7 @@ const SK      = 'ddgb_v1';
 const CATS_SK = 'ddgb_cats_v1';
 const IS_LOGGED_IN = <?= $isLoggedIn ? 'true' : 'false' ?>;
 const USER_NAME    = <?= json_encode($_SESSION['user_name'] ?? '') ?>;
+const USER_ID      = <?= json_encode($_SESSION['user_id']   ?? null) ?>;
 const TABS = ['ledger','calendar','stats','report','me'];
 
 const BASE_CATS = {
@@ -4343,6 +4430,10 @@ document.addEventListener('DOMContentLoaded', () => {
   setFxCycle('weekly');
   // 초기 탭(가계부)은 흰 헤더 모드
   document.getElementById('appHeader').classList.add('ledger-mode');
+  // 프로필 행 값 초기화 + 나 탭 아바타 동기화
+  const rowVal = document.getElementById('profileRowValue');
+  if (rowVal) rowVal.textContent = localStorage.getItem('profile_nickname') || USER_NAME || '';
+  updateMeHomeAvatar();
 });
 
 // 소급 확인 팝업용 임시 저장
@@ -4677,12 +4768,148 @@ function addCatEdit() {
 let _payEditIcon = { lu: 'credit-card', bg: '#607D8B' };
 
 function openMePage(name) {
-  const id = name === 'appSettings' ? 'mePageAppSettings' : 'mePageData';
+  const id = name === 'appSettings' ? 'mePageAppSettings' : name === 'data' ? 'mePageData' : 'mePageProfile';
   document.getElementById(id).classList.add('active');
+  if (name === 'profile') initProfilePage();
   refreshIcons();
 }
 function closeMePage() {
   document.querySelectorAll('.me-subpage').forEach(p => p.classList.remove('active'));
+}
+
+// ── 프로필 페이지 ─────────────────────────────────────────────
+const PROF_COLORS = ['#1D2C55','#E91E63','#6D4C41','#F57F17','#1565C0','#00695C','#2E7D32','#C62828','#6A1B9A','#283593'];
+function initProfilePage() {
+  const nickname = localStorage.getItem('profile_nickname') || USER_NAME || '';
+  const colorIdx = parseInt(localStorage.getItem('profile_avatar_color') || '0');
+  const initial  = nickname ? [...nickname][0] : (USER_NAME ? [...USER_NAME][0] : '?');
+  const circle   = document.getElementById('profAvatarCircle');
+  const initEl   = document.getElementById('profAvatarInitial');
+  if (circle && !localStorage.getItem('profile_avatar_img')) circle.style.background = PROF_COLORS[colorIdx % PROF_COLORS.length];
+  if (initEl) initEl.textContent = initial;
+  updateAvatarDisplay();
+  updateAvatarThumb();
+  const nnEl = document.getElementById('profNicknameVal');
+  if (nnEl) nnEl.textContent = nickname || '-';
+  const rowVal = document.getElementById('profileRowValue');
+  if (rowVal) rowVal.textContent = nickname || USER_NAME || '';
+  applyLang();
+}
+function updateAvatarDisplay() {
+  const dataUrl = localStorage.getItem('profile_avatar_img');
+  // 프로필 서브페이지 아바타
+  const img    = document.getElementById('profAvatarImg');
+  const initEl = document.getElementById('profAvatarInitial');
+  const circle = document.getElementById('profAvatarCircle');
+  if (dataUrl) {
+    if (img)    { img.src = dataUrl; img.style.display = 'block'; }
+    if (initEl) initEl.style.display = 'none';
+    if (circle) circle.style.background = 'transparent';
+  } else {
+    if (img)    img.style.display = 'none';
+    if (initEl) initEl.style.display = 'block';
+    const colorIdx = parseInt(localStorage.getItem('profile_avatar_color') || '0');
+    if (circle) circle.style.background = PROF_COLORS[colorIdx % PROF_COLORS.length];
+  }
+  // 나 탭 홈 아바타
+  updateMeHomeAvatar();
+}
+function updateMeHomeAvatar() {
+  const dataUrl = localStorage.getItem('profile_avatar_img');
+  const img  = document.getElementById('meHomeAvatarImg');
+  const svg  = document.getElementById('meHomeAvatarSvg');
+  const wrap = document.getElementById('meHomeAvatarWrap');
+  if (!img) return;
+  if (dataUrl) {
+    img.src = dataUrl; img.style.display = 'block';
+    if (svg)  svg.style.display = 'none';
+    if (wrap) wrap.style.background = 'transparent';
+  } else {
+    img.style.display = 'none';
+    if (svg)  svg.style.display = '';
+    if (wrap) wrap.style.background = '';
+  }
+}
+function updateAvatarThumb() {
+  const thumb = document.getElementById('profAvatarThumb');
+  if (!thumb) return;
+  const dataUrl = localStorage.getItem('profile_avatar_img');
+  if (dataUrl) {
+    thumb.innerHTML = `<img src="${dataUrl}" style="width:24px;height:24px;border-radius:50%;object-fit:cover;vertical-align:middle">`;
+  } else {
+    thumb.innerHTML = '';
+  }
+}
+function openAvatarPicker() {
+  const removeBtn = document.getElementById('avatarRemoveBtn');
+  if (removeBtn) removeBtn.style.display = localStorage.getItem('profile_avatar_img') ? 'block' : 'none';
+  document.getElementById('avatarSheetBackdrop').classList.add('show');
+  document.getElementById('avatarActionSheet').classList.add('show');
+  applyLang();
+}
+function closeAvatarPicker() {
+  document.getElementById('avatarSheetBackdrop').classList.remove('show');
+  document.getElementById('avatarActionSheet').classList.remove('show');
+}
+function pickAvatarCamera() {
+  closeAvatarPicker();
+  setTimeout(() => document.getElementById('profAvatarCamera').click(), 150);
+}
+function pickAvatarAlbum() {
+  closeAvatarPicker();
+  setTimeout(() => document.getElementById('profAvatarAlbum').click(), 150);
+}
+function handleAvatarFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    // Resize to max 400x400 to keep localStorage small
+    const img = new Image();
+    img.onload = function() {
+      const MAX = 400;
+      let w = img.width, h = img.height;
+      if (w > MAX || h > MAX) { const r = Math.min(MAX/w, MAX/h); w = Math.round(w*r); h = Math.round(h*r); }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.82);
+      localStorage.setItem('profile_avatar_img', dataUrl);
+      updateAvatarDisplay();
+      updateAvatarThumb();
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+function removeAvatarPhoto() {
+  closeAvatarPicker();
+  localStorage.removeItem('profile_avatar_img');
+  updateAvatarDisplay();
+  updateAvatarThumb();
+}
+function editNickname() {
+  const cur = localStorage.getItem('profile_nickname') || USER_NAME || '';
+  const val = prompt(tr('prof.nicknameEdit'), cur);
+  if (val === null) return;
+  const trimmed = val.trim().slice(0, 20);
+  localStorage.setItem('profile_nickname', trimmed);
+  initProfilePage();
+}
+function doProfLogout() {
+  if (!confirm(tr('prof.logoutConfirm'))) return;
+  window.location.href = 'index.php?logout=1';
+}
+function doProfDeleteAccount() {
+  if (!confirm(tr('prof.deleteConfirm'))) return;
+  fetch('../api/?action=delete_account', { method:'POST', credentials:'same-origin' })
+    .then(r => r.json())
+    .then(res => {
+      if (res.ok) { window.location.href = 'login.php'; }
+      else { showToast(res.msg || 'Error'); }
+    })
+    .catch(() => { window.location.href = 'index.php?logout=1'; });
 }
 function openPayEditModal() {
   _payEditIcon = { lu: 'credit-card', bg: '#607D8B' };
@@ -5071,6 +5298,11 @@ const TRANSLATIONS = {
     'page.appSettings':'앱 설정','page.data':'데이터',
     'section.records':'기록 관리','section.environment':'앱 환경','section.dataManagement':'데이터 관리',
     'row.fixedExpense':'고정 지출 설정','row.categories':'카테고리 편집','row.payments':'결제수단 편집',
+    'row.profile':'프로필','page.profile':'프로필',
+    'prof.myAvatar':'내 아바타','prof.camera':'카메라로 촬영','prof.album':'앨범에서 선택','prof.removePhoto':'사진 삭제',
+    'prof.nickname':'별명','prof.id':'ID','prof.logout':'로그아웃','prof.deleteAccount':'계정 삭제',
+    'prof.nicknameEdit':'별명 입력',
+    'prof.logoutConfirm':'로그아웃하시겠습니까?','prof.deleteConfirm':'계정을 삭제하시겠습니까? 모든 데이터가 삭제됩니다.',
     'row.currency':'기본 통화','row.notifications':'푸시 알림','row.theme':'테마','row.fontSize':'글꼴 크기','row.language':'언어',
     'row.backup':'백업 및 복구','row.export':'엑셀로 내보내기','row.deleteAll':'전체 내역 삭제',
     'lbl.income':'수입','lbl.expense':'지출','lbl.balance':'잔액','lbl.category':'카테고리','lbl.payment':'결제수단',
@@ -5263,6 +5495,11 @@ const TRANSLATIONS = {
     'page.appSettings':'App Settings','page.data':'Data',
     'section.records':'Record Management','section.environment':'App Environment','section.dataManagement':'Data Management',
     'row.fixedExpense':'Fixed Expenses','row.categories':'Edit Categories','row.payments':'Edit Payments',
+    'row.profile':'Profile','page.profile':'Profile',
+    'prof.myAvatar':'My Avatar','prof.camera':'Take Photo','prof.album':'Choose from Library','prof.removePhoto':'Remove Photo',
+    'prof.nickname':'Nickname','prof.id':'ID','prof.logout':'Logout','prof.deleteAccount':'Delete Account',
+    'prof.nicknameEdit':'Enter nickname',
+    'prof.logoutConfirm':'Log out?','prof.deleteConfirm':'Delete account? All data will be deleted.',
     'row.currency':'Default Currency','row.notifications':'Notifications','row.theme':'Theme','row.fontSize':'Font Size','row.language':'Language',
     'row.backup':'Backup & Restore','row.export':'Export to Excel','row.deleteAll':'Delete All Records',
     'lbl.income':'Income','lbl.expense':'Expense','lbl.balance':'Balance','lbl.category':'Category','lbl.payment':'Payment',
@@ -5455,6 +5692,11 @@ const TRANSLATIONS = {
     'page.appSettings':'アプリ設定','page.data':'データ',
     'section.records':'記録管理','section.environment':'アプリ環境','section.dataManagement':'データ管理',
     'row.fixedExpense':'固定支出設定','row.categories':'カテゴリ編集','row.payments':'支払方法編集',
+    'row.profile':'プロフィール','page.profile':'プロフィール',
+    'prof.myAvatar':'マイアバター','prof.camera':'カメラで撮影','prof.album':'アルバムから選択','prof.removePhoto':'写真を削除',
+    'prof.nickname':'ニックネーム','prof.id':'ID','prof.logout':'ログアウト','prof.deleteAccount':'アカウント削除',
+    'prof.nicknameEdit':'ニックネームを入力',
+    'prof.logoutConfirm':'ログアウトしますか？','prof.deleteConfirm':'アカウントを削除しますか？すべてのデータが削除されます。',
     'row.currency':'デフォルト通貨','row.notifications':'プッシュ通知','row.theme':'テーマ','row.fontSize':'フォントサイズ','row.language':'言語',
     'row.backup':'バックアップ・復元','row.export':'Excelエクスポート','row.deleteAll':'全データ削除',
     'lbl.income':'収入','lbl.expense':'支出','lbl.balance':'残高','lbl.category':'カテゴリ','lbl.payment':'支払方法',
@@ -5647,6 +5889,11 @@ const TRANSLATIONS = {
     'page.appSettings':'应用设置','page.data':'数据',
     'section.records':'记录管理','section.environment':'应用环境','section.dataManagement':'数据管理',
     'row.fixedExpense':'固定支出设置','row.categories':'编辑分类','row.payments':'编辑支付方式',
+    'row.profile':'个人资料','page.profile':'个人资料',
+    'prof.myAvatar':'我的头像','prof.camera':'拍照','prof.album':'从相册选择','prof.removePhoto':'删除照片',
+    'prof.nickname':'昵称','prof.id':'ID','prof.logout':'退出登录','prof.deleteAccount':'删除账户',
+    'prof.nicknameEdit':'输入昵称',
+    'prof.logoutConfirm':'确定退出登录？','prof.deleteConfirm':'确定删除账户？所有数据将被删除。',
     'row.currency':'默认货币','row.notifications':'推送通知','row.theme':'主题','row.fontSize':'字体大小','row.language':'语言',
     'row.backup':'备份与恢复','row.export':'导出Excel','row.deleteAll':'删除全部记录',
     'lbl.income':'收入','lbl.expense':'支出','lbl.balance':'余额','lbl.category':'分类','lbl.payment':'支付方式',
@@ -5839,6 +6086,11 @@ const TRANSLATIONS = {
     'page.appSettings':'Ajustes','page.data':'Datos',
     'section.records':'Gestión de registros','section.environment':'Entorno','section.dataManagement':'Gestión de datos',
     'row.fixedExpense':'Gastos fijos','row.categories':'Editar categorías','row.payments':'Editar pagos',
+    'row.profile':'Perfil','page.profile':'Perfil',
+    'prof.myAvatar':'Mi avatar','prof.camera':'Tomar foto','prof.album':'Elegir de la biblioteca','prof.removePhoto':'Eliminar foto',
+    'prof.nickname':'Apodo','prof.id':'ID','prof.logout':'Cerrar sesión','prof.deleteAccount':'Eliminar cuenta',
+    'prof.nicknameEdit':'Introducir apodo',
+    'prof.logoutConfirm':'¿Cerrar sesión?','prof.deleteConfirm':'¿Eliminar cuenta? Se eliminarán todos los datos.',
     'row.currency':'Moneda predeterminada','row.notifications':'Notificaciones','row.theme':'Tema','row.fontSize':'Tamaño de fuente','row.language':'Idioma',
     'row.backup':'Copia de seguridad','row.export':'Exportar a Excel','row.deleteAll':'Eliminar todo',
     'lbl.income':'Ingresos','lbl.expense':'Gastos','lbl.balance':'Saldo','lbl.category':'Categoría','lbl.payment':'Pago',
