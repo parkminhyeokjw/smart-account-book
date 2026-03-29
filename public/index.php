@@ -1641,10 +1641,10 @@ body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C;
     </div>
     <div id="txaSummary"></div>
     <div class="txa-menu">
-      <div class="txa-item" onclick="showTxDetail()"><span class="txa-ico">📋</span> 상세정보</div>
-      <div class="txa-item" onclick="editTx()"><span class="txa-ico">✏️</span> 수정</div>
-      <div class="txa-item" onclick="copyTx()"><span class="txa-ico">📄</span> 복사</div>
-      <div class="txa-item danger" onclick="deleteTxFromAction()"><span class="txa-ico">🗑️</span> 삭제</div>
+      <div class="txa-item" onclick="showTxDetail()"><span class="txa-ico">📋</span> <span data-i18n="btn.detail">상세정보</span></div>
+      <div class="txa-item" onclick="editTx()"><span class="txa-ico">✏️</span> <span data-i18n="btn.edit">수정</span></div>
+      <div class="txa-item" onclick="copyTx()"><span class="txa-ico">📄</span> <span data-i18n="btn.copy">복사</span></div>
+      <div class="txa-item danger" onclick="deleteTxFromAction()"><span class="txa-ico">🗑️</span> <span data-i18n="btn.delete">삭제</span></div>
     </div>
   </div>
 </div>
@@ -1653,7 +1653,7 @@ body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C;
 <div class="detail-overlay" id="detailOverlay" onclick="if(event.target===this)this.classList.remove('show')">
   <div class="detail-sheet">
     <div class="detail-hd">
-      <span class="detail-hd-title">상세정보</span>
+      <span class="detail-hd-title" data-i18n="lbl.detail">상세정보</span>
       <button class="detail-x" onclick="document.getElementById('detailOverlay').classList.remove('show')">×</button>
     </div>
     <div id="detailBody"></div>
@@ -1724,14 +1724,14 @@ body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C;
       <button class="type-t"      id="typeI" onclick="setType('income')" data-i18n="lbl.income">수입</button>
     </div>
     <div class="mform">
-      <label class="mf-label">금액 (원)</label>
+      <label class="mf-label" data-i18n="form.amount">금액 (원)</label>
       <input class="mf-input" id="fAmt" type="text" inputmode="numeric" placeholder="0" oninput="formatAmtInput(this)">
 
-      <label class="mf-label">카테고리</label>
+      <label class="mf-label" data-i18n="form.category">카테고리</label>
       <div class="cat-row-wrap">
         <div class="cat-custom-select" id="catCustomSelect">
           <button class="cat-cs-trigger" id="catCsTrigger" type="button" onclick="toggleCatDropdown()">
-            <span id="catCsLabel">선택</span><span class="cat-cs-arrow"><i data-lucide="chevron-down" style="width:16px;height:16px;stroke-width:2"></i></span>
+            <span id="catCsLabel" data-i18n="form.catSelect">선택</span><span class="cat-cs-arrow"><i data-lucide="chevron-down" style="width:16px;height:16px;stroke-width:2"></i></span>
           </button>
           <div class="cat-cs-dropdown" id="catCsDropdown"></div>
         </div>
@@ -1746,12 +1746,12 @@ body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C;
               <i data-lucide="package" style="width:18px;height:18px;color:#fff;stroke-width:1.75"></i>
             </div>
           </button>
-          <input class="new-cat-name" id="ncName" type="text" placeholder="카테고리 이름">
-          <button class="new-cat-save" onclick="saveNewCat()">추가</button>
+          <input class="new-cat-name" id="ncName" type="text" data-i18n-ph="form.catName" placeholder="카테고리 이름">
+          <button class="new-cat-save" onclick="saveNewCat()" data-i18n="btn.add">추가</button>
         </div>
       </div>
 
-      <label class="mf-label">결제수단</label>
+      <label class="mf-label" data-i18n="form.payment">결제수단</label>
       <div class="cat-row-wrap">
         <div class="cat-custom-select" id="payCustomSelect">
           <button class="cat-cs-trigger" id="payCsTrigger" type="button" onclick="togglePayDropdown()">
@@ -1769,14 +1769,14 @@ body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C;
               <i data-lucide="credit-card" style="width:18px;height:18px;color:#fff;stroke-width:1.75"></i>
             </div>
           </button>
-          <input class="new-cat-name" id="npName" type="text" placeholder="결제수단 이름">
-          <button class="new-cat-save" onclick="saveNewPay()">추가</button>
+          <input class="new-cat-name" id="npName" type="text" data-i18n-ph="form.payName" placeholder="결제수단 이름">
+          <button class="new-cat-save" onclick="saveNewPay()" data-i18n="btn.add">추가</button>
         </div>
       </div>
 
-      <label class="mf-label">내용 / 메모</label>
+      <label class="mf-label" data-i18n="form.desc">내용 / 메모</label>
       <div class="desc-row">
-        <input class="mf-input" id="fDesc" type="text" placeholder="예) 편의점, 버스">
+        <input class="mf-input" id="fDesc" type="text" data-i18n-ph="form.descPh" placeholder="예) 편의점, 버스">
         <button class="photo-btn" onclick="document.getElementById('photoInput').click()" title="사진 첨부">📷</button>
         <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="onPhotoSelect(this)">
       </div>
@@ -1785,7 +1785,7 @@ body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C;
         <div class="photo-grid" id="photoGridItems"></div>
       </div>
 
-      <label class="mf-label">날짜</label>
+      <label class="mf-label" data-i18n="form.date">날짜</label>
       <input class="mf-input" id="fDate" type="date">
     </div>
     <button class="modal-save" onclick="saveTx()">저장</button>
@@ -2538,11 +2538,12 @@ function renderStats() {
     else etcItems.push({ label: k, amt: v });
   });
   const etcTotal = etcItems.reduce((s, x) => s + x.amt, 0);
-  const chartLabels  = mainItems.map(x => x.label);
+  const _nameMap = statsGroupBy === 'payment' ? PAY_NAME_MAP : CAT_NAME_MAP;
+  const chartLabels  = mainItems.map(x => dn(x.label, _nameMap));
   const chartAmounts = mainItems.map(x => x.amt);
   const chartColors  = mainItems.map(x => x.color);
   if (etcTotal > 0) {
-    chartLabels.push('기타 ('+etcItems.map(x=>x.label).join(', ')+')');
+    chartLabels.push(tr('lbl.other') + ' (' + etcItems.map(x => dn(x.label, _nameMap)).join(', ') + ')');
     chartAmounts.push(etcTotal);
     chartColors.push('#B0BEC5');
   }
@@ -2724,7 +2725,7 @@ function widgetInsightHTML() {
 function widgetChampHTML() {
   return `<div class="widget-card" id="rChampCard">
     <button class="widget-menu-btn" onclick="openWidgetAction(event, this.closest('.widget-card').id)">···</button>
-    <div class="champ-header"><span class="champ-header-label">🏆 최고 지출</span></div>
+    <div class="champ-header"><span class="champ-header-label">🏆 <span data-i18n="widget.champ">최고 지출</span></span></div>
     <div class="champ-body">
       <div class="champ-mnav">
         <button class="champ-mnav-btn" id="rChampMPrev" onclick="changeMonth(-1)">‹</button>
@@ -2746,8 +2747,8 @@ function widgetChampHTML() {
       </div>
       <div class="champ-pct-msg" id="rChampPct"></div>
       <div class="champ-feel-btns" id="rChampFeelBtns" style="display:none">
-        <button class="champ-feel-btn" id="rFeelOk"     onclick="setChampFeel('ok')">😊 만족해요</button>
-        <button class="champ-feel-btn" id="rFeelRegret" onclick="setChampFeel('regret')">💸 아까워요</button>
+        <button class="champ-feel-btn" id="rFeelOk"     onclick="setChampFeel('ok')">😊 <span data-i18n="widget.feelOk">만족해요</span></button>
+        <button class="champ-feel-btn" id="rFeelRegret" onclick="setChampFeel('regret')">💸 <span data-i18n="widget.feelRegret">아까워요</span></button>
       </div>
     </div>
   </div>`;
@@ -2756,7 +2757,7 @@ function widgetDowHTML() {
   return `<div class="widget-card" id="rDowCard">
     <button class="widget-menu-btn" onclick="openWidgetAction(event, this.closest('.widget-card').id)">···</button>
     <div class="dow-body">
-      <div class="dow-title">📅 요일별 소비 패턴</div>
+      <div class="dow-title">📅 <span data-i18n="widget.dow">요일별 소비 패턴</span></div>
       <div class="dow-bars"    id="rDowBars"></div>
       <div class="dow-insight" id="rDowInsight"></div>
     </div>
@@ -2765,12 +2766,12 @@ function widgetDowHTML() {
 function widgetSurvivalHTML() {
   return `<div class="widget-card" id="rSurvivalCard">
     <button class="widget-menu-btn" onclick="openWidgetAction(event, this.closest('.widget-card').id)">···</button>
-    <div class="surv-header" id="rSurvHeader"><span class="surv-header-label">💰 목표 예산</span></div>
+    <div class="surv-header" id="rSurvHeader"><span class="surv-header-label">💰 <span data-i18n="widget.survival">목표 예산</span></span></div>
     <div class="surv-body">
       <div class="surv-tabs">
-        <button class="surv-tab" id="survTab-week"  onclick="setSurvMode('week')">주</button>
-        <button class="surv-tab" id="survTab-month" onclick="setSurvMode('month')">월</button>
-        <button class="surv-tab" id="survTab-year"  onclick="setSurvMode('year')">년</button>
+        <button class="surv-tab" id="survTab-week"  onclick="setSurvMode('week')"  data-i18n="period.week">주</button>
+        <button class="surv-tab" id="survTab-month" onclick="setSurvMode('month')" data-i18n="period.month">월</button>
+        <button class="surv-tab" id="survTab-year"  onclick="setSurvMode('year')"  data-i18n="period.year">년</button>
       </div>
       <div class="surv-period-nav">
         <button class="surv-period-btn" onclick="survNav(-1)">‹</button>
@@ -2778,34 +2779,34 @@ function widgetSurvivalHTML() {
         <button class="surv-period-btn" id="rSurvNavNext" onclick="survNav(1)">›</button>
       </div>
       <div class="surv-input-row">
-        <span class="surv-input-label">목표 예산</span>
-        <input class="surv-input" id="rSurvInput" type="text" inputmode="numeric" placeholder="미설정"
+        <span class="surv-input-label" data-i18n="widget.survival">목표 예산</span>
+        <input class="surv-input" id="rSurvInput" type="text" inputmode="numeric" data-i18n-ph="surv.notSet" placeholder="미설정"
                oninput="onSurvBudgetInput(this)" onblur="saveSurvBudget()" onkeydown="if(event.key==='Enter')this.blur()">
-        <span class="surv-input-unit">원</span>
+        <span class="surv-input-unit" data-i18n="widget.survUnit">원</span>
       </div>
       <div class="surv-progress-wrap"><div class="surv-progress-bar" id="rSurvBar" style="width:0%"></div></div>
       <div class="surv-progress-labels">
-        <span id="rSurvUsedPct">목표 미설정</span>
+        <span id="rSurvUsedPct" data-i18n="surv.noGoal">목표 미설정</span>
         <span id="rSurvPeriodLabel"></span>
       </div>
-      <div class="surv-remaining" id="rSurvRemLabel">변동 지출 합계</div>
+      <div class="surv-remaining" id="rSurvRemLabel" data-i18n="surv.totalVar">변동 지출 합계</div>
       <div class="surv-remaining-amt" id="rSurvAmt">₩0</div>
       <div class="surv-divider"></div>
-      <div class="surv-msg" id="rSurvMsg">계산 중...</div>
+      <div class="surv-msg" id="rSurvMsg" data-i18n="widget.calculating">계산 중...</div>
     </div>
   </div>`;
 }
 function widgetTop3HTML() {
   return `<div class="widget-card" id="rTop3Card">
     <button class="widget-menu-btn" onclick="openWidgetAction(event, this.closest('.widget-card').id)">···</button>
-    <div class="top3-header"><span class="top3-header-label">🥇 카테고리 TOP 3</span></div>
+    <div class="top3-header"><span class="top3-header-label">🥇 <span data-i18n="widget.top3">카테고리 TOP 3</span></span></div>
     <div class="top3-body" id="rTop3Body"></div>
   </div>`;
 }
 function widgetMbtiHTML() {
   return `<div class="widget-card" id="rMbtiCard">
     <button class="widget-menu-btn" onclick="openWidgetAction(event, this.closest('.widget-card').id)">···</button>
-    <div class="mbti-header"><span class="mbti-header-label">🧬 나의 소비 MBTI</span></div>
+    <div class="mbti-header"><span class="mbti-header-label">🧬 <span data-i18n="widget.mbti">나의 소비 MBTI</span></span></div>
     <div class="mbti-body">
       <div class="mbti-emoji" id="rMbtiEmoji">🌈</div>
       <div class="mbti-code"  id="rMbtiCode">????</div>
@@ -2820,10 +2821,10 @@ function editPanelHTML() {
   const hidden = WIDGET_DEFS.filter(w => !reportWidgets.includes(w.id));
   if (!hidden.length) return '';
   return `<div class="report-edit-panel">
-    <div class="edit-panel-title">＋ 항목 추가</div>
+    <div class="edit-panel-title">＋ ${tr('report.addWidget')}</div>
     ${hidden.map(w => `<div class="edit-row" onclick="addWidgetById('${w.id}')">
       <span class="edit-row-icon">${w.icon}</span>
-      <span class="edit-row-label">${w.label}</span>
+      <span class="edit-row-label">${tr('wdef.'+w.id)}</span>
       <span class="edit-row-plus">＋</span>
     </div>`).join('')}
   </div>`;
@@ -3080,7 +3081,7 @@ function renderReport() {
 
     // TOP 3 미니 배지
     const top3badges = sorted.slice(0, 3).map(([cat]) =>
-      `<span class="mbti-badge"><i class="${_icMeta(cat).fa}" style="color:${_icMeta(cat).c}"></i> ${cat}</span>`
+      `<span class="mbti-badge"><i class="${_icMeta(cat).fa}" style="color:${_icMeta(cat).c}"></i> ${dn(cat, CAT_NAME_MAP)}</span>`
     ).join('');
     document.getElementById('rMbtiTop3').innerHTML = top3badges;
   }
@@ -3127,7 +3128,7 @@ function renderReportEditBar() {
     document.body.appendChild(bar);
   }
   bar.innerHTML = `<button class="report-edit-btn${reportEditMode ? ' on' : ''}" onclick="toggleReportEdit()">
-    ${reportEditMode ? '✅ 편집 완료' : '✏️ 분석 항목 편집'}
+    ${reportEditMode ? tr('report.editDone') : tr('report.editStart')}
   </button>`;
   bar.style.display = 'block';
 }
@@ -3353,16 +3354,16 @@ function fillSurvival() {
   // 금액 표시
   const amtEl = document.getElementById('rSurvAmt');
   if (amtEl) {
-    amtEl.textContent = isWeekPastUnset ? '미설정' : budget > 0 ? fmt(Math.abs(remaining)) : fmt(spent);
+    amtEl.textContent = isWeekPastUnset ? tr('surv.notSet') : budget > 0 ? fmt(Math.abs(remaining)) : fmt(spent);
     amtEl.className = 'surv-remaining-amt' + ((remaining >= 0 || !budget) ? ' positive' : ' negative');
   }
   const remLbl = document.getElementById('rSurvRemLabel');
   if (remLbl) {
-    if (isWeekPastUnset)              remLbl.textContent = '이 주는 목표가 설정되지 않았어요';
-    else if (!budget)                 remLbl.textContent = '변동 지출 합계 (고정비 제외)';
-    else if (isDanger && remaining>0) remLbl.textContent = '🚨 예산 위험! 조금만 더 아껴써요';
-    else if (remaining >= 0)          remLbl.textContent = '남은 예산';
-    else                              remLbl.textContent = '초과 지출';
+    if (isWeekPastUnset)              remLbl.textContent = tr('surv.weekNoGoal');
+    else if (!budget)                 remLbl.textContent = tr('surv.totalVar');
+    else if (isDanger && remaining>0) remLbl.textContent = tr('surv.danger');
+    else if (remaining >= 0)          remLbl.textContent = tr('surv.remaining');
+    else                              remLbl.textContent = tr('surv.over');
   }
 
   // 입력란: 미설정 과거 주는 비워두기
@@ -3374,17 +3375,17 @@ function fillSurvival() {
   if (msgEl) {
     let msg;
     if (isWeekPastUnset) {
-      msg = `${navLabel}은 목표 예산이 없었어요 📭`;
+      msg = tr('surv.msgNoGoal').replace('{period}', navLabel);
     } else if (!budget) {
-      msg = '목표 예산을 입력하면<br>하루 가용 금액을 알려드려요 💡';
+      msg = tr('surv.msgEnterGoal');
     } else if (remaining <= 0) {
-      msg = `${navLabel} 목표를 <b>${fmt(-remaining)}</b> 초과했어요 😰`;
+      msg = tr('surv.msgOver').replace('{period}', navLabel).replace('{amt}', fmt(-remaining));
     } else if (isPast || daysLeft === 0) {
-      msg = `${navLabel} 예산 <b>${fmt(remaining)}</b> 절약했어요! 🎉`;
+      msg = tr('surv.msgSaved').replace('{period}', navLabel).replace('{amt}', fmt(remaining));
     } else if (isDanger) {
-      msg = `남은 <b>${daysLeft}일</b> 동안 매일 <b>${fmt(Math.floor(remaining/daysLeft))}</b>씩만 써야 해요 🚨`;
+      msg = tr('surv.msgDanger').replace('{days}', daysLeft).replace('{daily}', fmt(Math.floor(remaining/daysLeft)));
     } else {
-      msg = `남은 <b>${daysLeft}일</b> 동안 매일 <b>${fmt(Math.floor(remaining/daysLeft))}</b>씩 사용 가능해요! 💰`;
+      msg = tr('surv.msgOk').replace('{days}', daysLeft).replace('{daily}', fmt(Math.floor(remaining/daysLeft)));
     }
     msgEl.innerHTML = msg;
   }
@@ -3398,9 +3399,9 @@ function openWidgetAction(e, cardId) {
   const idx = reportWidgets.indexOf(activeWidgetId);
   const pop = document.getElementById('widgetPopover');
   pop.innerHTML =
-    `<div class="wpop-item${idx<=0?' disabled':''}" onclick="widgetMove(-1)">↑ 위로 이동</div>` +
-    `<div class="wpop-item${idx>=reportWidgets.length-1?' disabled':''}" onclick="widgetMove(1)">↓ 아래로 이동</div>` +
-    `<div class="wpop-item danger" onclick="widgetDeleteActive()">🗑️ 삭제</div>`;
+    `<div class="wpop-item${idx<=0?' disabled':''}" onclick="widgetMove(-1)">${tr('wpop.moveUp')}</div>` +
+    `<div class="wpop-item${idx>=reportWidgets.length-1?' disabled':''}" onclick="widgetMove(1)">${tr('wpop.moveDown')}</div>` +
+    `<div class="wpop-item danger" onclick="widgetDeleteActive()">${tr('wpop.delete')}</div>`;
   const btn  = e.currentTarget;
   const rect = btn.getBoundingClientRect();
   pop.style.top     = (rect.bottom + 4) + 'px';
@@ -3514,7 +3515,7 @@ function buildCatSelect(type, keepVal) {
       <span class="cat-cs-option-icon" style="background:${m.bg}">
         <i data-lucide="${m.lu}" style="width:14px;height:14px;color:${m.c};stroke-width:1.75"></i>
       </span>
-      <span class="cat-cs-option-name">${esc(name)}</span>
+      <span class="cat-cs-option-name">${dn(name, CAT_NAME_MAP)}</span>
     </div>`;
   }).join('');
 
@@ -3549,7 +3550,7 @@ function buildCatSelect(type, keepVal) {
   const val = allNames.includes(cur) ? cur : first;
   hidden.value = val;
   const lbl = document.getElementById('catCsLabel');
-  if (lbl) lbl.textContent = val || '선택';
+  if (lbl) lbl.textContent = val ? dn(val, CAT_NAME_MAP) : tr('form.catSelect');
 }
 
 function toggleCatDropdown() {
@@ -3570,7 +3571,7 @@ function closeCatDropdownOutside(e) {
 function selectCatOption(name) {
   document.getElementById('fCat').value = name;
   const lbl = document.getElementById('catCsLabel');
-  if (lbl) lbl.textContent = name;
+  if (lbl) lbl.textContent = dn(name, CAT_NAME_MAP);
   document.getElementById('catCsDropdown')?.classList.remove('open');
 }
 
@@ -3602,7 +3603,7 @@ function buildPaySelect(selected) {
       <span class="cat-cs-option-icon" style="background:${m.bg}">
         <i data-lucide="${m.lu}" style="width:14px;height:14px;color:${m.c};stroke-width:1.75"></i>
       </span>
-      <span class="cat-cs-option-name">${esc(p)}</span>
+      <span class="cat-cs-option-name">${dn(p, PAY_NAME_MAP)}</span>
     </div>`;
   }).join('') + customPays.map((p, i) => {
     const m = _icMeta(p);
@@ -3618,7 +3619,7 @@ function buildPaySelect(selected) {
   const finalVal = allPays.includes(val) ? val : allPays[0] || '현금';
   if (hidden) hidden.value = finalVal;
   const lbl = document.getElementById('payCsLabel');
-  if (lbl) lbl.textContent = finalVal;
+  if (lbl) lbl.textContent = dn(finalVal, PAY_NAME_MAP);
 }
 function togglePayDropdown() {
   const dd = document.getElementById('payCsDropdown');
@@ -3634,7 +3635,7 @@ function closePayDropdownOutside(e) {
 function selectPayOption(name) {
   document.getElementById('fPay').value = name;
   const lbl = document.getElementById('payCsLabel');
-  if (lbl) lbl.textContent = name;
+  if (lbl) lbl.textContent = dn(name, PAY_NAME_MAP);
   document.getElementById('payCsDropdown')?.classList.remove('open');
 }
 function deleteCustomPay(idx) {
@@ -4926,6 +4927,13 @@ const TRANSLATIONS = {
     'form.amount':'금액 (원)','form.desc':'내용 / 메모','form.descPh':'예) 편의점, 버스','form.date':'날짜',
     'form.catName':'카테고리 이름','form.payName':'결제수단 이름','form.catSelect':'선택',
     'btn.save':'저장','btn.add':'추가','btn.close':'닫기',
+    'btn.detail':'상세정보','btn.edit':'수정','btn.copy':'복사','btn.delete':'삭제',
+    'lbl.detail':'상세정보',
+    'form.amount':'금액 (원)','form.amountPh':'0',
+    'form.category':'카테고리','form.catSelect':'선택',
+    'form.payment':'결제수단',
+    'form.desc':'내용 / 메모','form.descPh':'예) 편의점, 버스','form.date':'날짜',
+    'form.catName':'카테고리 이름','form.payName':'결제수단 이름',
     'search.ph':'내용, 카테고리, 금액 검색...','search.empty':'검색어를 입력하세요',
     'modal.addTx':'내역 추가','modal.editTx':'내역 수정',
     'section.txHistory':'거래 내역',
@@ -4956,6 +4964,7 @@ const TRANSLATIONS = {
     'stats.noData':'이 기간에는 내역이 없어요!',
     'stats.noDataSub':'{period} 기간의<br>{type} 내역을 추가해 보세요',
     'wpop.moveUp':'↑ 위로 이동','wpop.moveDown':'↓ 아래로 이동','wpop.delete':'🗑️ 삭제',
+    'report.editDone':'✅ 편집 완료','report.editStart':'✏️ 분석 항목 편집',
     'toast.feelOk':'좋은 선택이었어요! 😊','toast.feelRegret':'다음엔 조금만 참아봐요! 💪',
     'report.empty':'아직 분석 항목이 없어요.<br>아래 토글을 켜서 추가해보세요! ✨',
     'surv.thisWeek':'이번 주','surv.lastWeek':'지난 주','surv.weeksAgo':'{n}주 전',
@@ -5077,6 +5086,13 @@ const TRANSLATIONS = {
     'form.amount':'Amount','form.desc':'Note / Memo','form.descPh':'e.g. Coffee, Bus','form.date':'Date',
     'form.catName':'Category name','form.payName':'Payment name','form.catSelect':'Select',
     'btn.save':'Save','btn.add':'Add','btn.close':'Close',
+    'btn.detail':'Detail','btn.edit':'Edit','btn.copy':'Copy','btn.delete':'Delete',
+    'lbl.detail':'Detail',
+    'form.amount':'Amount','form.amountPh':'0',
+    'form.category':'Category','form.catSelect':'Select',
+    'form.payment':'Payment',
+    'form.desc':'Note / Memo','form.descPh':'e.g. Coffee, Bus','form.date':'Date',
+    'form.catName':'Category name','form.payName':'Payment name',
     'search.ph':'Search by note, category, amount...','search.empty':'Enter a search term',
     'modal.addTx':'Add Record','modal.editTx':'Edit Record',
     'section.txHistory':'Transactions',
@@ -5107,6 +5123,7 @@ const TRANSLATIONS = {
     'stats.noData':'No records in this period!',
     'stats.noDataSub':'Add {type} records<br>for {period}',
     'wpop.moveUp':'↑ Move up','wpop.moveDown':'↓ Move down','wpop.delete':'🗑️ Delete',
+    'report.editDone':'✅ Done Editing','report.editStart':'✏️ Edit Widgets',
     'toast.feelOk':'Great choice! 😊','toast.feelRegret':'Try to hold back next time! 💪',
     'report.empty':'No widgets yet.<br>Toggle items below to add them! ✨',
     'surv.thisWeek':'This week','surv.lastWeek':'Last week','surv.weeksAgo':'{n} weeks ago',
@@ -5228,6 +5245,13 @@ const TRANSLATIONS = {
     'form.amount':'金額','form.desc':'内容 / メモ','form.descPh':'例）コンビニ、バス','form.date':'日付',
     'form.catName':'カテゴリ名','form.payName':'支払方法名','form.catSelect':'選択',
     'btn.save':'保存','btn.add':'追加','btn.close':'閉じる',
+    'btn.detail':'詳細','btn.edit':'編集','btn.copy':'コピー','btn.delete':'削除',
+    'lbl.detail':'詳細情報',
+    'form.amount':'金額 (円)','form.amountPh':'0',
+    'form.category':'カテゴリ','form.catSelect':'選択',
+    'form.payment':'支払方法',
+    'form.desc':'内容 / メモ','form.descPh':'例) コンビニ、バス','form.date':'日付',
+    'form.catName':'カテゴリ名','form.payName':'支払方法名',
     'search.ph':'内容・カテゴリ・金額で検索...','search.empty':'検索ワードを入力してください',
     'modal.addTx':'記録を追加','modal.editTx':'記録を編集',
     'section.txHistory':'取引履歴',
@@ -5258,6 +5282,7 @@ const TRANSLATIONS = {
     'stats.noData':'この期間に記録はありません！',
     'stats.noDataSub':'{period}の<br>{type}記録を追加してください',
     'wpop.moveUp':'↑ 上に移動','wpop.moveDown':'↓ 下に移動','wpop.delete':'🗑️ 削除',
+    'report.editDone':'✅ 編集完了','report.editStart':'✏️ 分析項目を編集',
     'toast.feelOk':'良い選択でした！ 😊','toast.feelRegret':'次は少し我慢してみましょう！ 💪',
     'report.empty':'まだ分析項目がありません。<br>トグルをオンにして追加してください！ ✨',
     'surv.thisWeek':'今週','surv.lastWeek':'先週','surv.weeksAgo':'{n}週前',
@@ -5379,6 +5404,13 @@ const TRANSLATIONS = {
     'form.amount':'金额','form.desc':'内容 / 备注','form.descPh':'例：便利店、公交','form.date':'日期',
     'form.catName':'分类名称','form.payName':'支付方式名称','form.catSelect':'选择',
     'btn.save':'保存','btn.add':'添加','btn.close':'关闭',
+    'btn.detail':'详情','btn.edit':'编辑','btn.copy':'复制','btn.delete':'删除',
+    'lbl.detail':'详细信息',
+    'form.amount':'金额','form.amountPh':'0',
+    'form.category':'类别','form.catSelect':'选择',
+    'form.payment':'支付方式',
+    'form.desc':'内容 / 备注','form.descPh':'例) 便利店、公交车','form.date':'日期',
+    'form.catName':'类别名称','form.payName':'支付方式名称',
     'search.ph':'按内容、分类、金额搜索...','search.empty':'请输入搜索词',
     'modal.addTx':'添加记录','modal.editTx':'编辑记录',
     'section.txHistory':'交易记录',
@@ -5409,6 +5441,7 @@ const TRANSLATIONS = {
     'stats.noData':'此期间没有记录！',
     'stats.noDataSub':'请添加{period}的<br>{type}记录',
     'wpop.moveUp':'↑ 上移','wpop.moveDown':'↓ 下移','wpop.delete':'🗑️ 删除',
+    'report.editDone':'✅ 完成编辑','report.editStart':'✏️ 编辑分析项目',
     'toast.feelOk':'好的选择！ 😊','toast.feelRegret':'下次稍微忍一忍！ 💪',
     'report.empty':'还没有分析项目。<br>打开下方开关来添加吧！ ✨',
     'surv.thisWeek':'本周','surv.lastWeek':'上周','surv.weeksAgo':'{n}周前',
@@ -5530,6 +5563,13 @@ const TRANSLATIONS = {
     'form.amount':'Importe','form.desc':'Nota / Memo','form.descPh':'Ej: Café, Autobús','form.date':'Fecha',
     'form.catName':'Nombre de categoría','form.payName':'Nombre de pago','form.catSelect':'Seleccionar',
     'btn.save':'Guardar','btn.add':'Añadir','btn.close':'Cerrar',
+    'btn.detail':'Detalle','btn.edit':'Editar','btn.copy':'Copiar','btn.delete':'Eliminar',
+    'lbl.detail':'Detalle',
+    'form.amount':'Monto','form.amountPh':'0',
+    'form.category':'Categoría','form.catSelect':'Seleccionar',
+    'form.payment':'Método de pago',
+    'form.desc':'Nota / Memo','form.descPh':'ej. Café, Bus','form.date':'Fecha',
+    'form.catName':'Nombre de categoría','form.payName':'Nombre de método de pago',
     'search.ph':'Buscar por nota, categoría, importe...','search.empty':'Introduce un término de búsqueda',
     'modal.addTx':'Añadir registro','modal.editTx':'Editar registro',
     'section.txHistory':'Transacciones',
@@ -5560,6 +5600,7 @@ const TRANSLATIONS = {
     'stats.noData':'¡Sin registros en este período!',
     'stats.noDataSub':'Añade registros de {type}<br>para {period}',
     'wpop.moveUp':'↑ Subir','wpop.moveDown':'↓ Bajar','wpop.delete':'🗑️ Eliminar',
+    'report.editDone':'✅ Listo','report.editStart':'✏️ Editar Widgets',
     'toast.feelOk':'¡Buena elección! 😊','toast.feelRegret':'¡Intenta aguantar la próxima vez! 💪',
     'report.empty':'Aún no hay elementos.<br>¡Activa los elementos de abajo para añadirlos! ✨',
     'surv.thisWeek':'Esta semana','surv.lastWeek':'Semana pasada','surv.weeksAgo':'Hace {n} semanas',
