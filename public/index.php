@@ -1183,40 +1183,40 @@ body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C;
           <div class="me-stats-row">
             <div class="me-stat-col">
               <div class="me-stat-num"><?=$dbStats['month_count']?></div>
-              <div class="me-stat-label">이번 달 기록</div>
+              <div class="me-stat-label" data-i18n="me.monthRecord">이번 달 기록</div>
             </div>
             <div class="me-stat-col">
               <div class="me-stat-streak-text" id="meStreak"><?= $dbStats['streak'] > 0 ? $dbStats['streak'].'일 연속 🔥' : '아직 기록을 시작해봐요! 🔥'?></div>
-              <div class="me-stat-label">연속 기록일</div>
+              <div class="me-stat-label" data-i18n="me.streakDays">연속 기록일</div>
             </div>
           </div>
         <?php else: ?>
-          <div class="me-name">비로그인</div>
-          <div class="me-email">로그인하면 서버에 동기화됩니다</div>
-          <a href="login.php" class="me-login-btn">로그인 / 회원가입</a>
+          <div class="me-name" data-i18n="me.notLoggedIn">비로그인</div>
+          <div class="me-email" data-i18n="me.syncInfo">로그인하면 서버에 동기화됩니다</div>
+          <a href="login.php" class="me-login-btn" data-i18n="me.loginBtn">로그인 / 회원가입</a>
         <?php endif; ?>
       </div>
 
       <div class="me-grid">
         <div class="me-grid-item" onclick="openMePage('appSettings')">
           <div class="me-grid-icon"><i data-lucide="settings"></i></div>
-          <span class="me-grid-label">앱 설정</span>
+          <span class="me-grid-label" data-i18n="grid.settings">앱 설정</span>
         </div>
-        <div class="me-grid-item" onclick="showToast('준비 중이에요')">
+        <div class="me-grid-item" onclick="showToast(tr('toast.coming'))">
           <div class="me-grid-icon"><i data-lucide="zap"></i></div>
-          <span class="me-grid-label">업그레이드</span>
+          <span class="me-grid-label" data-i18n="grid.upgrade">업그레이드</span>
         </div>
         <div class="me-grid-item" onclick="openHelpModal()">
           <div class="me-grid-icon"><i data-lucide="help-circle"></i></div>
-          <span class="me-grid-label">도움말</span>
+          <span class="me-grid-label" data-i18n="grid.help">도움말</span>
         </div>
         <div class="me-grid-item" onclick="openMePage('data')">
           <div class="me-grid-icon"><i data-lucide="database"></i></div>
-          <span class="me-grid-label">데이터</span>
+          <span class="me-grid-label" data-i18n="grid.data">데이터</span>
         </div>
-        <div class="me-grid-item" onclick="showToast('준비 중이에요')">
+        <div class="me-grid-item" onclick="showToast(tr('toast.coming'))">
           <div class="me-grid-icon"><i data-lucide="message-circle"></i></div>
-          <span class="me-grid-label">문의하기</span>
+          <span class="me-grid-label" data-i18n="grid.contact">문의하기</span>
         </div>
       </div>
     </div>
@@ -1225,7 +1225,7 @@ body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C;
     <div id="mePageAppSettings" class="me-subpage">
       <div class="me-subpage-hd">
         <button class="me-subpage-back" onclick="closeMePage()"><i data-lucide="chevron-left"></i></button>
-        <span class="me-subpage-title">앱 설정</span>
+        <span class="me-subpage-title" data-i18n="page.appSettings">앱 설정</span>
       </div>
       <div class="me-section">
         <div class="me-section-title" data-i18n="section.records">기록 관리</div>
@@ -1267,7 +1267,7 @@ body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C;
     <div id="mePageData" class="me-subpage">
       <div class="me-subpage-hd">
         <button class="me-subpage-back" onclick="closeMePage()"><i data-lucide="chevron-left"></i></button>
-        <span class="me-subpage-title">데이터</span>
+        <span class="me-subpage-title" data-i18n="page.data">데이터</span>
       </div>
       <div class="me-section">
         <div class="me-section-title" data-i18n="section.dataManagement">데이터 관리</div>
@@ -2857,7 +2857,7 @@ function renderReport() {
   const prevExps = monthOf(prev).filter(t => t.type === 'expense');
   const thisExp  = thisExps.reduce((s,t) => s + t.amount, 0);
   const prevExp  = prevExps.reduce((s,t) => s + t.amount, 0);
-  const name     = USER_NAME || '사용자';
+  const name     = USER_NAME || tr('lbl.user');
 
   if (reportWidgets.includes('insight')) {
     const diff = thisExp - prevExp;
@@ -2866,64 +2866,60 @@ function renderReport() {
     let emoji, insight, sub, tag, tagClass;
 
     if (prevExp === 0 && thisExp === 0) {
-      // 데이터 없음 — 첫 시작
-      emoji = '🌱'; tagClass = 'neutral'; tag = '#기록시작';
-      insight = `${name}님, 아직 이번 달 지출이 없어요!`;
-      sub = '오늘부터 소비를 기록해봐요 ✏️';
+      emoji = '🌱'; tagClass = 'neutral'; tag = tr('insight.tagStart');
+      insight = tr('insight.noData').replace('{name}', name);
+      sub = tr('insight.noDataSub');
 
     } else if (prevExp === 0) {
-      // 지난달 0원 — 비율 계산 불가
-      emoji = '🎉'; tagClass = 'neutral'; tag = '#이번달첫기록';
-      insight = `${name}님, 이번 달은 현재까지 총 ${fmt(thisExp)}을 사용하셨네요!`;
-      sub = '지난달 데이터가 없어 증감은 다음 달부터 확인할 수 있어요 📖';
+      emoji = '🎉'; tagClass = 'neutral'; tag = tr('insight.tagFirst');
+      insight = tr('insight.firstRecord').replace('{name}', name).replace('{amt}', fmt(thisExp));
+      sub = tr('insight.firstRecordSub');
 
     } else if (diff === 0) {
-      emoji = '😐'; tagClass = 'neutral'; tag = '#균형유지';
-      insight = `${name}님, 지난 달과 딱 같은 금액을 쓰셨어요.`;
-      sub = '균형 잡힌 소비 패턴이네요.';
+      emoji = '😐'; tagClass = 'neutral'; tag = tr('insight.tagEqual');
+      insight = tr('insight.equal').replace('{name}', name);
+      sub = tr('insight.equalSub');
 
     } else if (diff < 0) {
-      // 지출 감소
       if (pct >= 30) {
-        emoji = '💚'; tagClass = 'good'; tag = '#알뜰살뜰';
-        insight = `${name}님, 지난달보다 ${pct}% 확 줄었어요! 절약 고수시네요 👑`;
-        sub = `${fmt(-diff)} 절약! 이대로 쭉 이어가봐요 💚`;
+        emoji = '💚'; tagClass = 'good'; tag = tr('insight.tagThrifty');
+        insight = tr('insight.down30').replace('{name}', name).replace('{pct}', pct);
+        sub = tr('insight.down30Sub').replace('{amt}', fmt(-diff));
       } else if (pct >= 10) {
-        emoji = '🎉'; tagClass = 'good'; tag = '#절약성공';
-        insight = `${name}님, 지난달보다 ${pct}% 아껴 쓰셨어요! 대단해요 👏`;
-        sub = `${fmt(-diff)} 절약했어요. 이대로 쭉!`;
+        emoji = '🎉'; tagClass = 'good'; tag = tr('insight.tagSaved');
+        insight = tr('insight.down10').replace('{name}', name).replace('{pct}', pct);
+        sub = tr('insight.downSub').replace('{amt}', fmt(-diff));
       } else {
-        emoji = '🙂'; tagClass = 'good'; tag = '#절약중';
-        insight = `${name}님, 지난달보다 ${pct}% 줄었어요. 잘 하고 계세요!`;
-        sub = `${fmt(-diff)} 절약했어요.`;
+        emoji = '🙂'; tagClass = 'good'; tag = tr('insight.tagSaving');
+        insight = tr('insight.downSmall').replace('{name}', name).replace('{pct}', pct);
+        sub = tr('insight.downSub').replace('{amt}', fmt(-diff));
       }
 
     } else {
-      // 지출 증가
       if (pct >= 50) {
-        emoji = '🔴'; tagClass = 'danger'; tag = '#과소비경보';
-        insight = `${name}님, 지출이 지난달보다 ${pct}% 급증했어요! 지갑이 비상이에요 😰`;
-        sub = `지난달보다 ${fmt(diff)} 더 지출했어요. 점검이 필요해요!`;
+        emoji = '🔴'; tagClass = 'danger'; tag = tr('insight.tagOverspend');
+        insight = tr('insight.up50').replace('{name}', name).replace('{pct}', pct);
+        sub = tr('insight.upSub').replace('{amt}', fmt(diff));
       } else if (pct >= 30) {
-        emoji = '📈'; tagClass = 'danger'; tag = '#지출급증';
-        insight = `${name}님, 이번 달 지출이 지난달보다 ${pct}% 늘었어요. 지갑이 많이 얇아졌네요 😅`;
-        sub = `지난달보다 ${fmt(diff)} 더 지출했어요.`;
+        emoji = '📈'; tagClass = 'danger'; tag = tr('insight.tagUpBig');
+        insight = tr('insight.up30').replace('{name}', name).replace('{pct}', pct);
+        sub = tr('insight.upSub').replace('{amt}', fmt(diff));
       } else if (pct >= 10) {
-        emoji = '⚠️'; tagClass = 'warn'; tag = '#지출주의';
-        insight = `${name}님, 이번 달은 지난달보다 ${pct}% 더 쓰셨어요. 조금만 더 조절해봐요! 💪`;
-        sub = `지난달보다 ${fmt(diff)} 더 지출했어요.`;
+        emoji = '⚠️'; tagClass = 'warn'; tag = tr('insight.tagUpWarn');
+        insight = tr('insight.up10').replace('{name}', name).replace('{pct}', pct);
+        sub = tr('insight.upSub').replace('{amt}', fmt(diff));
       } else {
-        emoji = '📊'; tagClass = 'warn'; tag = '#소폭증가';
-        insight = `${name}님, 지난달보다 ${pct}% 소폭 늘었어요. 아직 괜찮아요!`;
-        sub = `지난달보다 ${fmt(diff)} 더 지출했어요.`;
+        emoji = '📊'; tagClass = 'warn'; tag = tr('insight.tagUpSmall');
+        insight = tr('insight.upSmall').replace('{name}', name).replace('{pct}', pct);
+        sub = tr('insight.upSub').replace('{amt}', fmt(diff));
       }
     }
 
     const tagEl = document.getElementById('rInsightTag');
     tagEl.textContent = tag;
     tagEl.className   = `rc-tag ${tagClass}`;
-    document.getElementById('rLabelPrev').textContent = parseInt(pm) + '월 지출';
-    document.getElementById('rLabelThis').textContent = parseInt(tm) + '월 지출';
+    document.getElementById('rLabelPrev').textContent = tr('report.monthExpense').replace('{m}', parseInt(pm));
+    document.getElementById('rLabelThis').textContent = tr('report.monthExpense').replace('{m}', parseInt(tm));
     document.getElementById('rValPrev').textContent   = fmt(prevExp);
     const valEl = document.getElementById('rValThis');
     valEl.textContent = fmt(thisExp);
@@ -2937,7 +2933,7 @@ function renderReport() {
     // 월 네비 라벨 채우기 (renderReport 후 DOM 새로 생성되므로 여기서 직접 설정)
     const [cy,cm] = curMonth.split('-');
     const cLabel = document.getElementById('rChampMLabel');
-    if (cLabel) cLabel.textContent = cy+'년 '+parseInt(cm)+'월';
+    if (cLabel) cLabel.textContent = fmtYearMonth(cy, cm);
     const cNext = document.getElementById('rChampMNext');
     const nowYM2 = new Date().getFullYear()+'-'+String(new Date().getMonth()+1).padStart(2,'0');
     if (cNext) cNext.disabled = curMonth >= nowYM2;
@@ -2949,15 +2945,15 @@ function renderReport() {
       _ce.innerHTML = `<span style="width:56px;height:56px;border-radius:50%;background:${_cm.bg};display:flex;align-items:center;justify-content:center"><i data-lucide="${_cm.lu}" style="width:26px;height:26px;color:${_cm.c};stroke-width:1.75"></i></span>`;
       lucide.createIcons();
     } else { _ce.innerHTML = '<span style="font-size:32px">💸</span>'; }
-    document.getElementById('rChampName').textContent  = champ ? (champ.description || champ.category) : '이번 달 지출 내역이 없어요';
-    document.getElementById('rChampCat').textContent   = champ ? champ.category + (champ.payment ? ' · ' + champ.payment : '') : '';
+    document.getElementById('rChampName').textContent  = champ ? ((champ.description && champ.description !== champ.category) ? champ.description : dn(champ.category, CAT_NAME_MAP)) : tr('report.noExpense');
+    document.getElementById('rChampCat').textContent   = champ ? dn(champ.category, CAT_NAME_MAP) + (champ.payment ? ' · ' + dn(champ.payment, PAY_NAME_MAP) : '') : '';
     document.getElementById('rChampAmt').innerHTML   = champ ? fmtH(champ.amount) : fmtH(0);
-    document.getElementById('rChampDate').textContent  = champ ? champ.date.replace(/-/g,'.') + ' 지출' : '';
+    document.getElementById('rChampDate').textContent  = champ ? champ.date.replace(/-/g,'.') + ' ' + tr('lbl.expense') : '';
     const pctEl = document.getElementById('rChampPct');
     const feelBtns = document.getElementById('rChampFeelBtns');
     if (champ && thisExp > 0) {
       const pct = Math.round(champ.amount / thisExp * 100);
-      pctEl.innerHTML = `이번 달 총 지출의 <span>${pct}%</span>가 이 한 번의 결제에서!`;
+      pctEl.innerHTML = tr('report.champPct').replace('{pct}', `<span>${pct}%</span>`);
       feelBtns.style.display = 'flex';
       const feelKey = 'ddgb_champ_feel_' + curMonth;
       const saved = localStorage.getItem(feelKey) || '';
@@ -2974,13 +2970,13 @@ function renderReport() {
     // JS getDay(): 0=일,1=월,2=화,3=수,4=목,5=금,6=토
     // SLOTS[i].js = 해당 슬롯의 JS 요일 번호 (명시적 테이블, 변환 배열 없음)
     const SLOTS = [
-      {label:'월', js:1},
-      {label:'화', js:2},
-      {label:'수', js:3},
-      {label:'목', js:4},
-      {label:'금', js:5},
-      {label:'토', js:6},
-      {label:'일', js:0},
+      {label:tr('day.mon'), js:1, msgKey:'dow.msg.mon'},
+      {label:tr('day.tue'), js:2, msgKey:'dow.msg.tue'},
+      {label:tr('day.wed'), js:3, msgKey:'dow.msg.wed'},
+      {label:tr('day.thu'), js:4, msgKey:'dow.msg.thu'},
+      {label:tr('day.fri'), js:5, msgKey:'dow.msg.fri'},
+      {label:tr('day.sat'), js:6, msgKey:'dow.msg.sat'},
+      {label:tr('day.sun'), js:0, msgKey:'dow.msg.sun'},
     ];
 
     // JS 요일 → 슬롯 인덱스 역방향 맵
@@ -3007,7 +3003,7 @@ function renderReport() {
       const isPeak = i === peakIdx && dowSum[i] > 0;
       const cls    = isPeak ? ' peak' : '';
       const crown  = isPeak ? `<div class="dow-crown">👑</div>` : '';
-      const tipText = dowSum[i] > 0 ? `${s.label} ${fmt(dowSum[i])}` : `${s.label} 지출없음`;
+      const tipText = dowSum[i] > 0 ? `${s.label} ${fmt(dowSum[i])}` : `${s.label} ${tr('dow.noExpense')}`;
       return `<div class="dow-bar-wrap" data-tip="${tipText}"
         onmouseenter="showDowTip(event,this)" onmouseleave="hideDowTip()"
         ontouchstart="showDowTip(event,this)" ontouchend="hideDowTipDelay()">
@@ -3017,26 +3013,16 @@ function renderReport() {
       </div>`;
     }).join('');
 
-    // 요일별 맞춤 멘트 (슬롯 인덱스: 0=월,1=화,2=수,3=목,4=금,5=토,6=일)
-    const DOW_MSG = [
-      `한 주의 시작부터 에너지를 많이 쓰셨네요!<br>월요병을 소비로 이겨내셨나요? 😂`,
-      `평일의 꾸준한 소비가 쌓이고 있어요.<br>자잘한 지출만 줄여도 이번 달은 성공이에요! 🌱`,
-      `평일의 꾸준한 소비가 쌓이고 있어요.<br>자잘한 지출만 줄여도 이번 달은 성공이에요! 🌱`,
-      `평일의 꾸준한 소비가 쌓이고 있어요.<br>자잘한 지출만 줄여도 이번 달은 성공이에요! 🌱`,
-      `신나는 불금! 주말의 시작과 함께 지출이 터졌네요 🍺`,
-      `주말 FLEX 주의보! 🚨<br>예산 안에서 즐겨보는 건 어떨까요?`,
-      `일요일 지출이 가장 커요!<br>내일부터 시작될 한 주를 위해 오늘은 조금 아껴봐요 🏠`,
-    ];
     let dowInsight;
     if (!thisExps.length) {
-      dowInsight = '아직 이번 달 지출 데이터가 없어요.';
+      dowInsight = tr('dow.noData');
     } else if (dowSum[peakIdx] === 0) {
-      dowInsight = '지출이 골고루 분포되어 있어요!';
+      dowInsight = tr('dow.balanced');
     } else {
-      dowInsight = `이번 달 <b>${SLOTS[peakIdx].label}요일</b> 지출이 가장 많아요`
+      dowInsight = tr('dow.peak').replace('{day}', SLOTS[peakIdx].label)
         + `<br><span class="hi-amt">${fmt(dowSum[peakIdx])}</span>`
-        + ` <span class="lo-cnt">(총 ${dowCnt[peakIdx]}건)</span>`
-        + `<br>${DOW_MSG[peakIdx]}`;
+        + ` <span class="lo-cnt">(${tr('dow.txCount').replace('{n}', dowCnt[peakIdx])})</span>`
+        + `<br>${tr(SLOTS[peakIdx].msgKey)}`;
     }
     document.getElementById('rDowInsight').innerHTML = dowInsight;
   }
@@ -3047,13 +3033,13 @@ function renderReport() {
   // ── 소비 MBTI ────────────────────────────────────────────────
   if (reportWidgets.includes('mbti')) {
     const MBTI_TYPES = [
-      { keys:['식비','음식','밥','카페','커피','간식','분식'],     code:'EATJ', title:'미식가형',       emoji:'🍜', desc:'먹는 게 남는 거! 오늘도 맛집 탐방 중인 타입이에요. 지갑이 열리는 건 음식 앞에서뿐!' },
-      { keys:['쇼핑','패션','의류','잡화','마트','백화점'],        code:'SHOP', title:'트렌드세터형',    emoji:'🛍️', desc:'쇼핑은 힐링! 눈 깜짝할 새 카트가 가득 차는 타입이에요. 오늘도 장바구니 투어 중?' },
-      { keys:['문화','여가','영화','취미','레저','공연','게임'],    code:'YOLO', title:'욜로라이프형',    emoji:'🎭', desc:'경험에 아낌없이 투자! 인생은 한 번이니까요. 추억이 최고의 재테크예요!' },
-      { keys:['교통','이동','주유','택시','지하철','버스','항공'], code:'MOVE', title:'무브먼트형',      emoji:'🚗', desc:'항상 어딘가로 이동 중! 바쁘고 활동적인 타입이에요. 오늘도 달리는 중이죠?' },
-      { keys:['의료','건강','병원','약','헬스','피부'],            code:'HLTH', title:'건강제일형',      emoji:'💊', desc:'건강이 최우선! 몸 관리에 투자를 아끼지 않는 타입이에요. 건강이 진짜 재산이죠!' },
-      { keys:['통신','인터넷','구독','스트리밍','디지털'],         code:'DIGI', title:'디지털노마드형',  emoji:'📱', desc:'디지털 라이프의 달인! 구독 서비스 없인 못 사는 타입이에요. 오늘도 스트리밍 중?' },
-      { keys:['주거','생활','관리비','인테리어','가구'],           code:'HOME', title:'홈베이스형',      emoji:'🏠', desc:'집이 제일 좋아! 나만의 공간 꾸미는 데 진심인 타입이에요. 오늘도 홈카페 중?' },
+      { keys:['식비','음식','밥','카페','커피','간식','분식'],     code:'EATJ', tkey:'mbti.title.eatj', emoji:'🍜', dkey:'mbti.desc.eatj' },
+      { keys:['쇼핑','패션','의류','잡화','마트','백화점'],        code:'SHOP', tkey:'mbti.title.shop', emoji:'🛍️', dkey:'mbti.desc.shop' },
+      { keys:['문화','여가','영화','취미','레저','공연','게임'],    code:'YOLO', tkey:'mbti.title.yolo', emoji:'🎭', dkey:'mbti.desc.yolo' },
+      { keys:['교통','이동','주유','택시','지하철','버스','항공'], code:'MOVE', tkey:'mbti.title.move', emoji:'🚗', dkey:'mbti.desc.move' },
+      { keys:['의료','건강','병원','약','헬스','피부'],            code:'HLTH', tkey:'mbti.title.hlth', emoji:'💊', dkey:'mbti.desc.hlth' },
+      { keys:['통신','인터넷','구독','스트리밍','디지털'],         code:'DIGI', tkey:'mbti.title.digi', emoji:'📱', dkey:'mbti.desc.digi' },
+      { keys:['주거','생활','관리비','인테리어','가구'],           code:'HOME', tkey:'mbti.title.home', emoji:'🏠', dkey:'mbti.desc.home' },
     ];
     const catMap = {};
     thisExps.forEach(t => { catMap[t.category] = (catMap[t.category] || 0) + t.amount; });
@@ -3067,9 +3053,9 @@ function renderReport() {
     }
     if (!mbtiType) {
       if (!thisExps.length) {
-        mbtiType = { code:'????', title:'데이터 수집 중', emoji:'🔍', desc:'이번 달 지출 내역을 추가하면 나만의 소비 MBTI가 분석돼요!' };
+        mbtiType = { code:'????', tkey:'mbti.title.none', emoji:'🔍', dkey:'mbti.desc.none' };
       } else {
-        mbtiType = { code:'FREE', title:'자유분방형', emoji:'🌈', desc:'정해진 패턴 없이 자유롭게! 다양한 곳에 고루 지출하는 유연한 타입이에요.' };
+        mbtiType = { code:'FREE', tkey:'mbti.title.free', emoji:'🌈', dkey:'mbti.desc.free' };
       }
     }
 
@@ -3078,16 +3064,16 @@ function renderReport() {
     let budgetLine = '';
     if (thisInc2 > 0) {
       const ur = thisExp / thisInc2;
-      if (ur < 0.6)       budgetLine = '절약 능력까지 갖춘 완벽한 소비러예요! 💪';
-      else if (ur < 0.8)  budgetLine = '적당한 균형감각을 가진 소비러예요 👍';
-      else if (ur <= 1.0) budgetLine = '거의 한계선! 조금만 더 아껴봐요 😅';
-      else                budgetLine = '예산 초과! 다음 달엔 절약 모드 고고 😰';
+      if (ur < 0.6)       budgetLine = tr('mbti.budget.great');
+      else if (ur < 0.8)  budgetLine = tr('mbti.budget.ok');
+      else if (ur <= 1.0) budgetLine = tr('mbti.budget.warn');
+      else                budgetLine = tr('mbti.budget.over');
     }
 
     document.getElementById('rMbtiEmoji').textContent = mbtiType.emoji;
     document.getElementById('rMbtiCode').textContent  = mbtiType.code;
-    document.getElementById('rMbtiTitle').textContent = mbtiType.title;
-    document.getElementById('rMbtiDesc').textContent  = mbtiType.desc;
+    document.getElementById('rMbtiTitle').textContent = tr(mbtiType.tkey);
+    document.getElementById('rMbtiDesc').textContent  = tr(mbtiType.dkey);
     const budgetEl = document.getElementById('rMbtiBudget');
     if (budgetLine) { budgetEl.textContent = budgetLine; budgetEl.style.display = ''; }
     else            { budgetEl.style.display = 'none'; }
@@ -3107,7 +3093,7 @@ function renderReport() {
     const MEDALS = ['🥇','🥈','🥉'];
     const body = document.getElementById('rTop3Body');
     if (!sorted.length) {
-      body.innerHTML = `<div class="top3-empty">이번 달 지출 내역이 없어요</div>`;
+      body.innerHTML = `<div class="top3-empty">${tr('report.noExpense')}</div>`;
     } else {
       const maxAmt = sorted[0][1];
       body.innerHTML = sorted.map(([cat, amt], i) => {
@@ -3118,8 +3104,8 @@ function renderReport() {
         return `<div class="top3-row">
           <div class="top3-rank">${MEDALS[i]}</div>
           <div class="top3-info">
-            <div class="top3-cat"><i class="${_icMeta(cat).fa}" style="color:${_icMeta(cat).c};margin-right:6px"></i>${cat}</div>
-            <div class="top3-sub">${cnt}건</div>
+            <div class="top3-cat"><i class="${_icMeta(cat).fa}" style="color:${_icMeta(cat).c};margin-right:6px"></i>${dn(cat, CAT_NAME_MAP)}</div>
+            <div class="top3-sub">${tr('lbl.cntFmt').replace('{n}', cnt)}</div>
             <div class="top3-bar-wrap"><div class="top3-bar" style="width:${barW}%"></div></div>
           </div>
           <div class="top3-right">
@@ -3168,7 +3154,7 @@ function renderMeStreak() {
     streak++;
     check.setDate(check.getDate() - 1);
   }
-  el.textContent = streak > 0 ? `🔥 연속 기록 ${streak}일` : '아직 기록을 시작해봐요!';
+  el.textContent = streak > 0 ? tr('me.streak').replace('{n}', streak) : tr('me.streakZero');
 }
 
 // ── 요일 툴팁 ────────────────────────────────────────────────
@@ -4955,6 +4941,9 @@ const TRANSLATIONS = {
     'wdef.insight':'이번 달 요약','wdef.champion':'최고 지출 항목','wdef.dayofweek':'요일별 소비 패턴',
     'wdef.survival':'목표 예산','wdef.mbti':'나의 소비 MBTI','wdef.top3cats':'카테고리 TOP 3',
     'me.streak':'🔥 연속 기록 {n}일','me.streakZero':'아직 기록을 시작해봐요!',
+    'me.monthRecord':'이번 달 기록','me.streakDays':'연속 기록일',
+    'me.notLoggedIn':'비로그인','me.syncInfo':'로그인하면 서버에 동기화됩니다','me.loginBtn':'로그인 / 회원가입',
+    'dow.noExpense':'지출없음',
     'badge.guard':'자산 수비대 🛡️','badge.explorer':'절약 탐험가 🧭','badge.sprout':'기록 새싹 🌱',
     'cat.dining':'식비','cat.transport':'교통','cat.shopping':'쇼핑','cat.medical':'의료',
     'cat.culture':'문화','cat.telecom':'통신','cat.housing':'주거','cat.other':'기타',
@@ -5103,6 +5092,9 @@ const TRANSLATIONS = {
     'wdef.insight':'Monthly Summary','wdef.champion':'Top Expense','wdef.dayofweek':'Spending by Day',
     'wdef.survival':'Budget Goal','wdef.mbti':'Spending MBTI','wdef.top3cats':'Category TOP 3',
     'me.streak':'🔥 {n}-day streak','me.streakZero':'Start recording today!',
+    'me.monthRecord':'This month','me.streakDays':'Streak days',
+    'me.notLoggedIn':'Not logged in','me.syncInfo':'Log in to sync to server','me.loginBtn':'Login / Sign up',
+    'dow.noExpense':'No expense',
     'badge.guard':'Asset Guardian 🛡️','badge.explorer':'Savings Explorer 🧭','badge.sprout':'Record Sprout 🌱',
     'cat.dining':'Dining','cat.transport':'Transport','cat.shopping':'Shopping','cat.medical':'Medical',
     'cat.culture':'Culture','cat.telecom':'Telecom','cat.housing':'Housing','cat.other':'Other',
@@ -5251,6 +5243,9 @@ const TRANSLATIONS = {
     'wdef.insight':'月間サマリー','wdef.champion':'最高支出','wdef.dayofweek':'曜日別消費',
     'wdef.survival':'予算目標','wdef.mbti':'消費MBTI','wdef.top3cats':'カテゴリ TOP 3',
     'me.streak':'🔥 {n}日連続記録','me.streakZero':'今日から記録を始めましょう！',
+    'me.monthRecord':'今月の記録','me.streakDays':'連続記録日',
+    'me.notLoggedIn':'未ログイン','me.syncInfo':'ログインするとサーバーに同期されます','me.loginBtn':'ログイン / 会員登録',
+    'dow.noExpense':'支出なし',
     'badge.guard':'資産守護隊 🛡️','badge.explorer':'節約探検家 🧭','badge.sprout':'記録の芽 🌱',
     'cat.dining':'食費','cat.transport':'交通','cat.shopping':'ショッピング','cat.medical':'医療',
     'cat.culture':'文化','cat.telecom':'通信','cat.housing':'住居','cat.other':'その他',
@@ -5399,6 +5394,9 @@ const TRANSLATIONS = {
     'wdef.insight':'月度摘要','wdef.champion':'最高支出','wdef.dayofweek':'按星期消费',
     'wdef.survival':'预算目标','wdef.mbti':'消费MBTI','wdef.top3cats':'分类 TOP 3',
     'me.streak':'🔥 连续记录 {n} 天','me.streakZero':'快来开始记录吧！',
+    'me.monthRecord':'本月记录','me.streakDays':'连续记录天数',
+    'me.notLoggedIn':'未登录','me.syncInfo':'登录后同步到服务器','me.loginBtn':'登录 / 注册',
+    'dow.noExpense':'无支出',
     'badge.guard':'资产守卫 🛡️','badge.explorer':'节俭探索者 🧭','badge.sprout':'记录新芽 🌱',
     'cat.dining':'餐饮','cat.transport':'交通','cat.shopping':'购物','cat.medical':'医疗',
     'cat.culture':'文化','cat.telecom':'通讯','cat.housing':'住房','cat.other':'其他',
@@ -5547,6 +5545,9 @@ const TRANSLATIONS = {
     'wdef.insight':'Resumen mensual','wdef.champion':'Mayor gasto','wdef.dayofweek':'Gastos por día',
     'wdef.survival':'Presupuesto','wdef.mbti':'MBTI de consumo','wdef.top3cats':'Categoría TOP 3',
     'me.streak':'🔥 {n} días seguidos','me.streakZero':'¡Empieza a registrar hoy!',
+    'me.monthRecord':'Este mes','me.streakDays':'Días seguidos',
+    'me.notLoggedIn':'No conectado','me.syncInfo':'Inicia sesión para sincronizar','me.loginBtn':'Iniciar sesión / Registrarse',
+    'dow.noExpense':'Sin gasto',
     'badge.guard':'Guardián de activos 🛡️','badge.explorer':'Explorador ahorrativo 🧭','badge.sprout':'Brote de registros 🌱',
     'cat.dining':'Comida','cat.transport':'Transporte','cat.shopping':'Compras','cat.medical':'Médico',
     'cat.culture':'Cultura','cat.telecom':'Telecom','cat.housing':'Vivienda','cat.other':'Otros',
