@@ -1039,6 +1039,7 @@ body.dark .fx-cycle-btn.on { background:#78909C; color:#fff; border-color:#78909
 .fx-dow-btn.on { background:var(--p); color:#fff; border-color:var(--p); }
 body.dark .fx-dow-btn { background:#37474F; color:#CFD8DC; border-color:#546E7A; }
 body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C; }
+#currencyGrid::-webkit-scrollbar { display:none; }
 </style>
 </head>
 <body class="<?= $darkMode ? 'dark' : '' ?>">
@@ -1240,6 +1241,9 @@ body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C;
       </div>
       <div class="me-section">
         <div class="me-section-title" data-i18n="section.environment">앱 환경</div>
+        <div class="me-row" onclick="openCurrencyModal()">
+          <span class="me-row-ico"><i data-lucide="coins"></i></span><span class="me-row-label" data-i18n="row.currency">기본 통화</span><span class="me-row-value" id="currencyRowValue">₩ KRW</span><span class="me-row-arrow">›</span>
+        </div>
         <div class="me-row" onclick="openNotifModal()">
           <span class="me-row-ico"><i data-lucide="bell"></i></span><span class="me-row-label" data-i18n="row.notifications">푸시 알림</span><span class="me-row-value" id="notifRowValue">꺼짐</span><span class="me-row-arrow">›</span>
         </div>
@@ -1534,6 +1538,24 @@ body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C;
 </div>
 
 <!-- ── 도움말 모달 ── -->
+<!-- ── 통화 선택 모달 ── -->
+<div class="overlay" id="currencyModal" onclick="if(event.target===this)closeCurrencyModal()">
+  <div class="modal" style="max-width:360px">
+    <div class="modal-hd">
+      <span class="modal-hd-title" data-i18n="row.currency">기본 통화</span>
+      <button class="modal-x" onclick="closeCurrencyModal()">×</button>
+    </div>
+    <div style="padding:12px 16px 0">
+      <div style="display:flex;align-items:center;gap:8px;border:1.5px solid #e0e0e0;border-radius:10px;padding:8px 12px;background:#f9f9f9">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9e9e9e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input id="currencySearch" type="text" placeholder="통화 검색..." oninput="renderCurrencyGrid(this.value)"
+          style="border:none;outline:none;background:transparent;font-size:14px;width:100%;color:#374151">
+      </div>
+    </div>
+    <div id="currencyGrid" style="overflow-y:auto;max-height:60vh;scrollbar-width:none;-ms-overflow-style:none"></div>
+  </div>
+</div>
+
 <!-- ── 언어 선택 모달 ── -->
 <div class="overlay" id="langModal" onclick="if(event.target===this)closeLangModal()">
   <div class="modal" style="max-width:320px">
@@ -1844,8 +1866,83 @@ function refreshIcons() {
   _lcTimer = setTimeout(() => lucide.createIcons(), 0);
 }
 
+// ── 통화 ──────────────────────────────────────────────────────
+const CURRENCY_SK = 'app_currency';
+const CURRENCY_LIST = [
+  {code:'KRW',symbol:'₩',name:'대한민국 원'},{code:'USD',symbol:'$',name:'미국 달러'},
+  {code:'EUR',symbol:'€',name:'유럽 유로'},{code:'JPY',symbol:'¥',name:'일본 엔'},
+  {code:'GBP',symbol:'£',name:'영국 파운드'},{code:'CNY',symbol:'¥',name:'중국 위안'},
+  {code:'HKD',symbol:'HK$',name:'홍콩 달러'},{code:'TWD',symbol:'NT$',name:'대만 달러'},
+  {code:'SGD',symbol:'S$',name:'싱가포르 달러'},{code:'AUD',symbol:'A$',name:'호주 달러'},
+  {code:'CAD',symbol:'CA$',name:'캐나다 달러'},{code:'CHF',symbol:'Fr',name:'스위스 프랑'},
+  {code:'SEK',symbol:'kr',name:'스웨덴 크로나'},{code:'NOK',symbol:'kr',name:'노르웨이 크로네'},
+  {code:'DKK',symbol:'kr',name:'덴마크 크로네'},{code:'NZD',symbol:'NZ$',name:'뉴질랜드 달러'},
+  {code:'THB',symbol:'฿',name:'태국 바트'},{code:'MYR',symbol:'RM',name:'말레이시아 링깃'},
+  {code:'IDR',symbol:'Rp',name:'인도네시아 루피아'},{code:'PHP',symbol:'₱',name:'필리핀 페소'},
+  {code:'VND',symbol:'₫',name:'베트남 동'},{code:'INR',symbol:'₹',name:'인도 루피'},
+  {code:'PKR',symbol:'₨',name:'파키스탄 루피'},{code:'BDT',symbol:'৳',name:'방글라데시 타카'},
+  {code:'LKR',symbol:'₨',name:'스리랑카 루피'},{code:'NPR',symbol:'₨',name:'네팔 루피'},
+  {code:'MMK',symbol:'K',name:'미얀마 짯'},{code:'KHR',symbol:'៛',name:'캄보디아 리엘'},
+  {code:'LAK',symbol:'₭',name:'라오스 킵'},{code:'MNT',symbol:'₮',name:'몽골 투그릭'},
+  {code:'BND',symbol:'B$',name:'브루나이 달러'},{code:'MOP',symbol:'P',name:'마카오 파타카'},
+  {code:'MVR',symbol:'Rf',name:'몰디브 루피아'},
+  {code:'MXN',symbol:'MX$',name:'멕시코 페소'},{code:'BRL',symbol:'R$',name:'브라질 헤알'},
+  {code:'ARS',symbol:'$',name:'아르헨티나 페소'},{code:'CLP',symbol:'$',name:'칠레 페소'},
+  {code:'COP',symbol:'$',name:'콜롬비아 페소'},{code:'PEN',symbol:'S/',name:'페루 솔'},
+  {code:'UYU',symbol:'$U',name:'우루과이 페소'},{code:'BOB',symbol:'Bs',name:'볼리비아 볼리비아노'},
+  {code:'PYG',symbol:'₲',name:'파라과이 과라니'},{code:'VES',symbol:'Bs.S',name:'베네수엘라 볼리바르'},
+  {code:'GYD',symbol:'G$',name:'가이아나 달러'},{code:'TTD',symbol:'TT$',name:'트리니다드 달러'},
+  {code:'JMD',symbol:'J$',name:'자메이카 달러'},{code:'DOP',symbol:'RD$',name:'도미니카 페소'},
+  {code:'HTG',symbol:'G',name:'아이티 구르드'},{code:'GTQ',symbol:'Q',name:'과테말라 케트살'},
+  {code:'HNL',symbol:'L',name:'온두라스 렘피라'},{code:'NIO',symbol:'C$',name:'니카라과 코르도바'},
+  {code:'CRC',symbol:'₡',name:'코스타리카 콜론'},{code:'PAB',symbol:'B/.',name:'파나마 발보아'},
+  {code:'BSD',symbol:'B$',name:'바하마 달러'},{code:'BBD',symbol:'Bds$',name:'바베이도스 달러'},
+  {code:'XCD',symbol:'EC$',name:'동카리브 달러'},{code:'CUP',symbol:'$',name:'쿠바 페소'},
+  {code:'RUB',symbol:'₽',name:'러시아 루블'},{code:'UAH',symbol:'₴',name:'우크라이나 흐리브냐'},
+  {code:'PLN',symbol:'zł',name:'폴란드 즐로티'},{code:'CZK',symbol:'Kč',name:'체코 코루나'},
+  {code:'HUF',symbol:'Ft',name:'헝가리 포린트'},{code:'RON',symbol:'lei',name:'루마니아 레우'},
+  {code:'BGN',symbol:'лв',name:'불가리아 레프'},{code:'ISK',symbol:'kr',name:'아이슬란드 크로나'},
+  {code:'HRK',symbol:'kn',name:'크로아티아 쿠나'},{code:'RSD',symbol:'din',name:'세르비아 디나르'},
+  {code:'ALL',symbol:'L',name:'알바니아 렉'},{code:'MKD',symbol:'ден',name:'북마케도니아 데나르'},
+  {code:'BAM',symbol:'KM',name:'보스니아 마르크'},{code:'MDL',symbol:'L',name:'몰도바 레이'},
+  {code:'BYN',symbol:'Br',name:'벨라루스 루블'},{code:'KZT',symbol:'₸',name:'카자흐스탄 텡게'},
+  {code:'UZS',symbol:'сум',name:'우즈베키스탄 솜'},{code:'AZN',symbol:'₼',name:'아제르바이잔 마나트'},
+  {code:'GEL',symbol:'₾',name:'조지아 라리'},{code:'AMD',symbol:'֏',name:'아르메니아 드람'},
+  {code:'TJS',symbol:'SM',name:'타지키스탄 소모니'},{code:'TMT',symbol:'T',name:'투르크메니스탄 마나트'},
+  {code:'KGS',symbol:'с',name:'키르기스스탄 솜'},{code:'TRY',symbol:'₺',name:'튀르키예 리라'},
+  {code:'SAR',symbol:'SR',name:'사우디 리얄'},{code:'AED',symbol:'AED',name:'아랍에미리트 디르함'},
+  {code:'KWD',symbol:'KD',name:'쿠웨이트 디나르'},{code:'BHD',symbol:'BD',name:'바레인 디나르'},
+  {code:'OMR',symbol:'OMR',name:'오만 리얄'},{code:'QAR',symbol:'QR',name:'카타르 리얄'},
+  {code:'JOD',symbol:'JD',name:'요르단 디나르'},{code:'ILS',symbol:'₪',name:'이스라엘 세켈'},
+  {code:'LBP',symbol:'L£',name:'레바논 파운드'},{code:'IRR',symbol:'﷼',name:'이란 리얄'},
+  {code:'IQD',symbol:'IQD',name:'이라크 디나르'},{code:'AFN',symbol:'؋',name:'아프가니스탄 아프가니'},
+  {code:'ZAR',symbol:'R',name:'남아프리카 랜드'},{code:'NGN',symbol:'₦',name:'나이지리아 나이라'},
+  {code:'KES',symbol:'KSh',name:'케냐 실링'},{code:'GHS',symbol:'GH₵',name:'가나 세디'},
+  {code:'ETB',symbol:'Br',name:'에티오피아 비르'},{code:'TZS',symbol:'TSh',name:'탄자니아 실링'},
+  {code:'UGX',symbol:'USh',name:'우간다 실링'},{code:'RWF',symbol:'FRw',name:'르완다 프랑'},
+  {code:'MAD',symbol:'MAD',name:'모로코 디르함'},{code:'DZD',symbol:'DZD',name:'알제리 디나르'},
+  {code:'TND',symbol:'TND',name:'튀니지 디나르'},{code:'EGP',symbol:'E£',name:'이집트 파운드'},
+  {code:'SDG',symbol:'SDG',name:'수단 파운드'},{code:'GNF',symbol:'FG',name:'기니 프랑'},
+  {code:'GMD',symbol:'D',name:'감비아 달라시'},{code:'SLL',symbol:'Le',name:'시에라리온 레온'},
+  {code:'LRD',symbol:'L$',name:'라이베리아 달러'},{code:'NAD',symbol:'N$',name:'나미비아 달러'},
+  {code:'BWP',symbol:'P',name:'보츠와나 풀라'},{code:'ZMW',symbol:'ZK',name:'잠비아 콰차'},
+  {code:'MZN',symbol:'MT',name:'모잠비크 메티칼'},{code:'AOA',symbol:'Kz',name:'앙골라 콴자'},
+  {code:'CDF',symbol:'FC',name:'콩고 프랑'},{code:'MGA',symbol:'Ar',name:'마다가스카르 아리아리'},
+  {code:'MUR',symbol:'₨',name:'모리셔스 루피'},{code:'XOF',symbol:'CFA',name:'서아프리카 CFA 프랑'},
+  {code:'XAF',symbol:'CFA',name:'중앙아프리카 CFA 프랑'},{code:'FJD',symbol:'FJ$',name:'피지 달러'},
+  {code:'PGK',symbol:'K',name:'파푸아뉴기니 키나'},{code:'SBD',symbol:'SI$',name:'솔로몬 달러'},
+  {code:'TOP',symbol:'T$',name:'통가 파앙아'},{code:'WST',symbol:'WS$',name:'사모아 탈라'},
+  {code:'VUV',symbol:'VT',name:'바누아투 바투'},{code:'XPF',symbol:'CFP',name:'태평양 프랑'},
+];
+function getCurrSymbol() {
+  try { const c = JSON.parse(localStorage.getItem(CURRENCY_SK)); return (c && c.symbol) ? c.symbol : '₩'; } catch { return '₩'; }
+}
+function getCurrCode() {
+  try { const c = JSON.parse(localStorage.getItem(CURRENCY_SK)); return (c && c.code) ? c.code : 'KRW'; } catch { return 'KRW'; }
+}
+
 // ₩ 기호를 작게 처리한 금액 HTML
-const fmtH = n => `<span class="w-sym">₩</span>${Math.abs(n).toLocaleString('ko-KR')}`;
+const fmtH = n => `<span class="w-sym">${getCurrSymbol()}</span>${Math.abs(n).toLocaleString()}`;
 
 // ── 상태 ──────────────────────────────────────────────────────
 let txs        = [];
@@ -1938,13 +2035,16 @@ function persist()     { localStorage.setItem(SK,      JSON.stringify(txs)); }
 function persistCats() { localStorage.setItem(CATS_SK, JSON.stringify(customCats)); }
 
 // ── 유틸 ──────────────────────────────────────────────────────
-const fmt = n => '₩' + Math.abs(n).toLocaleString('ko-KR');
+const fmt = n => getCurrSymbol() + Math.abs(n).toLocaleString();
 const fmtShort = n => {
   const a = Math.abs(n);
-  if (a >= 1000000000000) { const v = a/1000000000000; return '₩'+(v%1?v.toFixed(1)+'조':v+'조'); }
-  if (a >= 100000000)     { const v = a/100000000;     return '₩'+(v%1?v.toFixed(1)+'억':v+'억'); }
-  if (a >= 10000)         { const v = a/10000;          return '₩'+(v%1?v.toFixed(1)+'만':v+'만'); }
-  return '₩'+a.toLocaleString('ko-KR');
+  const sym = getCurrSymbol();
+  if (getCurrCode() === 'KRW') {
+    if (a >= 1000000000000) { const v = a/1000000000000; return sym+(v%1?v.toFixed(1)+'조':v+'조'); }
+    if (a >= 100000000)     { const v = a/100000000;     return sym+(v%1?v.toFixed(1)+'억':v+'억'); }
+    if (a >= 10000)         { const v = a/10000;          return sym+(v%1?v.toFixed(1)+'만':v+'만'); }
+  }
+  return sym+a.toLocaleString();
 };
 const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 function monthOf(ym)   { return txs.filter(t => t.date.startsWith(ym)); }
@@ -3407,19 +3507,22 @@ function buildCatSelect(type, keepVal) {
   if (!hidden) return;
   const cur = keepVal || hidden.value;
 
-  let baseCats, customList;
+  let baseCatNames, dbCustomList, localCustomList;
   if (IS_LOGGED_IN) {
-    baseCats   = (dbCats[type] || []).map(c => c.name);
-    customList = [];
+    const baseNames = BASE_CATS[type] || [];
+    baseCatNames  = (dbCats[type] || []).filter(c => baseNames.includes(c.name)).map(c => c.name);
+    dbCustomList  = (dbCats[type] || []).filter(c => !baseNames.includes(c.name));
+    localCustomList = [];
   } else {
-    baseCats   = BASE_CATS[type] || [];
-    customList = (customCats[type] || []);
+    baseCatNames  = BASE_CATS[type] || [];
+    dbCustomList  = [];
+    localCustomList = (customCats[type] || []);
   }
 
   const dropdown = document.getElementById('catCsDropdown');
   if (!dropdown) return;
 
-  let html = baseCats.map(name => {
+  let html = baseCatNames.map(name => {
     const m = _icMeta(name);
     return `<div class="cat-cs-option${name===cur?' selected':''}" onclick="selectCatOption('${esc(name)}')">
       <span class="cat-cs-option-icon" style="background:${m.bg}">
@@ -3429,14 +3532,25 @@ function buildCatSelect(type, keepVal) {
     </div>`;
   }).join('');
 
-  html += customList.map((c, i) => {
+  html += dbCustomList.map(c => {
     const m = _icMeta(c.name);
     return `<div class="cat-cs-option${c.name===cur?' selected':''}" onclick="selectCatOption('${esc(c.name)}')">
       <span class="cat-cs-option-icon" style="background:${m.bg}">
         <i data-lucide="${m.lu}" style="width:14px;height:14px;color:${m.c};stroke-width:1.75"></i>
       </span>
       <span class="cat-cs-option-name">${esc(c.name)}</span>
-      <button class="cat-cs-del" onclick="event.stopPropagation();deleteCustomCat(${i})" type="button">−</button>
+      <button class="cat-cs-del" onclick="event.stopPropagation();deleteCustomCat(null,'${esc(c.name)}',${c.id||0})" type="button">−</button>
+    </div>`;
+  }).join('');
+
+  html += localCustomList.map((c, i) => {
+    const m = _icMeta(c.name);
+    return `<div class="cat-cs-option${c.name===cur?' selected':''}" onclick="selectCatOption('${esc(c.name)}')">
+      <span class="cat-cs-option-icon" style="background:${m.bg}">
+        <i data-lucide="${m.lu}" style="width:14px;height:14px;color:${m.c};stroke-width:1.75"></i>
+      </span>
+      <span class="cat-cs-option-name">${esc(c.name)}</span>
+      <button class="cat-cs-del" onclick="event.stopPropagation();deleteCustomCat(${i},null,null)" type="button">−</button>
     </div>`;
   }).join('');
 
@@ -3444,8 +3558,9 @@ function buildCatSelect(type, keepVal) {
   refreshIcons();
 
   // 선택값 설정
-  const first = [...baseCats, ...customList.map(c=>c.name)][0] || '';
-  const val = (baseCats.includes(cur) || customList.find(c=>c.name===cur)) ? cur : first;
+  const allNames = [...baseCatNames, ...dbCustomList.map(c=>c.name), ...localCustomList.map(c=>c.name)];
+  const first = allNames[0] || '';
+  const val = allNames.includes(cur) ? cur : first;
   hidden.value = val;
   const lbl = document.getElementById('catCsLabel');
   if (lbl) lbl.textContent = val || '선택';
@@ -3708,57 +3823,109 @@ function resetPayIconPicker() {
 function renderCustomCatList() {
   const el = document.getElementById('customCatList');
   if (!el) return;
-  const cats = (customCats[curType] || []);
+  let cats;
+  if (IS_LOGGED_IN) {
+    const baseCatNames = BASE_CATS[curType] || [];
+    cats = (dbCats[curType] || []).filter(c => !baseCatNames.includes(c.name));
+  } else {
+    cats = (customCats[curType] || []);
+  }
   if (!cats.length) { el.innerHTML = ''; return; }
-  el.innerHTML = cats.map((c, i) => {
+  el.innerHTML = '<div style="border-top:1px solid #f0f0f0;margin-top:6px">' + cats.map((c, i) => {
     const m = _icMeta(c.name);
-    return `<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #f0f0f0">
+    const delArg = IS_LOGGED_IN ? `deleteCustomCat(null,'${esc(c.name)}',${c.id||0})` : `deleteCustomCat(${i},null,null)`;
+    return `<div style="display:flex;align-items:center;gap:8px;padding:7px 0;${i<cats.length-1?'border-bottom:1px solid #f0f0f0':''}">
       <span style="width:30px;height:30px;border-radius:50%;background:${m.bg};display:flex;align-items:center;justify-content:center;flex-shrink:0">
         <i data-lucide="${m.lu}" style="width:14px;height:14px;color:${m.c};stroke-width:1.75"></i>
       </span>
       <span style="flex:1;font-size:13px;font-weight:600;color:#374151">${esc(c.name)}</span>
-      <button onclick="deleteCustomCat(${i})" type="button"
+      <button onclick="${delArg}" type="button"
         style="background:none;border:1px solid #fecaca;border-radius:7px;cursor:pointer;color:#ef4444;padding:4px 8px;font-size:16px;line-height:1">−</button>
     </div>`;
-  }).join('');
+  }).join('') + '</div>';
   lucide.createIcons();
 }
-function deleteCustomCat(idx) {
-  const name = (customCats[curType] || [])[idx]?.name;
-  if (!name) return;
-  if (!confirm('"' + name + '" 카테고리를 삭제할까요?')) return;
-  customCats[curType].splice(idx, 1);
-  persistCats();
-  buildCatSelect(curType);
-  renderCustomCatList();
-  renderLedger();
-  showToast('카테고리가 삭제됐어요');
-}
-function toggleNewCat() {
+function deleteCustomCat(idx, name, id) {
   if (IS_LOGGED_IN) {
-    closeModal();
-    openCatEditModal();
+    if (!confirm('"' + name + '" 카테고리를 삭제할까요?')) return;
+    dbCats[curType] = (dbCats[curType]||[]).filter(c => String(c.id) !== String(id));
+    buildCatSelect(curType);
+    renderLedger();
+    showToast('카테고리가 삭제됐어요');
+    const fd = new FormData(); fd.append('id', id);
+    fetch('../api/?action=categories_delete', { method:'POST', body:fd, credentials:'same-origin' })
+      .then(r => r.json()).then(res => {
+        if (res.status === 'ok' && Array.isArray(res.categories)) {
+          dbCats.expense = res.categories.filter(c => c.type === 'expense');
+          dbCats.income  = res.categories.filter(c => c.type === 'income');
+          buildCatSelect(curType);
+        }
+      }).catch(() => {});
   } else {
-    const box = document.getElementById('newCatBox');
-    box.classList.toggle('show');
-    if (box.classList.contains('show')) renderCustomCatList();
+    const catName = (customCats[curType] || [])[idx]?.name;
+    if (!catName) return;
+    if (!confirm('"' + catName + '" 카테고리를 삭제할까요?')) return;
+    customCats[curType].splice(idx, 1);
+    persistCats();
+    buildCatSelect(curType);
+    renderLedger();
+    showToast('카테고리가 삭제됐어요');
   }
 }
+function toggleNewCat() {
+  const box = document.getElementById('newCatBox');
+  box.classList.toggle('show');
+}
 function saveNewCat() {
-  // 비로그인 전용 inline 추가
   const name = document.getElementById('ncName').value.trim();
-  if (!name) { showToast('카테고리 이름을 입력해주세요'); return; }
-  if (!customCats[curType]) customCats[curType] = [];
-  if (customCats[curType].find(c => c.name === name)) { showToast('이미 있는 카테고리예요'); return; }
-  customCats[curType].push({ emoji: selectedCatIcon.lu, lu: selectedCatIcon.lu, bg: selectedCatIcon.bg, name });
-  // 동적 아이콘 맵에 등록
-  CAT_ICON_MAP[name] = { lu: selectedCatIcon.lu, bg: selectedCatIcon.bg, c: '#fff' };
-  persistCats();
-  buildCatSelect(curType);
-  document.getElementById('fCat').value = name;
-  document.getElementById('ncName').value = '';
-  resetIconPicker();
-  document.getElementById('newCatBox').classList.remove('show');
+  if (!name) { showToast(tr('toast.catEmptyName')); return; }
+  const icon = selectedCatIcon.lu + '|' + selectedCatIcon.bg;
+
+  if (IS_LOGGED_IN) {
+    // 로그인: 이미 있는지 확인
+    const existing = [...(dbCats[curType]||[])];
+    if (existing.find(c => c.name === name)) { showToast(tr('toast.catDuplicate')); return; }
+    // 로컬에 임시 추가
+    CAT_ICON_MAP[name] = { lu: selectedCatIcon.lu, bg: selectedCatIcon.bg, c: '#fff' };
+    const tempId = 'tmp_' + Date.now();
+    if (!Array.isArray(dbCats[curType])) dbCats[curType] = [];
+    dbCats[curType] = [...dbCats[curType], { id: tempId, name, icon, type: curType }];
+    buildCatSelect(curType);
+    document.getElementById('fCat').value = name;
+    document.getElementById('ncName').value = '';
+    resetIconPicker();
+    document.getElementById('newCatBox').classList.remove('show');
+    showToast(tr('toast.catAdded'));
+    // 서버 저장
+    const fd = new FormData();
+    fd.append('name', name); fd.append('icon', icon); fd.append('type', curType);
+    fetch('../api/?action=categories_add', { method:'POST', body:fd, credentials:'same-origin' })
+      .then(r => r.json())
+      .then(res => {
+        if (res.status === 'ok') {
+          if (Array.isArray(res.categories) && res.categories.length > 0) {
+            dbCats.expense = res.categories.filter(c => c.type === 'expense');
+            dbCats.income  = res.categories.filter(c => c.type === 'income');
+          } else {
+            const item = (dbCats[curType]||[]).find(c => c.id === tempId);
+            if (item && res.id) item.id = res.id;
+          }
+          buildCatSelect(curType);
+        }
+      }).catch(() => {});
+  } else {
+    if (!customCats[curType]) customCats[curType] = [];
+    if (customCats[curType].find(c => c.name === name)) { showToast(tr('toast.catDuplicate')); return; }
+    customCats[curType].push({ emoji: selectedCatIcon.lu, lu: selectedCatIcon.lu, bg: selectedCatIcon.bg, name });
+    CAT_ICON_MAP[name] = { lu: selectedCatIcon.lu, bg: selectedCatIcon.bg, c: '#fff' };
+    persistCats();
+    buildCatSelect(curType);
+    document.getElementById('fCat').value = name;
+    document.getElementById('ncName').value = '';
+    resetIconPicker();
+    document.getElementById('newCatBox').classList.remove('show');
+    showToast(tr('toast.catAdded'));
+  }
 }
 
 // ── 사진 ─────────────────────────────────────────────────────
@@ -4714,6 +4881,45 @@ function loadDbCats(callback) {
     }).catch(() => { if (callback) callback(); });
 }
 
+// ── 통화 모달 ─────────────────────────────────────────────────
+function renderCurrencyGrid(q) {
+  const cur = getCurrCode();
+  const kw = (q || '').trim().toLowerCase();
+  const list = kw
+    ? CURRENCY_LIST.filter(c => c.code.toLowerCase().includes(kw) || c.name.toLowerCase().includes(kw) || c.symbol.toLowerCase().includes(kw))
+    : CURRENCY_LIST;
+  const grid = document.getElementById('currencyGrid');
+  if (!list.length) {
+    grid.innerHTML = `<div style="text-align:center;padding:32px;color:#9e9e9e;font-size:13px">검색 결과 없음</div>`;
+    return;
+  }
+  grid.innerHTML = list.map((c, i) => `
+    <div onclick="setCurrency('${c.code}','${c.symbol}','${c.name}')"
+      style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;cursor:pointer;${i>0?'border-top:1px solid #f0f0f0':''}${c.code===cur?';background:#f5f7ff':''}">
+      <span style="font-size:15px;color:#222;font-weight:${c.code===cur?'600':'400'}">${c.name} ( ${c.symbol} )</span>
+      <span style="font-size:14px;font-weight:700;color:${c.code===cur?'#364A6D':'#9e9e9e'}">${c.code}</span>
+    </div>`).join('');
+}
+function openCurrencyModal() {
+  const inp = document.getElementById('currencySearch');
+  if (inp) inp.value = '';
+  renderCurrencyGrid('');
+  document.getElementById('currencyModal').classList.add('show');
+  setTimeout(() => { if (inp) inp.focus(); }, 100);
+}
+function closeCurrencyModal() {
+  document.getElementById('currencyModal').classList.remove('show');
+}
+function setCurrency(code, symbol, name) {
+  localStorage.setItem(CURRENCY_SK, JSON.stringify({code, symbol, name}));
+  const rowVal = document.getElementById('currencyRowValue');
+  if (rowVal) rowVal.textContent = symbol + ' ' + code;
+  closeCurrencyModal();
+  showToast('통화가 변경됐어요');
+  renderLedger();
+  if (document.getElementById('pane-stats')?.classList.contains('active')) renderStats();
+}
+
 // ── 다국어 ───────────────────────────────────────────────────
 const LANG_SK = 'app_lang';
 const LANG_CODE_MAP = {'한국어':'ko','영어':'en','일본어':'ja','중국어':'zh','스페인어':'es'};
@@ -5491,6 +5697,8 @@ function applyLang() {
   if (rowVal) rowVal.textContent = trLang(name);
   const fszVal = document.getElementById('fontSizeRowValue');
   if (fszVal) { const fv = localStorage.getItem('design_fontsize')||'보통'; fszVal.textContent = trFontSize(fv); }
+  const currVal = document.getElementById('currencyRowValue');
+  if (currVal) { const sym = getCurrSymbol(); const code = getCurrCode(); currVal.textContent = sym + ' ' + code; }
 }
 function fmtYearMonth(y, m) {
   const lang = localStorage.getItem(LANG_SK) || '한국어';
