@@ -1089,15 +1089,15 @@ body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C;
   </div>
   <div class="sum-cols" id="sumCols">
     <div class="sum-col">
-      <div class="sum-col-label">수입</div>
+      <div class="sum-col-label" data-i18n="lbl.income">수입</div>
       <div class="sum-col-value sum-income" id="sumInc">₩0</div>
     </div>
     <div class="sum-col">
-      <div class="sum-col-label">지출</div>
+      <div class="sum-col-label" data-i18n="lbl.expense">지출</div>
       <div class="sum-col-value sum-expense" id="sumExp">₩0</div>
     </div>
     <div class="sum-col">
-      <div class="sum-col-label">잔액</div>
+      <div class="sum-col-label" data-i18n="lbl.balance">잔액</div>
       <div class="sum-col-value" id="sumBal">₩0</div>
     </div>
   </div>
@@ -1124,8 +1124,8 @@ body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C;
 <div class="tab-pane" id="pane-stats">
   <!-- 지출/수입 토글 -->
   <div class="stats-type-toggle">
-    <button id="st-expense" class="st-btn on expense" onclick="setStatsType('expense')">지출</button>
-    <button id="st-income"  class="st-btn income"     onclick="setStatsType('income')">수입</button>
+    <button id="st-expense" class="st-btn on expense" onclick="setStatsType('expense')" data-i18n="lbl.expense">지출</button>
+    <button id="st-income"  class="st-btn income"     onclick="setStatsType('income')" data-i18n="lbl.income">수입</button>
   </div>
   <!-- 도넛 차트 -->
   <div class="donut-section" id="donutSection">
@@ -1227,28 +1227,34 @@ body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C;
         <span class="me-subpage-title">앱 설정</span>
       </div>
       <div class="me-section">
-        <div class="me-section-title">기록 관리</div>
+        <div class="me-section-title" data-i18n="section.records">기록 관리</div>
         <div class="me-row" onclick="openFixedModal()">
-          <span class="me-row-ico"><i data-lucide="pin"></i></span><span class="me-row-label">고정 지출 설정</span><span class="me-row-arrow">›</span>
+          <span class="me-row-ico"><i data-lucide="pin"></i></span><span class="me-row-label" data-i18n="row.fixedExpense">고정 지출 설정</span><span class="me-row-arrow">›</span>
         </div>
         <div class="me-row" onclick="openCatEditModal()">
-          <span class="me-row-ico"><i data-lucide="tag"></i></span><span class="me-row-label">카테고리 편집</span><span class="me-row-arrow">›</span>
+          <span class="me-row-ico"><i data-lucide="tag"></i></span><span class="me-row-label" data-i18n="row.categories">카테고리 편집</span><span class="me-row-arrow">›</span>
         </div>
         <div class="me-row" onclick="openPayEditModal()">
-          <span class="me-row-ico"><i data-lucide="credit-card"></i></span><span class="me-row-label">결제수단 편집</span><span class="me-row-arrow">›</span>
+          <span class="me-row-ico"><i data-lucide="credit-card"></i></span><span class="me-row-label" data-i18n="row.payments">결제수단 편집</span><span class="me-row-arrow">›</span>
         </div>
       </div>
       <div class="me-section">
-        <div class="me-section-title">앱 환경</div>
+        <div class="me-section-title" data-i18n="section.environment">앱 환경</div>
         <div class="me-row" onclick="openNotifModal()">
-          <span class="me-row-ico"><i data-lucide="bell"></i></span><span class="me-row-label">푸시 알림</span><span class="me-row-value" id="notifRowValue">꺼짐</span><span class="me-row-arrow">›</span>
+          <span class="me-row-ico"><i data-lucide="bell"></i></span><span class="me-row-label" data-i18n="row.notifications">푸시 알림</span><span class="me-row-value" id="notifRowValue">꺼짐</span><span class="me-row-arrow">›</span>
         </div>
         <div class="me-row" onclick="toggleDarkMode()">
-          <span class="me-row-ico"><i data-lucide="moon"></i></span><span class="me-row-label">다크 모드</span>
+          <span class="me-row-ico"><i data-lucide="moon"></i></span><span class="me-row-label" data-i18n="row.theme">다크 모드</span>
           <label class="toggle-wrap" style="margin-left:auto;pointer-events:none">
             <input type="checkbox" class="toggle-input" id="darkToggle" style="pointer-events:none">
             <span class="toggle-slider"></span>
           </label>
+        </div>
+        <div class="me-row" onclick="openFontSizeModal ? openFontSizeModal() : null">
+          <span class="me-row-ico"><i data-lucide="type"></i></span><span class="me-row-label" data-i18n="row.fontSize">글꼴 크기</span><span class="me-row-value" id="fontSizeRowValue">보통</span><span class="me-row-arrow">›</span>
+        </div>
+        <div class="me-row" onclick="openLangModal()">
+          <span class="me-row-ico"><i data-lucide="globe"></i></span><span class="me-row-label" data-i18n="row.language">언어</span><span class="me-row-value" id="langRowValue">한국어</span><span class="me-row-arrow">›</span>
         </div>
       </div>
     </div>
@@ -1260,15 +1266,15 @@ body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C;
         <span class="me-subpage-title">데이터</span>
       </div>
       <div class="me-section">
-        <div class="me-section-title">데이터 관리</div>
+        <div class="me-section-title" data-i18n="section.dataManagement">데이터 관리</div>
         <div class="me-row" onclick="openBackupModal()">
-          <span class="me-row-ico"><i data-lucide="cloud"></i></span><span class="me-row-label">백업 및 복구</span><span class="me-row-arrow">›</span>
+          <span class="me-row-ico"><i data-lucide="cloud"></i></span><span class="me-row-label" data-i18n="row.backup">백업 및 복구</span><span class="me-row-arrow">›</span>
         </div>
         <div class="me-row" onclick="openExportModal()">
-          <span class="me-row-ico"><i data-lucide="download"></i></span><span class="me-row-label">엑셀로 내보내기</span><span class="me-row-arrow">›</span>
+          <span class="me-row-ico"><i data-lucide="download"></i></span><span class="me-row-label" data-i18n="row.export">엑셀로 내보내기</span><span class="me-row-arrow">›</span>
         </div>
         <div class="me-row danger" onclick="doDeleteAll()">
-          <span class="me-row-ico"><i data-lucide="trash-2"></i></span><span class="me-row-label">전체 내역 삭제</span><span class="me-row-arrow">›</span>
+          <span class="me-row-ico"><i data-lucide="trash-2"></i></span><span class="me-row-label" data-i18n="row.deleteAll">전체 내역 삭제</span><span class="me-row-arrow">›</span>
         </div>
       </div>
     </div>
@@ -1528,6 +1534,23 @@ body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C;
 </div>
 
 <!-- ── 도움말 모달 ── -->
+<!-- ── 언어 선택 모달 ── -->
+<div class="overlay" id="langModal" onclick="if(event.target===this)closeLangModal()">
+  <div class="modal" style="max-width:320px">
+    <div class="modal-hd">
+      <span class="modal-hd-title" data-i18n="row.language">언어</span>
+      <button class="modal-x" onclick="closeLangModal()">×</button>
+    </div>
+    <div style="padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div id="langOpt한국어" onclick="setLang('한국어')" style="border:2px solid #e0e0e0;border-radius:12px;padding:14px;text-align:center;cursor:pointer;font-size:14px;font-weight:600">🇰🇷 한국어</div>
+      <div id="langOpt영어"  onclick="setLang('영어')"  style="border:2px solid #e0e0e0;border-radius:12px;padding:14px;text-align:center;cursor:pointer;font-size:14px;font-weight:600">🇺🇸 English</div>
+      <div id="langOpt일본어" onclick="setLang('일본어')" style="border:2px solid #e0e0e0;border-radius:12px;padding:14px;text-align:center;cursor:pointer;font-size:14px;font-weight:600">🇯🇵 日本語</div>
+      <div id="langOpt중국어" onclick="setLang('중국어')" style="border:2px solid #e0e0e0;border-radius:12px;padding:14px;text-align:center;cursor:pointer;font-size:14px;font-weight:600">🇨🇳 中文</div>
+      <div id="langOpt스페인어" onclick="setLang('스페인어')" style="border:2px solid #e0e0e0;border-radius:12px;padding:14px;text-align:center;cursor:pointer;font-size:14px;font-weight:600;grid-column:span 2">🇪🇸 Español</div>
+    </div>
+  </div>
+</div>
+
 <div class="overlay" id="helpModal" onclick="if(event.target===this)closeHelpModal()">
   <div class="modal">
     <div class="modal-hd">
@@ -1675,8 +1698,8 @@ body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C;
       <button class="modal-x" onclick="closeModal()">×</button>
     </div>
     <div class="type-row">
-      <button class="type-t on e" id="typeE" onclick="setType('expense')">지출</button>
-      <button class="type-t"      id="typeI" onclick="setType('income')">수입</button>
+      <button class="type-t on e" id="typeE" onclick="setType('expense')" data-i18n="lbl.expense">지출</button>
+      <button class="type-t"      id="typeI" onclick="setType('income')" data-i18n="lbl.income">수입</button>
     </div>
     <div class="mform">
       <label class="mf-label">금액 (원)</label>
@@ -1957,8 +1980,8 @@ function txRowHtml(t, extraOnclick) {
   return `<div class="tx-row" onclick="${extraOnclick||''}openTxAction('${t.id}')">
     <div class="tx-icon" style="background:${ibg}">${getIconHtml(t.category)}</div>
     <div class="tx-info">
-      <div class="tx-desc">${esc(t.description||t.category)}</div>
-      <div class="tx-cat">${esc(t.category)}${t.payment?` · ${esc(t.payment)}`:''}</div>
+      <div class="tx-desc">${t.description ? esc(t.description) : dn(t.category, CAT_NAME_MAP)}</div>
+      <div class="tx-cat">${dn(t.category, CAT_NAME_MAP)}${t.payment?` · ${dn(t.payment, PAY_NAME_MAP)}`:''}</div>
     </div>
     <div class="tx-right">
       ${thumb}
@@ -2246,29 +2269,34 @@ function renderLedger() {
 
   if (!list.length) {
     document.getElementById('txList').innerHTML =
-      '<div class="empty-msg">이번 달 내역이 없어요<br>아래 <b>＋</b> 버튼으로 추가하세요!</div>';
+      `<div class="empty-msg">${tr('ledger.empty')}</div>`;
+    applyLang();
     return;
   }
   const grouped = {};
   list.forEach(t => (grouped[t.date]=grouped[t.date]||[]).push(t));
   const dates = Object.keys(grouped).sort().reverse();
+  const DOW_KEYS = ['day.sun','day.mon','day.tue','day.wed','day.thu','day.fri','day.sat'];
   document.getElementById('txList').innerHTML =
-    '<div class="tx-section-title">거래 내역</div>' +
+    `<div class="tx-section-title" data-i18n="section.txHistory">${tr('section.txHistory')}</div>` +
     dates.map(date=>{
     const rows = grouped[date];
     const dExp = rows.filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
     const dInc = rows.filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
     const [,,dd] = date.split('-');
-    const dow = ['일','월','화','수','목','금','토'][new Date(date).getDay()];
+    const dowIdx = new Date(date).getDay();
+    const dow = tr(DOW_KEYS[dowIdx]);
+    const dateLabel = tr('fmt.dateGroup').replace('{d}', parseInt(dd)).replace('{dow}', dow);
     let dayTotal='';
     if (dInc) dayTotal+=`<span style="color:#93C5FD">+${fmt(dInc)}</span> `;
     if (dExp) dayTotal+=`<span style="color:#FCA5A5">-${fmt(dExp)}</span>`;
     return `<div class="date-group">
-      <div class="date-header"><span>${parseInt(dd)}일 (${dow})</span><span>${dayTotal}</span></div>
+      <div class="date-header"><span>${dateLabel}</span><span>${dayTotal}</span></div>
       ${rows.map(t=>txRowHtml(t)).join('')}
     </div>`;
   }).join('') + '';
   refreshIcons();
+  applyLang();
 }
 
 // ── 통계 ─────────────────────────────────────────────────────
@@ -2357,8 +2385,8 @@ function getStatsPeriodLabel() {
 }
 
 function renderStats() {
-  const typeLabel = statsType === 'expense' ? '지출' : '수입';
-  const grpLabel  = statsGroupBy === 'category' ? '카테고리' : '결제수단';
+  const typeLabel = statsType === 'expense' ? tr('lbl.expense') : tr('lbl.income');
+  const grpLabel  = statsGroupBy === 'category' ? tr('lbl.category') : tr('lbl.payment');
   const palette   = statsType === 'expense' ? COLORS_EXPENSE : COLORS_INCOME;
   const amtColor  = statsType === 'expense' ? '#EF4444' : '#3B82F6';
 
@@ -2377,14 +2405,14 @@ function renderStats() {
 
   // 헤더 라벨 동기화
   setMonthLabel();
-  document.getElementById('donutCenterLabel').textContent = '총 ' + typeLabel;
-  document.getElementById('rankingHeaderTitle').textContent = `${grpLabel}별 ${typeLabel} 순위`;
+  document.getElementById('donutCenterLabel').textContent = tr('stats.totalLabel').replace('{type}', typeLabel);
+  document.getElementById('rankingHeaderTitle').textContent = tr('stats.rankFmt').replace('{group}', grpLabel).replace('{type}', typeLabel);
 
   if (!sorted.length) {
     emptyEl.innerHTML = `<div class="stats-empty-state">
       <div class="stats-empty-icon">📊</div>
-      <div class="stats-empty-title">이 기간에는 내역이 없어요!</div>
-      <div class="stats-empty-sub">${getStatsHeaderLabel()} 기간의<br>${typeLabel} 내역을 추가해 보세요</div>
+      <div class="stats-empty-title">${tr('stats.noData')}</div>
+      <div class="stats-empty-sub">${tr('stats.noDataSub').replace('{period}', getStatsHeaderLabel()).replace('{type}', typeLabel)}</div>
     </div>`;
     emptyEl.style.display    = 'block';
     donutSec.style.display   = 'none';
@@ -2398,7 +2426,7 @@ function renderStats() {
 
   document.getElementById('donutCenterAmt').textContent = fmt(total);
 
-  const labels  = sorted.map(([k]) => k);
+  const labels  = sorted.map(([k]) => statsGroupBy==='payment' ? dn(k, PAY_NAME_MAP) : dn(k, CAT_NAME_MAP));
   const amounts = sorted.map(([,v]) => v);
   const colors  = sorted.map(([k]) => getIconBg(k));
 
@@ -2472,7 +2500,7 @@ function renderStats() {
       <div class="rank-dot" style="background:${color}"></div>
       <div class="rank-icon" style="display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;background:${getIconBg(k)}">${getIconHtml(k,14)}</div>
       <div class="rank-info">
-        <div class="rank-name">${esc(k)}</div>
+        <div class="rank-name">${statsGroupBy==='payment' ? dn(k, PAY_NAME_MAP) : dn(k, CAT_NAME_MAP)}</div>
         <div class="rank-bar-wrap"><div class="rank-bar" style="width:${pct}%;background:${color}"></div></div>
       </div>
       <div class="rank-right">
@@ -2512,12 +2540,12 @@ function openGroupDetail(key) {
   const total = rows.reduce((s,t) => s+t.amount, 0);
   const _ck = statsGroupBy === 'payment' ? '기타' : key;
   document.getElementById('catdetTitle').innerHTML =
-    `<span style="display:inline-flex;align-items:center;gap:8px">${getIconHtml(_ck,16)} ${esc(key)}</span>
+    `<span style="display:inline-flex;align-items:center;gap:8px">${getIconHtml(_ck,16)} ${statsGroupBy==='payment' ? dn(key, PAY_NAME_MAP) : dn(key, CAT_NAME_MAP)}</span>
      <span style="font-size:14px;font-weight:400;opacity:.8;margin-left:8px">${fmtH(total)}</span>`;
   refreshIcons();
   document.getElementById('catdetBody').innerHTML = rows.length
     ? rows.map(t => txRowHtml(t)).join('')
-    : '<div class="search-empty">내역이 없어요</div>';
+    : `<div class="search-empty">${tr('empty.noRecords')}</div>`;
   document.getElementById('catdetOverlay').classList.add('show');
 }
 
@@ -2710,7 +2738,7 @@ function renderReport() {
   if (reportWidgets.length === 0) {
     html = `<div class="report-empty">
       <div class="report-empty-ico">📭</div>
-      <div class="report-empty-msg">아직 분석 항목이 없어요.<br>아래 토글을 켜서 추가해보세요! ✨</div>
+      <div class="report-empty-msg">${tr('report.empty')}</div>
     </div>`;
   } else {
     reportWidgets.forEach(id => { if (widgetMap[id]) html += widgetMap[id](); });
@@ -2719,6 +2747,7 @@ function renderReport() {
 
   wrap.innerHTML = html;
   renderReportEditBar();
+  applyLang();
 
   // 데이터 채우기
   const prev     = prevMonth(curMonth);
@@ -3447,6 +3476,16 @@ function selectCatOption(name) {
 // ── 커스텀 카테고리 (로그인 시 catEdit 모달로, 비로그인 시 inline) ──
 // ── 결제수단 추가 ─────────────────────────────────────────────
 const DEFAULT_PAYS = ['현금','신용카드','체크카드','계좌이체','카카오페이','네이버페이','토스','기타'];
+const CAT_NAME_MAP = {
+  '식비':'cat.dining','교통':'cat.transport','쇼핑':'cat.shopping','의료':'cat.medical',
+  '문화':'cat.culture','통신':'cat.telecom','주거':'cat.housing','기타':'cat.other',
+  '급여':'cat.salary','용돈':'cat.allowance','기타수입':'cat.otherIncome',
+};
+const PAY_NAME_MAP = {
+  '현금':'pay.cash','신용카드':'pay.credit','체크카드':'pay.debit','계좌이체':'pay.transfer',
+  '카카오페이':'pay.kakao','네이버페이':'pay.naver','토스':'pay.toss','기타':'pay.other','자동':'pay.auto',
+};
+function dn(name, map) { const k = map[name]; return k ? tr(k) : name; }
 const CUSTOM_PAYS_SK = 'custom_pays';
 let customPays = JSON.parse(localStorage.getItem(CUSTOM_PAYS_SK) || '[]');
 
@@ -3591,6 +3630,23 @@ const INCOME_ICON_OPTIONS = [
 let selectedCatIcon = { lu: 'package', bg: '#607D8B' };
 let selectedPayIcon = { lu: 'credit-card', bg: '#7C3AED' };
 let _iconPickerMode = 'cat'; // 'cat' | 'pay'
+const ICON_LABEL_TR = {
+  '음식':'ico.food','쇼핑':'ico.shopping','교통':'ico.transport','자동차':'ico.car',
+  '주거':'ico.housing','건강':'ico.health','통신':'ico.telecom','문화':'ico.culture',
+  '급여':'ico.salary','선물':'ico.gift','여행':'ico.travel','카페':'ico.cafe',
+  '술':'ico.alcohol','교육':'ico.education','스포츠':'ico.sports','반려동물':'ico.pet',
+  '수리':'ico.repair','전자제품':'ico.electronics','의류':'ico.clothing','아동':'ico.child',
+  '채소':'ico.grocery','뷰티':'ico.beauty','사교':'ico.social','저축':'ico.savings',
+  '기부':'ico.donation','담배':'ico.smoking','기타수입':'ico.otherIncome','기타':'ico.other',
+  '신용카드':'ico.credit','현금':'ico.cash','계좌이체':'ico.transfer','지갑':'ico.wallet',
+  '간편결제':'ico.easypay','QR결제':'ico.qr','페이':'ico.pay','포인트':'ico.points',
+  '상품권':'ico.voucher','은행':'ico.bank','저금통':'ico.piggyBank','동전':'ico.coins',
+  '자동이체':'ico.autoTransfer',
+  '용돈':'ico.allowance','투자':'ico.invest','이자':'ico.interest','저금':'ico.save',
+  '부수입':'ico.sideIncome','환급':'ico.refund','보너스':'ico.bonus',
+  '정기수입':'ico.regularIncome','포상':'ico.reward',
+};
+function trIconLabel(label) { const k = ICON_LABEL_TR[label]; return k ? tr(k) : label; }
 
 function openIconPicker(mode) {
   _iconPickerMode = mode || 'cat';
@@ -3605,7 +3661,7 @@ function openIconPicker(mode) {
       <div class="icon-opt-circle" style="background:${o.bg}">
         <i data-lucide="${o.lu}" style="width:22px;height:22px;color:#fff;stroke-width:1.75"></i>
       </div>
-      <div class="icon-opt-label">${o.label}</div>
+      <div class="icon-opt-label">${trIconLabel(o.label)}</div>
     </div>`).join('');
   document.getElementById('iconPickerOverlay').classList.add('show');
   lucide.createIcons();
@@ -3830,14 +3886,14 @@ function closeTxaOverlay(e) {
 function showTxDetail() {
   const t = txs.find(x => x.id === activeTxId);
   if (!t) return;
-  const typeLabel = t.type==='expense'?'지출':'수입';
+  const typeLabel = t.type==='expense' ? tr('lbl.expense') : tr('lbl.income');
   document.getElementById('detailBody').innerHTML = `
-    <div class="detail-row"><span class="detail-key">유형</span><span class="detail-val" style="color:${t.type==='expense'?'#EF4444':'#3B82F6'}">${typeLabel}</span></div>
-    <div class="detail-row"><span class="detail-key">금액</span><span class="detail-val" style="color:${t.type==='expense'?'#EF4444':'#3B82F6'}">${t.type==='income'?'+':'−'}${fmtH(t.amount)}</span></div>
-    <div class="detail-row"><span class="detail-key">카테고리</span><span class="detail-val" style="display:flex;align-items:center;gap:6px"><i class="${_icMeta(t.category).fa}" style="color:${_icMeta(t.category).c}"></i>${esc(t.category)}</span></div>
-    <div class="detail-row"><span class="detail-key">내용</span><span class="detail-val">${esc(t.description||'-')}</span></div>
-    <div class="detail-row"><span class="detail-key">결제수단</span><span class="detail-val">${esc(t.payment||'-')}</span></div>
-    <div class="detail-row"><span class="detail-key">날짜</span><span class="detail-val">${t.date}</span></div>
+    <div class="detail-row"><span class="detail-key">${tr('lbl.type')}</span><span class="detail-val" style="color:${t.type==='expense'?'#EF4444':'#3B82F6'}">${typeLabel}</span></div>
+    <div class="detail-row"><span class="detail-key">${tr('lbl.amount')}</span><span class="detail-val" style="color:${t.type==='expense'?'#EF4444':'#3B82F6'}">${t.type==='income'?'+':'−'}${fmtH(t.amount)}</span></div>
+    <div class="detail-row"><span class="detail-key">${tr('lbl.category')}</span><span class="detail-val" style="display:flex;align-items:center;gap:6px"><i class="${_icMeta(t.category).fa}" style="color:${_icMeta(t.category).c}"></i>${dn(t.category, CAT_NAME_MAP)}</span></div>
+    <div class="detail-row"><span class="detail-key">${tr('lbl.content')}</span><span class="detail-val">${esc(t.description||'-')}</span></div>
+    <div class="detail-row"><span class="detail-key">${tr('lbl.payment')}</span><span class="detail-val">${dn(t.payment, PAY_NAME_MAP) || '-'}</span></div>
+    <div class="detail-row"><span class="detail-key">${tr('lbl.date')}</span><span class="detail-val">${t.date}</span></div>
     ${(()=>{ const ph=Array.isArray(t.photos)?t.photos:(t.photo?[t.photo]:[]); return ph.length?buildCarousel(ph,'det'):''; })()}
   `;
   document.getElementById('txaOverlay').classList.remove('show');
@@ -4658,6 +4714,812 @@ function loadDbCats(callback) {
     }).catch(() => { if (callback) callback(); });
 }
 
+// ── 다국어 ───────────────────────────────────────────────────
+const LANG_SK = 'app_lang';
+const LANG_CODE_MAP = {'한국어':'ko','영어':'en','일본어':'ja','중국어':'zh','스페인어':'es'};
+const TRANSLATIONS = {
+  ko: {
+    'app.title':'마이가계부','tab.ledger':'가계부','tab.stats':'통계','tab.report':'분석','tab.me':'나',
+    'grid.settings':'앱 설정','grid.upgrade':'업그레이드','grid.help':'도움말','grid.data':'데이터','grid.contact':'문의하기',
+    'page.appSettings':'앱 설정','page.data':'데이터',
+    'section.records':'기록 관리','section.environment':'앱 환경','section.dataManagement':'데이터 관리',
+    'row.fixedExpense':'고정 지출 설정','row.categories':'카테고리 편집','row.payments':'결제수단 편집',
+    'row.currency':'기본 통화','row.notifications':'푸시 알림','row.theme':'테마','row.fontSize':'글꼴 크기','row.language':'언어',
+    'row.backup':'백업 및 복구','row.export':'엑셀로 내보내기','row.deleteAll':'전체 내역 삭제',
+    'lbl.income':'수입','lbl.expense':'지출','lbl.balance':'잔액','lbl.category':'카테고리','lbl.payment':'결제수단',
+    'lbl.type':'유형','lbl.amount':'금액','lbl.content':'내용','lbl.date':'날짜','lbl.other':'기타','lbl.cntFmt':'{n}건','lbl.user':'사용자',
+    'day.sun':'일','day.mon':'월','day.tue':'화','day.wed':'수','day.thu':'목','day.fri':'금','day.sat':'토',
+    'period.week':'주','period.month':'월','period.year':'년',
+    'stats.rankTitle':'카테고리별 지출 순위',
+    'form.amount':'금액 (원)','form.desc':'내용 / 메모','form.descPh':'예) 편의점, 버스','form.date':'날짜',
+    'form.catName':'카테고리 이름','form.payName':'결제수단 이름','form.catSelect':'선택',
+    'btn.save':'저장','btn.add':'추가','btn.close':'닫기',
+    'search.ph':'내용, 카테고리, 금액 검색...','search.empty':'검색어를 입력하세요',
+    'modal.addTx':'내역 추가','modal.editTx':'내역 수정',
+    'section.txHistory':'거래 내역',
+    'ledger.empty':'이번 달 내역이 없어요<br>아래 <b>＋</b> 버튼으로 추가하세요!',
+    'widget.champ':'최고 지출','widget.dow':'요일별 소비 패턴','widget.survival':'목표 예산',
+    'widget.top3':'카테고리 TOP 3','widget.mbti':'나의 소비 MBTI',
+    'widget.feelOk':'만족해요','widget.feelRegret':'아까워요',
+    'widget.survNotSet':'미설정','widget.survUnit':'원','widget.survTotal':'변동 지출 합계','widget.calculating':'계산 중...',
+    'stats.totalLabel':'총 {type}','stats.rankFmt':'{group}별 {type} 순위',
+    'report.monthExpense':'{m}월 지출','report.noExpense':'이번 달 지출 내역이 없어요',
+    'report.champPct':'이번 달 총 지출의 {pct}가 이 한 번의 결제에서!',
+    'report.addWidget':'항목 추가',
+    'wdef.insight':'이번 달 요약','wdef.champion':'최고 지출 항목','wdef.dayofweek':'요일별 소비 패턴',
+    'wdef.survival':'목표 예산','wdef.mbti':'나의 소비 MBTI','wdef.top3cats':'카테고리 TOP 3',
+    'me.streak':'🔥 연속 기록 {n}일','me.streakZero':'아직 기록을 시작해봐요!',
+    'badge.guard':'자산 수비대 🛡️','badge.explorer':'절약 탐험가 🧭','badge.sprout':'기록 새싹 🌱',
+    'cat.dining':'식비','cat.transport':'교통','cat.shopping':'쇼핑','cat.medical':'의료',
+    'cat.culture':'문화','cat.telecom':'통신','cat.housing':'주거','cat.other':'기타',
+    'cat.salary':'급여','cat.allowance':'용돈','cat.otherIncome':'기타수입',
+    'pay.cash':'현금','pay.credit':'신용카드','pay.debit':'체크카드','pay.transfer':'계좌이체',
+    'pay.kakao':'카카오페이','pay.naver':'네이버페이','pay.toss':'토스','pay.other':'기타','pay.auto':'자동',
+    'stats.yearTotal':'{y}년 전체',
+    'fmt.dateGroup':'{d}일 ({dow})',
+    'empty.noRecords':'내역이 없어요',
+    'stats.noData':'이 기간에는 내역이 없어요!',
+    'stats.noDataSub':'{period} 기간의<br>{type} 내역을 추가해 보세요',
+    'wpop.moveUp':'↑ 위로 이동','wpop.moveDown':'↓ 아래로 이동','wpop.delete':'🗑️ 삭제',
+    'toast.feelOk':'좋은 선택이었어요! 😊','toast.feelRegret':'다음엔 조금만 참아봐요! 💪',
+    'report.empty':'아직 분석 항목이 없어요.<br>아래 토글을 켜서 추가해보세요! ✨',
+    'surv.thisWeek':'이번 주','surv.lastWeek':'지난 주','surv.weeksAgo':'{n}주 전',
+    'surv.thisYear':'올해','surv.lastYear':'작년','surv.yearFmt':'{y}년',
+    'surv.thisMonth':'이번 달','surv.lastMonth':'지난 달',
+    'surv.weekRange':'{m1}/{d1}(월) ~ {m2}/{d2}(일)',
+    'surv.budgetPct':'지출 {pct}%','surv.noGoal':'목표 미설정','surv.notSet':'미설정',
+    'surv.weekNoGoal':'이 주는 목표가 설정되지 않았어요',
+    'surv.totalVar':'변동 지출 합계 (고정비 제외)',
+    'surv.danger':'🚨 예산 위험! 조금만 더 아껴써요',
+    'surv.remaining':'남은 예산','surv.over':'초과 지출',
+    'surv.msgNoGoal':'{period}은 목표 예산이 없었어요 📭',
+    'surv.msgEnterGoal':'목표 예산을 입력하면<br>하루 가용 금액을 알려드려요 💡',
+    'surv.msgOver':'{period} 목표를 <b>{amt}</b> 초과했어요 😰',
+    'surv.msgSaved':'{period} 예산 <b>{amt}</b> 절약했어요! 🎉',
+    'surv.msgDanger':'남은 <b>{days}일</b> 동안 매일 <b>{daily}</b>씩만 써야 해요 🚨',
+    'surv.msgOk':'남은 <b>{days}일</b> 동안 매일 <b>{daily}</b>씩 사용 가능해요! 💰',
+    'insight.tagStart':'#기록시작','insight.tagFirst':'#이번달첫기록','insight.tagEqual':'#균형유지',
+    'insight.tagThrifty':'#알뜰살뜰','insight.tagSaved':'#절약성공','insight.tagSaving':'#절약중',
+    'insight.tagOverspend':'#과소비경보','insight.tagUpBig':'#지출급증','insight.tagUpWarn':'#지출주의','insight.tagUpSmall':'#소폭증가',
+    'insight.noData':'{name}님, 아직 이번 달 지출이 없어요!',
+    'insight.noDataSub':'오늘부터 소비를 기록해봐요 ✏️',
+    'insight.firstRecord':'{name}님, 이번 달은 현재까지 총 {amt}을 사용하셨네요!',
+    'insight.firstRecordSub':'지난달 데이터가 없어 증감은 다음 달부터 확인할 수 있어요 📖',
+    'insight.equal':'{name}님, 지난 달과 딱 같은 금액을 쓰셨어요.',
+    'insight.equalSub':'균형 잡힌 소비 패턴이네요.',
+    'insight.down30':'{name}님, 지난달보다 {pct}% 확 줄었어요! 절약 고수시네요 👑',
+    'insight.down30Sub':'{amt} 절약! 이대로 쭉 이어가봐요 💚',
+    'insight.down10':'{name}님, 지난달보다 {pct}% 아껴 쓰셨어요! 대단해요 👏',
+    'insight.downSmall':'{name}님, 지난달보다 {pct}% 줄었어요. 잘 하고 계세요!',
+    'insight.downSub':'{amt} 절약했어요. 이대로 쭉!',
+    'insight.up50':'{name}님, 지출이 지난달보다 {pct}% 급증했어요! 지갑이 비상이에요 😰',
+    'insight.up30':'{name}님, 이번 달 지출이 지난달보다 {pct}% 늘었어요. 지갑이 많이 얇아졌네요 😅',
+    'insight.up10':'{name}님, 이번 달은 지난달보다 {pct}% 더 쓰셨어요. 조금만 더 조절해봐요! 💪',
+    'insight.upSmall':'{name}님, 지난달보다 {pct}% 소폭 늘었어요. 아직 괜찮아요!',
+    'insight.upSub':'지난달보다 {amt} 더 지출했어요.',
+    'export.all':'전체',
+    'dow.noData':'아직 이번 달 지출 데이터가 없어요.',
+    'dow.balanced':'지출이 골고루 분포되어 있어요!',
+    'dow.peak':'이번 달 <b>{day}요일</b> 지출이 가장 많아요',
+    'dow.txCount':'총 {n}건',
+    'dow.msg.mon':'한 주의 시작부터 에너지를 많이 쓰셨네요!<br>월요병을 소비로 이겨내셨나요? 😂',
+    'dow.msg.tue':'평일의 꾸준한 소비가 쌓이고 있어요.<br>자잘한 지출만 줄여도 이번 달은 성공이에요! 🌱',
+    'dow.msg.wed':'평일의 꾸준한 소비가 쌓이고 있어요.<br>자잘한 지출만 줄여도 이번 달은 성공이에요! 🌱',
+    'dow.msg.thu':'평일의 꾸준한 소비가 쌓이고 있어요.<br>자잘한 지출만 줄여도 이번 달은 성공이에요! 🌱',
+    'dow.msg.fri':'신나는 불금! 주말의 시작과 함께 지출이 터졌네요 🍺',
+    'dow.msg.sat':'주말 FLEX 주의보! 🚨<br>예산 안에서 즐겨보는 건 어떨까요?',
+    'dow.msg.sun':'일요일 지출이 가장 커요!<br>내일부터 시작될 한 주를 위해 오늘은 조금 아껴봐요 🏠',
+    'mbti.title.eatj':'미식가형','mbti.title.shop':'트렌드세터형','mbti.title.yolo':'욜로라이프형',
+    'mbti.title.move':'무브먼트형','mbti.title.hlth':'건강제일형','mbti.title.digi':'디지털노마드형',
+    'mbti.title.home':'홈베이스형','mbti.title.none':'데이터 수집 중','mbti.title.free':'자유분방형',
+    'mbti.desc.eatj':'먹는 게 남는 거! 오늘도 맛집 탐방 중인 타입이에요. 지갑이 열리는 건 음식 앞에서뿐!',
+    'mbti.desc.shop':'쇼핑은 힐링! 눈 깜짝할 새 카트가 가득 차는 타입이에요. 오늘도 장바구니 투어 중?',
+    'mbti.desc.yolo':'경험에 아낌없이 투자! 인생은 한 번이니까요. 추억이 최고의 재테크예요!',
+    'mbti.desc.move':'항상 어딘가로 이동 중! 바쁘고 활동적인 타입이에요. 오늘도 달리는 중이죠?',
+    'mbti.desc.hlth':'건강이 최우선! 몸 관리에 투자를 아끼지 않는 타입이에요. 건강이 진짜 재산이죠!',
+    'mbti.desc.digi':'디지털 라이프의 달인! 구독 서비스 없인 못 사는 타입이에요. 오늘도 스트리밍 중?',
+    'mbti.desc.home':'집이 제일 좋아! 나만의 공간 꾸미는 데 진심인 타입이에요. 오늘도 홈카페 중?',
+    'mbti.desc.none':'이번 달 지출 내역을 추가하면 나만의 소비 MBTI가 분석돼요!',
+    'mbti.desc.free':'정해진 패턴 없이 자유롭게! 다양한 곳에 고루 지출하는 유연한 타입이에요.',
+    'mbti.budget.great':'절약 능력까지 갖춘 완벽한 소비러예요! 💪',
+    'mbti.budget.ok':'적당한 균형감각을 가진 소비러예요 👍',
+    'mbti.budget.warn':'거의 한계선! 조금만 더 아껴봐요 😅',
+    'mbti.budget.over':'예산 초과! 다음 달엔 절약 모드 고고 😰',
+    'fx.weekly':'매주 {dow}요일','fx.monthly':'매달 {d}일','fx.yearly':'매년 {m}월 {d}일',
+    'fx.pastDateMonth':'이미 지난 날짜네요! 이번 달({label}) 내역에도 지금 바로 기록할까요?',
+    'fx.pastDateYear':'이미 지난 날짜네요! 올해({m}월 {d}일) 내역에도 지금 바로 기록할까요?',
+    'toast.coming':'준비 중이에요','toast.langSet':'언어가 변경됐어요 ✓','toast.fontChanged':'글꼴 크기가 변경됐어요',
+    'toast.catDeleted':'카테고리가 삭제됐어요','toast.catEmptyName':'카테고리 이름을 입력해주세요',
+    'toast.catDuplicate':'이미 있는 카테고리예요','toast.catAdded':'카테고리가 추가됐어요 🏷️',
+    'toast.payDeleted':'결제수단이 삭제됐어요','toast.payEmptyName':'결제수단 이름을 입력해주세요',
+    'toast.payDuplicate':'이미 있는 결제수단이에요','toast.payAdded':'결제수단이 추가됐어요',
+    'toast.fxEmptyName':'항목명을 입력해주세요','toast.fxEmptyAmt':'금액을 입력해주세요',
+    'toast.fxSaved':'달력에 기록됐어요! 📌','toast.fxAdded':'고정 항목이 추가됐어요 📌',
+    'toast.fxAddFail':'추가 실패: {msg}','toast.fxError':'오류가 발생했어요. 다시 시도해주세요.',
+    'toast.fxDeleted':'고정 항목이 삭제됐어요','toast.deleted':'삭제됐어요',
+    'toast.notifSet':'매일 {time}에 리마인드를 보내드릴게요 🔔',
+    'toast.noNotifSupport':'알림을 지원하지 않는 브라우저예요',
+    'toast.backupDown':'백업 파일이 다운로드됐어요 ✅','toast.backupError':'파일을 읽을 수 없어요: {err}',
+    'toast.csvDown':'CSV 파일이 다운로드됐어요 📊',
+    'toast.allDeleted':'모든 내역이 삭제됐어요 🗑️','toast.deleteFail':'삭제에 실패했어요: {msg}',
+    'toast.serverError':'서버 오류가 발생했어요',
+    'toast.inquirySent':'문의가 접수됐어요 ✓','toast.inquiryEmpty':'제목과 내용을 입력해주세요',
+    'fx.loadingList':'불러오는 중...','fx.emptyList':'등록된 고정 항목이 없어요<br>아래에서 추가해보세요',
+    'confirm.deleteLinked':'이번 달에 이미 기록된 "{name}" 내역 {count}건도 함께 삭제할까요?\n\n취소하면 고정 항목 설정만 삭제되고 내역은 유지됩니다.',
+    'opt.selectCat':'카테고리 선택',
+    'fontsize.normal':'보통','fontsize.large':'크게','fontsize.xlarge':'아주 크게',
+    'lang.ko':'한국어','lang.en':'영어','lang.ja':'일본어','lang.zh':'중국어','lang.es':'스페인어',
+    'alert.dateRange':'시작일과 종료일을 선택해주세요.','alert.dateOrder':'종료일이 시작일보다 빠를 수 없어요.',
+    'alert.enterAmt':'금액을 입력해주세요.','alert.enterDate':'날짜를 선택해주세요.',
+    'ico.food':'음식','ico.shopping':'쇼핑','ico.transport':'교통','ico.car':'자동차',
+    'ico.housing':'주거','ico.health':'건강','ico.telecom':'통신','ico.culture':'문화',
+    'ico.salary':'급여','ico.gift':'선물','ico.travel':'여행','ico.cafe':'카페',
+    'ico.alcohol':'술','ico.education':'교육','ico.sports':'스포츠','ico.pet':'반려동물',
+    'ico.repair':'수리','ico.electronics':'전자제품','ico.clothing':'의류','ico.child':'아동',
+    'ico.grocery':'채소','ico.beauty':'뷰티','ico.social':'사교','ico.savings':'저축',
+    'ico.donation':'기부','ico.smoking':'담배','ico.otherIncome':'기타수입','ico.other':'기타',
+    'ico.credit':'신용카드','ico.cash':'현금','ico.transfer':'계좌이체','ico.wallet':'지갑',
+    'ico.easypay':'간편결제','ico.qr':'QR결제','ico.pay':'페이','ico.points':'포인트',
+    'ico.voucher':'상품권','ico.bank':'은행','ico.piggyBank':'저금통','ico.coins':'동전',
+    'ico.autoTransfer':'자동이체',
+    'ico.allowance':'용돈','ico.invest':'투자','ico.interest':'이자','ico.save':'저금',
+    'ico.sideIncome':'부수입','ico.refund':'환급','ico.bonus':'보너스',
+    'ico.regularIncome':'정기수입','ico.reward':'포상',
+  },
+  en: {
+    'app.title':'My Account Book','tab.ledger':'Ledger','tab.stats':'Stats','tab.report':'Report','tab.me':'Me',
+    'grid.settings':'Settings','grid.upgrade':'Upgrade','grid.help':'Help','grid.data':'Data','grid.contact':'Contact',
+    'page.appSettings':'App Settings','page.data':'Data',
+    'section.records':'Record Management','section.environment':'App Environment','section.dataManagement':'Data Management',
+    'row.fixedExpense':'Fixed Expenses','row.categories':'Edit Categories','row.payments':'Edit Payments',
+    'row.currency':'Default Currency','row.notifications':'Notifications','row.theme':'Theme','row.fontSize':'Font Size','row.language':'Language',
+    'row.backup':'Backup & Restore','row.export':'Export to Excel','row.deleteAll':'Delete All Records',
+    'lbl.income':'Income','lbl.expense':'Expense','lbl.balance':'Balance','lbl.category':'Category','lbl.payment':'Payment',
+    'lbl.type':'Type','lbl.amount':'Amount','lbl.content':'Note','lbl.date':'Date','lbl.other':'Other','lbl.cntFmt':'{n} records','lbl.user':'User',
+    'day.sun':'Sun','day.mon':'Mon','day.tue':'Tue','day.wed':'Wed','day.thu':'Thu','day.fri':'Fri','day.sat':'Sat',
+    'period.week':'Wk','period.month':'Mo','period.year':'Yr',
+    'stats.rankTitle':'Expense Ranking by Category',
+    'form.amount':'Amount','form.desc':'Note / Memo','form.descPh':'e.g. Coffee, Bus','form.date':'Date',
+    'form.catName':'Category name','form.payName':'Payment name','form.catSelect':'Select',
+    'btn.save':'Save','btn.add':'Add','btn.close':'Close',
+    'search.ph':'Search by note, category, amount...','search.empty':'Enter a search term',
+    'modal.addTx':'Add Record','modal.editTx':'Edit Record',
+    'section.txHistory':'Transactions',
+    'ledger.empty':'No records this month<br>Tap <b>＋</b> to add one!',
+    'widget.champ':'Top Expense','widget.dow':'Spending by Day of Week','widget.survival':'Budget Goal',
+    'widget.top3':'Category TOP 3','widget.mbti':'Spending MBTI',
+    'widget.feelOk':'Satisfied','widget.feelRegret':'Regret it',
+    'widget.survNotSet':'Not set','widget.survUnit':'','widget.survTotal':'Total Variable Expenses','widget.calculating':'Calculating...',
+    'stats.totalLabel':'Total {type}','stats.rankFmt':'{type} Ranking by {group}',
+    'report.monthExpense':'Month {m} Expense','report.noExpense':'No expenses this month',
+    'report.champPct':'{pct} of this month\'s total expenses in one transaction!',
+    'report.addWidget':'Add Widget',
+    'wdef.insight':'Monthly Summary','wdef.champion':'Top Expense','wdef.dayofweek':'Spending by Day',
+    'wdef.survival':'Budget Goal','wdef.mbti':'Spending MBTI','wdef.top3cats':'Category TOP 3',
+    'me.streak':'🔥 {n}-day streak','me.streakZero':'Start recording today!',
+    'badge.guard':'Asset Guardian 🛡️','badge.explorer':'Savings Explorer 🧭','badge.sprout':'Record Sprout 🌱',
+    'cat.dining':'Dining','cat.transport':'Transport','cat.shopping':'Shopping','cat.medical':'Medical',
+    'cat.culture':'Culture','cat.telecom':'Telecom','cat.housing':'Housing','cat.other':'Other',
+    'cat.salary':'Salary','cat.allowance':'Allowance','cat.otherIncome':'Other Income',
+    'pay.cash':'Cash','pay.credit':'Credit Card','pay.debit':'Debit Card','pay.transfer':'Bank Transfer',
+    'pay.kakao':'KakaoPay','pay.naver':'NaverPay','pay.toss':'Toss','pay.other':'Other','pay.auto':'Auto',
+    'stats.yearTotal':'{y} Total',
+    'fmt.dateGroup':'{dow} {d}',
+    'empty.noRecords':'No records',
+    'stats.noData':'No records in this period!',
+    'stats.noDataSub':'Add {type} records<br>for {period}',
+    'wpop.moveUp':'↑ Move up','wpop.moveDown':'↓ Move down','wpop.delete':'🗑️ Delete',
+    'toast.feelOk':'Great choice! 😊','toast.feelRegret':'Try to hold back next time! 💪',
+    'report.empty':'No widgets yet.<br>Toggle items below to add them! ✨',
+    'surv.thisWeek':'This week','surv.lastWeek':'Last week','surv.weeksAgo':'{n} weeks ago',
+    'surv.thisYear':'This year','surv.lastYear':'Last year','surv.yearFmt':'{y}',
+    'surv.thisMonth':'This month','surv.lastMonth':'Last month',
+    'surv.weekRange':'{m1}/{d1}(Mon) ~ {m2}/{d2}(Sun)',
+    'surv.budgetPct':'{pct}% used','surv.noGoal':'No goal set','surv.notSet':'Not set',
+    'surv.weekNoGoal':'No goal was set for this week',
+    'surv.totalVar':'Total variable expenses (excl. fixed)',
+    'surv.danger':'🚨 Budget alert! Spend less!',
+    'surv.remaining':'Remaining budget','surv.over':'Over budget',
+    'surv.msgNoGoal':'No budget goal for {period} 📭',
+    'surv.msgEnterGoal':'Enter a budget goal<br>to see your daily allowance 💡',
+    'surv.msgOver':'{period} goal exceeded by <b>{amt}</b> 😰',
+    'surv.msgSaved':'Saved <b>{amt}</b> vs {period} budget! 🎉',
+    'surv.msgDanger':'Only <b>{daily}</b>/day for <b>{days}</b> days left 🚨',
+    'surv.msgOk':'<b>{daily}</b>/day available for <b>{days}</b> days 💰',
+    'insight.tagStart':'#StartRecording','insight.tagFirst':'#FirstRecord','insight.tagEqual':'#Balanced',
+    'insight.tagThrifty':'#Thrifty','insight.tagSaved':'#SavedUp','insight.tagSaving':'#Saving',
+    'insight.tagOverspend':'#Overspending','insight.tagUpBig':'#BigIncrease','insight.tagUpWarn':'#SpendingAlert','insight.tagUpSmall':'#SlightIncrease',
+    'insight.noData':'{name}, no expenses this month yet!',
+    'insight.noDataSub':'Start recording today ✏️',
+    'insight.firstRecord':'{name}, you\'ve spent {amt} so far this month!',
+    'insight.firstRecordSub':'No prior data — comparison available next month 📖',
+    'insight.equal':'{name}, you spent exactly the same as last month.',
+    'insight.equalSub':'Balanced spending pattern.',
+    'insight.down30':'{name}, down {pct}% from last month! Savings pro 👑',
+    'insight.down30Sub':'Saved {amt}! Keep it up 💚',
+    'insight.down10':'{name}, down {pct}% from last month! Great job 👏',
+    'insight.downSmall':'{name}, down {pct}% from last month. Nice work!',
+    'insight.downSub':'Saved {amt}. Keep going!',
+    'insight.up50':'{name}, expenses up {pct}% from last month! Budget alert 😰',
+    'insight.up30':'{name}, expenses up {pct}% this month. Wallet getting thin 😅',
+    'insight.up10':'{name}, spending is up {pct}% this month. Try to cut back! 💪',
+    'insight.upSmall':'{name}, up {pct}% from last month. Still manageable!',
+    'insight.upSub':'Spent {amt} more than last month.',
+    'export.all':'Total',
+    'dow.noData':'No expense data for this month yet.',
+    'dow.balanced':'Spending is evenly distributed!',
+    'dow.peak':'<b>{day}</b> has the highest spending this month',
+    'dow.txCount':'{n} transactions',
+    'dow.msg.mon':'Big energy spend to start the week!<br>Fighting the Monday blues with spending? 😂',
+    'dow.msg.tue':'Steady weekday spending adding up.<br>Cut small expenses = successful month! 🌱',
+    'dow.msg.wed':'Steady weekday spending adding up.<br>Cut small expenses = successful month! 🌱',
+    'dow.msg.thu':'Steady weekday spending adding up.<br>Cut small expenses = successful month! 🌱',
+    'dow.msg.fri':'TGIF spending surge! The weekend starts here 🍺',
+    'dow.msg.sat':'Weekend FLEX alert! 🚨<br>How about enjoying it within budget?',
+    'dow.msg.sun':'Sunday is your biggest spend day!<br>Save a little for the week ahead 🏠',
+    'mbti.title.eatj':'Foodie','mbti.title.shop':'Trendsetter','mbti.title.yolo':'YOLO Life',
+    'mbti.title.move':'On the Move','mbti.title.hlth':'Health First','mbti.title.digi':'Digital Nomad',
+    'mbti.title.home':'Home Base','mbti.title.none':'Collecting Data','mbti.title.free':'Free Spirit',
+    'mbti.desc.eatj':'Food is life! Always hunting for the next great meal. Your wallet only opens for food!',
+    'mbti.desc.shop':'Shopping is therapy! Your cart fills up in no time. Daily shopping tour in progress?',
+    'mbti.desc.yolo':'Investing in experiences without hesitation! You only live once. Memories are the best investment!',
+    'mbti.desc.move':'Always on the move! Active and busy type. Still running today?',
+    'mbti.desc.hlth':'Health is top priority! No holding back on body care. Your health is your true wealth!',
+    'mbti.desc.digi':'Digital life master! Can\'t live without subscription services. Still streaming today?',
+    'mbti.desc.home':'Home is best! Seriously into decorating your own space. Home café mode today?',
+    'mbti.desc.none':'Add expense records this month to analyze your spending MBTI!',
+    'mbti.desc.free':'Free-spirited! Flexible type that spends evenly across various areas.',
+    'mbti.budget.great':'A perfect spender with great saving skills! 💪',
+    'mbti.budget.ok':'A spender with balanced sense 👍',
+    'mbti.budget.warn':'Almost at the limit! Try to save a little more 😅',
+    'mbti.budget.over':'Over budget! Let\'s go saving mode next month 😰',
+    'fx.weekly':'Every {dow}','fx.monthly':'Day {d} of every month','fx.yearly':'Every {m}/{d}',
+    'fx.pastDateMonth':'This date has passed! Record it for this month ({label}) now?',
+    'fx.pastDateYear':'This date has passed! Record it for this year ({m}/{d}) now?',
+    'toast.coming':'Coming soon','toast.langSet':'Language updated ✓','toast.fontChanged':'Font size changed',
+    'toast.catDeleted':'Category deleted','toast.catEmptyName':'Enter category name',
+    'toast.catDuplicate':'Category already exists','toast.catAdded':'Category added 🏷️',
+    'toast.payDeleted':'Payment method deleted','toast.payEmptyName':'Enter payment method name',
+    'toast.payDuplicate':'Payment method already exists','toast.payAdded':'Payment method added',
+    'toast.fxEmptyName':'Enter item name','toast.fxEmptyAmt':'Enter amount',
+    'toast.fxSaved':'Recorded on calendar! 📌','toast.fxAdded':'Fixed item added 📌',
+    'toast.fxAddFail':'Failed to add: {msg}','toast.fxError':'An error occurred. Please try again.',
+    'toast.fxDeleted':'Fixed item deleted','toast.deleted':'Deleted',
+    'toast.notifSet':'Daily reminder set for {time} 🔔',
+    'toast.noNotifSupport':'Notifications not supported in this browser',
+    'toast.backupDown':'Backup downloaded ✅','toast.backupError':'Cannot read file: {err}',
+    'toast.csvDown':'CSV downloaded 📊',
+    'toast.allDeleted':'All records deleted 🗑️','toast.deleteFail':'Deletion failed: {msg}',
+    'toast.serverError':'Server error occurred',
+    'toast.inquirySent':'Inquiry submitted ✓','toast.inquiryEmpty':'Enter title and content',
+    'fx.loadingList':'Loading...','fx.emptyList':'No fixed items yet<br>Add one below',
+    'confirm.deleteLinked':'"{name}" has {count} record(s) this month. Delete them too?\n\nCancel to remove only the fixed item setting.',
+    'opt.selectCat':'Select category',
+    'fontsize.normal':'Normal','fontsize.large':'Large','fontsize.xlarge':'X-Large',
+    'lang.ko':'Korean','lang.en':'English','lang.ja':'Japanese','lang.zh':'Chinese','lang.es':'Spanish',
+    'alert.dateRange':'Please select start and end dates.','alert.dateOrder':'End date cannot be before start date.',
+    'alert.enterAmt':'Please enter an amount.','alert.enterDate':'Please select a date.',
+    'ico.food':'Food','ico.shopping':'Shopping','ico.transport':'Transport','ico.car':'Car',
+    'ico.housing':'Housing','ico.health':'Health','ico.telecom':'Telecom','ico.culture':'Culture',
+    'ico.salary':'Salary','ico.gift':'Gift','ico.travel':'Travel','ico.cafe':'Cafe',
+    'ico.alcohol':'Alcohol','ico.education':'Education','ico.sports':'Sports','ico.pet':'Pet',
+    'ico.repair':'Repair','ico.electronics':'Electronics','ico.clothing':'Clothing','ico.child':'Child',
+    'ico.grocery':'Grocery','ico.beauty':'Beauty','ico.social':'Social','ico.savings':'Savings',
+    'ico.donation':'Donation','ico.smoking':'Smoking','ico.otherIncome':'Other Income','ico.other':'Other',
+    'ico.credit':'Credit Card','ico.cash':'Cash','ico.transfer':'Bank Transfer','ico.wallet':'Wallet',
+    'ico.easypay':'Easy Pay','ico.qr':'QR Pay','ico.pay':'Pay','ico.points':'Points',
+    'ico.voucher':'Voucher','ico.bank':'Bank','ico.piggyBank':'Piggy Bank','ico.coins':'Coins',
+    'ico.autoTransfer':'Auto Transfer',
+    'ico.allowance':'Allowance','ico.invest':'Investment','ico.interest':'Interest','ico.save':'Saving',
+    'ico.sideIncome':'Side Income','ico.refund':'Refund','ico.bonus':'Bonus',
+    'ico.regularIncome':'Regular Income','ico.reward':'Reward',
+  },
+  ja: {
+    'app.title':'マイ家計簿','tab.ledger':'家計簿','tab.stats':'統計','tab.report':'分析','tab.me':'マイ',
+    'grid.settings':'設定','grid.upgrade':'アップグレード','grid.help':'ヘルプ','grid.data':'データ','grid.contact':'お問合せ',
+    'page.appSettings':'アプリ設定','page.data':'データ',
+    'section.records':'記録管理','section.environment':'アプリ環境','section.dataManagement':'データ管理',
+    'row.fixedExpense':'固定支出設定','row.categories':'カテゴリ編集','row.payments':'支払方法編集',
+    'row.currency':'デフォルト通貨','row.notifications':'プッシュ通知','row.theme':'テーマ','row.fontSize':'フォントサイズ','row.language':'言語',
+    'row.backup':'バックアップ・復元','row.export':'Excelエクスポート','row.deleteAll':'全データ削除',
+    'lbl.income':'収入','lbl.expense':'支出','lbl.balance':'残高','lbl.category':'カテゴリ','lbl.payment':'支払方法',
+    'lbl.type':'種類','lbl.amount':'金額','lbl.content':'内容','lbl.date':'日付','lbl.other':'その他','lbl.cntFmt':'{n}件','lbl.user':'ユーザー',
+    'day.sun':'日','day.mon':'月','day.tue':'火','day.wed':'水','day.thu':'木','day.fri':'金','day.sat':'土',
+    'period.week':'週','period.month':'月','period.year':'年',
+    'stats.rankTitle':'カテゴリ別支出ランキング',
+    'form.amount':'金額','form.desc':'内容 / メモ','form.descPh':'例）コンビニ、バス','form.date':'日付',
+    'form.catName':'カテゴリ名','form.payName':'支払方法名','form.catSelect':'選択',
+    'btn.save':'保存','btn.add':'追加','btn.close':'閉じる',
+    'search.ph':'内容・カテゴリ・金額で検索...','search.empty':'検索ワードを入力してください',
+    'modal.addTx':'記録を追加','modal.editTx':'記録を編集',
+    'section.txHistory':'取引履歴',
+    'ledger.empty':'今月の履歴はありません<br><b>＋</b> ボタンで追加してください！',
+    'widget.champ':'最高支出','widget.dow':'曜日別消費パターン','widget.survival':'予算目標',
+    'widget.top3':'カテゴリ TOP 3','widget.mbti':'消費MBTI',
+    'widget.feelOk':'満足','widget.feelRegret':'もったいない',
+    'widget.survNotSet':'未設定','widget.survUnit':'円','widget.survTotal':'変動支出合計','widget.calculating':'計算中...',
+    'stats.totalLabel':'総 {type}','stats.rankFmt':'{group}別{type}ランキング',
+    'report.monthExpense':'{m}月支出','report.noExpense':'今月の支出履歴はありません',
+    'report.champPct':'今月の総支出の{pct}がこの1回の決済から！',
+    'report.addWidget':'項目追加',
+    'wdef.insight':'月間サマリー','wdef.champion':'最高支出','wdef.dayofweek':'曜日別消費',
+    'wdef.survival':'予算目標','wdef.mbti':'消費MBTI','wdef.top3cats':'カテゴリ TOP 3',
+    'me.streak':'🔥 {n}日連続記録','me.streakZero':'今日から記録を始めましょう！',
+    'badge.guard':'資産守護隊 🛡️','badge.explorer':'節約探検家 🧭','badge.sprout':'記録の芽 🌱',
+    'cat.dining':'食費','cat.transport':'交通','cat.shopping':'ショッピング','cat.medical':'医療',
+    'cat.culture':'文化','cat.telecom':'通信','cat.housing':'住居','cat.other':'その他',
+    'cat.salary':'給与','cat.allowance':'お小遣い','cat.otherIncome':'その他収入',
+    'pay.cash':'現金','pay.credit':'クレジットカード','pay.debit':'デビットカード','pay.transfer':'銀行振込',
+    'pay.kakao':'KakaoPay','pay.naver':'NaverPay','pay.toss':'Toss','pay.other':'その他','pay.auto':'自動',
+    'stats.yearTotal':'{y}年全体',
+    'fmt.dateGroup':'{d}日 ({dow})',
+    'empty.noRecords':'記録がありません',
+    'stats.noData':'この期間に記録はありません！',
+    'stats.noDataSub':'{period}の<br>{type}記録を追加してください',
+    'wpop.moveUp':'↑ 上に移動','wpop.moveDown':'↓ 下に移動','wpop.delete':'🗑️ 削除',
+    'toast.feelOk':'良い選択でした！ 😊','toast.feelRegret':'次は少し我慢してみましょう！ 💪',
+    'report.empty':'まだ分析項目がありません。<br>トグルをオンにして追加してください！ ✨',
+    'surv.thisWeek':'今週','surv.lastWeek':'先週','surv.weeksAgo':'{n}週前',
+    'surv.thisYear':'今年','surv.lastYear':'去年','surv.yearFmt':'{y}年',
+    'surv.thisMonth':'今月','surv.lastMonth':'先月',
+    'surv.weekRange':'{m1}/{d1}(月) ~ {m2}/{d2}(日)',
+    'surv.budgetPct':'支出 {pct}%','surv.noGoal':'目標未設定','surv.notSet':'未設定',
+    'surv.weekNoGoal':'この週は目標が設定されていませんでした',
+    'surv.totalVar':'変動支出合計（固定費除く）',
+    'surv.danger':'🚨 予算危険！もう少し節約しましょう',
+    'surv.remaining':'残り予算','surv.over':'超過支出',
+    'surv.msgNoGoal':'{period}の予算目標はありませんでした 📭',
+    'surv.msgEnterGoal':'予算目標を入力すると<br>1日の利用可能額を表示します 💡',
+    'surv.msgOver':'{period}の目標を<b>{amt}</b>超過しました 😰',
+    'surv.msgSaved':'{period}の予算<b>{amt}</b>を節約しました！ 🎉',
+    'surv.msgDanger':'残り<b>{days}日</b>で毎日<b>{daily}</b>だけ使えます 🚨',
+    'surv.msgOk':'残り<b>{days}日</b>で毎日<b>{daily}</b>使用可能です！ 💰',
+    'insight.tagStart':'#記録開始','insight.tagFirst':'#今月初記録','insight.tagEqual':'#バランス維持',
+    'insight.tagThrifty':'#節約上手','insight.tagSaved':'#節約成功','insight.tagSaving':'#節約中',
+    'insight.tagOverspend':'#過消費警報','insight.tagUpBig':'#支出急増','insight.tagUpWarn':'#支出注意','insight.tagUpSmall':'#微増',
+    'insight.noData':'{name}さん、今月はまだ支出がありません！',
+    'insight.noDataSub':'今日から記録を始めましょう ✏️',
+    'insight.firstRecord':'{name}さん、今月は現在まで合計{amt}を使っています！',
+    'insight.firstRecordSub':'前月データがないため、増減は来月から確認できます 📖',
+    'insight.equal':'{name}さん、先月とまったく同じ金額を使いました。',
+    'insight.equalSub':'バランスの取れた消費パターンですね。',
+    'insight.down30':'{name}さん、先月より{pct}%減りました！節約の達人ですね 👑',
+    'insight.down30Sub':'{amt}節約！この調子で続けましょう 💚',
+    'insight.down10':'{name}さん、先月より{pct}%節約しました！すごいです 👏',
+    'insight.downSmall':'{name}さん、先月より{pct}%減りました。よくやっています！',
+    'insight.downSub':'{amt}節約しました。この調子で！',
+    'insight.up50':'{name}さん、支出が先月より{pct}%急増しました！緊急事態です 😰',
+    'insight.up30':'{name}さん、今月の支出が先月より{pct}%増えました 😅',
+    'insight.up10':'{name}さん、今月は先月より{pct}%多く使いました。少し調整しましょう！ 💪',
+    'insight.upSmall':'{name}さん、先月より{pct}%微増しました。まだ大丈夫です！',
+    'insight.upSub':'先月より{amt}多く支出しました。',
+    'export.all':'全件',
+    'dow.noData':'今月の支出データはまだありません。',
+    'dow.balanced':'支出が均等に分布しています！',
+    'dow.peak':'今月は<b>{day}曜日</b>の支出が最も多いです',
+    'dow.txCount':'合計{n}件',
+    'dow.msg.mon':'週の始まりから消費エネルギー全開！<br>月曜病を消費で乗り越えましたか？ 😂',
+    'dow.msg.tue':'平日の堅実な消費が積み重なっています。<br>ちょこちょこ節約で今月は成功！ 🌱',
+    'dow.msg.wed':'平日の堅実な消費が積み重なっています。<br>ちょこちょこ節約で今月は成功！ 🌱',
+    'dow.msg.thu':'平日の堅実な消費が積み重なっています。<br>ちょこちょこ節約で今月は成功！ 🌱',
+    'dow.msg.fri':'花金の爆発！週末の始まりと共に支出も爆発 🍺',
+    'dow.msg.sat':'週末FLEX注意報！🚨<br>予算内で楽しんでみましょうか？',
+    'dow.msg.sun':'日曜日の支出が最大！<br>来週のために少し節約しましょう 🏠',
+    'mbti.title.eatj':'グルメ型','mbti.title.shop':'トレンドセッター型','mbti.title.yolo':'YOLO型',
+    'mbti.title.move':'モバイル型','mbti.title.hlth':'健康第一型','mbti.title.digi':'デジタルノマド型',
+    'mbti.title.home':'ホームベース型','mbti.title.none':'データ収集中','mbti.title.free':'自由奔放型',
+    'mbti.desc.eatj':'食べることが一番！今日もグルメ探索中。お財布が開くのはグルメの前だけ！',
+    'mbti.desc.shop':'ショッピングは癒し！気づけばカートがいっぱい。今日も買い物ツアー中？',
+    'mbti.desc.yolo':'経験に惜しみなく投資！人生は一度きり。思い出が最高の投資！',
+    'mbti.desc.move':'常にどこかへ移動中！活動的なタイプ。今日も走ってますか？',
+    'mbti.desc.hlth':'健康が最優先！体のケアに投資を惜しまない。健康こそ本物の財産！',
+    'mbti.desc.digi':'デジタルライフの達人！サブスクなしでは生きられないタイプ。今日もストリーミング中？',
+    'mbti.desc.home':'家が一番！自分の空間を飾ることに熱心なタイプ。今日もホームカフェ中？',
+    'mbti.desc.none':'今月の支出を追加すると消費MBTIが分析されます！',
+    'mbti.desc.free':'決まったパターンなく自由に！様々な場所に均等に支出する柔軟なタイプ。',
+    'mbti.budget.great':'節約能力も備えた完璧な消費者！ 💪',
+    'mbti.budget.ok':'適度なバランス感覚を持つ消費者 👍',
+    'mbti.budget.warn':'限界ライン！もう少し節約しましょう 😅',
+    'mbti.budget.over':'予算超過！来月は節約モードで行こう 😰',
+    'fx.weekly':'毎週{dow}曜日','fx.monthly':'毎月{d}日','fx.yearly':'毎年{m}月{d}日',
+    'fx.pastDateMonth':'すでに過ぎた日付です！今月({label})の記録にも今すぐ記録しますか？',
+    'fx.pastDateYear':'すでに過ぎた日付です！今年({m}月{d}日)の記録にも今すぐ記録しますか？',
+    'toast.coming':'準備中です','toast.langSet':'言語が変更されました ✓','toast.fontChanged':'フォントサイズが変更されました',
+    'toast.catDeleted':'カテゴリが削除されました','toast.catEmptyName':'カテゴリ名を入力してください',
+    'toast.catDuplicate':'既に存在するカテゴリです','toast.catAdded':'カテゴリが追加されました 🏷️',
+    'toast.payDeleted':'支払方法が削除されました','toast.payEmptyName':'支払方法名を入力してください',
+    'toast.payDuplicate':'既に存在する支払方法です','toast.payAdded':'支払方法が追加されました',
+    'toast.fxEmptyName':'項目名を入力してください','toast.fxEmptyAmt':'金額を入力してください',
+    'toast.fxSaved':'カレンダーに記録されました！ 📌','toast.fxAdded':'固定項目が追加されました 📌',
+    'toast.fxAddFail':'追加失敗: {msg}','toast.fxError':'エラーが発生しました。再試行してください。',
+    'toast.fxDeleted':'固定項目が削除されました','toast.deleted':'削除されました',
+    'toast.notifSet':'毎日{time}にリマインドをお送りします 🔔',
+    'toast.noNotifSupport':'このブラウザは通知をサポートしていません',
+    'toast.backupDown':'バックアップをダウンロードしました ✅','toast.backupError':'ファイルを読み込めません: {err}',
+    'toast.csvDown':'CSVをダウンロードしました 📊',
+    'toast.allDeleted':'全データが削除されました 🗑️','toast.deleteFail':'削除に失敗しました: {msg}',
+    'toast.serverError':'サーバーエラーが発生しました',
+    'toast.inquirySent':'お問合せを受け付けました ✓','toast.inquiryEmpty':'タイトルと内容を入力してください',
+    'fx.loadingList':'読み込み中...','fx.emptyList':'固定項目がまだありません<br>下で追加してください',
+    'confirm.deleteLinked':'今月に記録された"{name}"の{count}件も一緒に削除しますか？\n\nキャンセルすると固定設定のみ削除され記録は保持されます。',
+    'opt.selectCat':'カテゴリを選択',
+    'fontsize.normal':'普通','fontsize.large':'大きく','fontsize.xlarge':'とても大きく',
+    'lang.ko':'韓国語','lang.en':'英語','lang.ja':'日本語','lang.zh':'中国語','lang.es':'スペイン語',
+    'alert.dateRange':'開始日と終了日を選択してください。','alert.dateOrder':'終了日は開始日より前にできません。',
+    'alert.enterAmt':'金額を入力してください。','alert.enterDate':'日付を選択してください。',
+    'ico.food':'食事','ico.shopping':'ショッピング','ico.transport':'交通','ico.car':'車',
+    'ico.housing':'住居','ico.health':'健康','ico.telecom':'通信','ico.culture':'文化',
+    'ico.salary':'給与','ico.gift':'贈り物','ico.travel':'旅行','ico.cafe':'カフェ',
+    'ico.alcohol':'お酒','ico.education':'教育','ico.sports':'スポーツ','ico.pet':'ペット',
+    'ico.repair':'修理','ico.electronics':'電子機器','ico.clothing':'衣類','ico.child':'育児',
+    'ico.grocery':'食材','ico.beauty':'美容','ico.social':'交際','ico.savings':'貯蓄',
+    'ico.donation':'寄付','ico.smoking':'喫煙','ico.otherIncome':'その他収入','ico.other':'その他',
+    'ico.credit':'クレジットカード','ico.cash':'現金','ico.transfer':'振込','ico.wallet':'財布',
+    'ico.easypay':'簡単決済','ico.qr':'QR決済','ico.pay':'ペイ','ico.points':'ポイント',
+    'ico.voucher':'商品券','ico.bank':'銀行','ico.piggyBank':'貯金箱','ico.coins':'小銭',
+    'ico.autoTransfer':'自動振替',
+    'ico.allowance':'お小遣い','ico.invest':'投資','ico.interest':'利子','ico.save':'貯金',
+    'ico.sideIncome':'副収入','ico.refund':'還付','ico.bonus':'ボーナス',
+    'ico.regularIncome':'定期収入','ico.reward':'報奨',
+  },
+  zh: {
+    'app.title':'我的账本','tab.ledger':'账本','tab.stats':'统计','tab.report':'分析','tab.me':'我',
+    'grid.settings':'设置','grid.upgrade':'升级','grid.help':'帮助','grid.data':'数据','grid.contact':'联系我们',
+    'page.appSettings':'应用设置','page.data':'数据',
+    'section.records':'记录管理','section.environment':'应用环境','section.dataManagement':'数据管理',
+    'row.fixedExpense':'固定支出设置','row.categories':'编辑分类','row.payments':'编辑支付方式',
+    'row.currency':'默认货币','row.notifications':'推送通知','row.theme':'主题','row.fontSize':'字体大小','row.language':'语言',
+    'row.backup':'备份与恢复','row.export':'导出Excel','row.deleteAll':'删除全部记录',
+    'lbl.income':'收入','lbl.expense':'支出','lbl.balance':'余额','lbl.category':'分类','lbl.payment':'支付方式',
+    'lbl.type':'类型','lbl.amount':'金额','lbl.content':'内容','lbl.date':'日期','lbl.other':'其他','lbl.cntFmt':'{n}条','lbl.user':'用户',
+    'day.sun':'日','day.mon':'一','day.tue':'二','day.wed':'三','day.thu':'四','day.fri':'五','day.sat':'六',
+    'period.week':'周','period.month':'月','period.year':'年',
+    'stats.rankTitle':'按分类支出排名',
+    'form.amount':'金额','form.desc':'内容 / 备注','form.descPh':'例：便利店、公交','form.date':'日期',
+    'form.catName':'分类名称','form.payName':'支付方式名称','form.catSelect':'选择',
+    'btn.save':'保存','btn.add':'添加','btn.close':'关闭',
+    'search.ph':'按内容、分类、金额搜索...','search.empty':'请输入搜索词',
+    'modal.addTx':'添加记录','modal.editTx':'编辑记录',
+    'section.txHistory':'交易记录',
+    'ledger.empty':'本月暂无记录<br>点击 <b>＋</b> 添加！',
+    'widget.champ':'最高支出','widget.dow':'按星期消费分析','widget.survival':'预算目标',
+    'widget.top3':'分类 TOP 3','widget.mbti':'消费MBTI',
+    'widget.feelOk':'满意','widget.feelRegret':'后悔',
+    'widget.survNotSet':'未设置','widget.survUnit':'','widget.survTotal':'变动支出合计','widget.calculating':'计算中...',
+    'stats.totalLabel':'总{type}','stats.rankFmt':'按{group}的{type}排名',
+    'report.monthExpense':'{m}月支出','report.noExpense':'本月暂无支出记录',
+    'report.champPct':'本月总支出的{pct}来自这一笔！',
+    'report.addWidget':'添加项目',
+    'wdef.insight':'月度摘要','wdef.champion':'最高支出','wdef.dayofweek':'按星期消费',
+    'wdef.survival':'预算目标','wdef.mbti':'消费MBTI','wdef.top3cats':'分类 TOP 3',
+    'me.streak':'🔥 连续记录 {n} 天','me.streakZero':'快来开始记录吧！',
+    'badge.guard':'资产守卫 🛡️','badge.explorer':'节俭探索者 🧭','badge.sprout':'记录新芽 🌱',
+    'cat.dining':'餐饮','cat.transport':'交通','cat.shopping':'购物','cat.medical':'医疗',
+    'cat.culture':'文化','cat.telecom':'通讯','cat.housing':'住房','cat.other':'其他',
+    'cat.salary':'工资','cat.allowance':'零花钱','cat.otherIncome':'其他收入',
+    'pay.cash':'现金','pay.credit':'信用卡','pay.debit':'借记卡','pay.transfer':'银行转账',
+    'pay.kakao':'KakaoPay','pay.naver':'NaverPay','pay.toss':'Toss','pay.other':'其他','pay.auto':'自动',
+    'stats.yearTotal':'{y}年全年',
+    'fmt.dateGroup':'{d}日 ({dow})',
+    'empty.noRecords':'暂无记录',
+    'stats.noData':'此期间没有记录！',
+    'stats.noDataSub':'请添加{period}的<br>{type}记录',
+    'wpop.moveUp':'↑ 上移','wpop.moveDown':'↓ 下移','wpop.delete':'🗑️ 删除',
+    'toast.feelOk':'好的选择！ 😊','toast.feelRegret':'下次稍微忍一忍！ 💪',
+    'report.empty':'还没有分析项目。<br>打开下方开关来添加吧！ ✨',
+    'surv.thisWeek':'本周','surv.lastWeek':'上周','surv.weeksAgo':'{n}周前',
+    'surv.thisYear':'今年','surv.lastYear':'去年','surv.yearFmt':'{y}年',
+    'surv.thisMonth':'本月','surv.lastMonth':'上月',
+    'surv.weekRange':'{m1}/{d1}(周一) ~ {m2}/{d2}(周日)',
+    'surv.budgetPct':'支出 {pct}%','surv.noGoal':'未设目标','surv.notSet':'未设置',
+    'surv.weekNoGoal':'本周没有设置目标',
+    'surv.totalVar':'变动支出合计（不含固定费）',
+    'surv.danger':'🚨 预算警报！再省一省吧',
+    'surv.remaining':'剩余预算','surv.over':'超支',
+    'surv.msgNoGoal':'{period}没有预算目标 📭',
+    'surv.msgEnterGoal':'输入预算目标<br>即可查看每日可用金额 💡',
+    'surv.msgOver':'{period}目标超出<b>{amt}</b> 😰',
+    'surv.msgSaved':'{period}节省了<b>{amt}</b>！ 🎉',
+    'surv.msgDanger':'剩余<b>{days}天</b>每天只能花<b>{daily}</b> 🚨',
+    'surv.msgOk':'剩余<b>{days}天</b>每天可花<b>{daily}</b>！ 💰',
+    'insight.tagStart':'#开始记录','insight.tagFirst':'#本月首记','insight.tagEqual':'#收支均衡',
+    'insight.tagThrifty':'#精打细算','insight.tagSaved':'#节省成功','insight.tagSaving':'#节省中',
+    'insight.tagOverspend':'#超支警报','insight.tagUpBig':'#支出暴增','insight.tagUpWarn':'#支出注意','insight.tagUpSmall':'#小幅增加',
+    'insight.noData':'{name}，本月还没有支出！',
+    'insight.noDataSub':'从今天开始记录吧 ✏️',
+    'insight.firstRecord':'{name}，本月目前共花费了{amt}！',
+    'insight.firstRecordSub':'没有上月数据，增减情况下月起可查看 📖',
+    'insight.equal':'{name}，和上月花费完全一样。',
+    'insight.equalSub':'均衡的消费模式。',
+    'insight.down30':'{name}，比上月减少了{pct}%！真是节约达人 👑',
+    'insight.down30Sub':'节省了{amt}！继续保持 💚',
+    'insight.down10':'{name}，比上月节省了{pct}%！太棒了 👏',
+    'insight.downSmall':'{name}，比上月减少了{pct}%。干得好！',
+    'insight.downSub':'节省了{amt}。继续加油！',
+    'insight.up50':'{name}，支出比上月暴增{pct}%！钱包告急 😰',
+    'insight.up30':'{name}，本月支出比上月增加了{pct}%，花销明显增大 😅',
+    'insight.up10':'{name}，本月比上月多花了{pct}%，稍微控制一下吧！ 💪',
+    'insight.upSmall':'{name}，比上月小幅增加{pct}%，还算可以！',
+    'insight.upSub':'比上月多花了{amt}。',
+    'export.all':'共',
+    'dow.noData':'本月还没有支出数据。',
+    'dow.balanced':'支出分布均匀！',
+    'dow.peak':'本月<b>{day}</b>的支出最多',
+    'dow.txCount':'共{n}笔',
+    'dow.msg.mon':'周一就消耗了大量能量！<br>用消费对抗周一综合症？ 😂',
+    'dow.msg.tue':'工作日消费稳定累积。<br>减少小支出就是本月的成功！ 🌱',
+    'dow.msg.wed':'工作日消费稳定累积。<br>减少小支出就是本月的成功！ 🌱',
+    'dow.msg.thu':'工作日消费稳定累积。<br>减少小支出就是本月的成功！ 🌱',
+    'dow.msg.fri':'周五大爆发！周末开始了 🍺',
+    'dow.msg.sat':'周末FLEX警报！🚨<br>在预算内享受如何？',
+    'dow.msg.sun':'周日支出最多！<br>为新的一周省一点吧 🏠',
+    'mbti.title.eatj':'美食家型','mbti.title.shop':'潮流达人型','mbti.title.yolo':'YOLO型',
+    'mbti.title.move':'行动派型','mbti.title.hlth':'健康至上型','mbti.title.digi':'数字游民型',
+    'mbti.title.home':'宅家型','mbti.title.none':'数据收集中','mbti.title.free':'自由型',
+    'mbti.desc.eatj':'民以食为天！今天也在寻找美食。只有美食才能打开钱包！',
+    'mbti.desc.shop':'购物是治愈！转眼间购物车就满了。今天也在购物中？',
+    'mbti.desc.yolo':'不惜投资体验！人生只有一次。回忆是最好的投资！',
+    'mbti.desc.move':'总是在移动中！活跃型。今天还在奔跑吗？',
+    'mbti.desc.hlth':'健康第一！不惜投资身体管理。健康才是真正的财富！',
+    'mbti.desc.digi':'数字生活达人！没有订阅服务就活不了。今天还在流媒体中？',
+    'mbti.desc.home':'家是最好的！热衷于装饰自己空间的类型。今天也在家咖啡模式？',
+    'mbti.desc.none':'添加本月支出记录即可分析你的消费MBTI！',
+    'mbti.desc.free':'不按固定模式自由消费！均匀分布在各处的灵活型。',
+    'mbti.budget.great':'具备节约能力的完美消费者！ 💪',
+    'mbti.budget.ok':'有适度平衡感的消费者 👍',
+    'mbti.budget.warn':'几乎到达极限！再省一点吧 😅',
+    'mbti.budget.over':'超支！下个月省钱模式出发 😰',
+    'fx.weekly':'每周{dow}','fx.monthly':'每月{d}日','fx.yearly':'每年{m}月{d}日',
+    'fx.pastDateMonth':'日期已过！现在记录到本月({label})的账单中吗？',
+    'fx.pastDateYear':'日期已过！现在记录到今年({m}月{d}日)的账单中吗？',
+    'toast.coming':'敬请期待','toast.langSet':'语言已更改 ✓','toast.fontChanged':'字体大小已更改',
+    'toast.catDeleted':'分类已删除','toast.catEmptyName':'请输入分类名称',
+    'toast.catDuplicate':'分类已存在','toast.catAdded':'分类已添加 🏷️',
+    'toast.payDeleted':'支付方式已删除','toast.payEmptyName':'请输入支付方式名称',
+    'toast.payDuplicate':'支付方式已存在','toast.payAdded':'支付方式已添加',
+    'toast.fxEmptyName':'请输入项目名称','toast.fxEmptyAmt':'请输入金额',
+    'toast.fxSaved':'已记录到日历！ 📌','toast.fxAdded':'固定项目已添加 📌',
+    'toast.fxAddFail':'添加失败: {msg}','toast.fxError':'发生错误，请重试。',
+    'toast.fxDeleted':'固定项目已删除','toast.deleted':'已删除',
+    'toast.notifSet':'每天{time}提醒您 🔔',
+    'toast.noNotifSupport':'此浏览器不支持通知',
+    'toast.backupDown':'备份已下载 ✅','toast.backupError':'无法读取文件: {err}',
+    'toast.csvDown':'CSV已下载 📊',
+    'toast.allDeleted':'所有记录已删除 🗑️','toast.deleteFail':'删除失败: {msg}',
+    'toast.serverError':'服务器发生错误',
+    'toast.inquirySent':'问题已提交 ✓','toast.inquiryEmpty':'请输入标题和内容',
+    'fx.loadingList':'加载中...','fx.emptyList':'还没有固定项目<br>在下方添加',
+    'confirm.deleteLinked':'本月已有"{name}"的{count}条记录，一并删除吗？\n\n取消则只删除固定设置，记录保留。',
+    'opt.selectCat':'选择分类',
+    'fontsize.normal':'普通','fontsize.large':'大','fontsize.xlarge':'超大',
+    'lang.ko':'韩语','lang.en':'英语','lang.ja':'日语','lang.zh':'中文','lang.es':'西班牙语',
+    'alert.dateRange':'请选择开始日期和结束日期。','alert.dateOrder':'结束日期不能早于开始日期。',
+    'alert.enterAmt':'请输入金额。','alert.enterDate':'请选择日期。',
+    'ico.food':'餐饮','ico.shopping':'购物','ico.transport':'交通','ico.car':'汽车',
+    'ico.housing':'住房','ico.health':'健康','ico.telecom':'通讯','ico.culture':'文化',
+    'ico.salary':'工资','ico.gift':'礼物','ico.travel':'旅行','ico.cafe':'咖啡',
+    'ico.alcohol':'酒水','ico.education':'教育','ico.sports':'运动','ico.pet':'宠物',
+    'ico.repair':'维修','ico.electronics':'电子','ico.clothing':'服装','ico.child':'育儿',
+    'ico.grocery':'蔬菜','ico.beauty':'美容','ico.social':'社交','ico.savings':'储蓄',
+    'ico.donation':'捐款','ico.smoking':'烟草','ico.otherIncome':'其他收入','ico.other':'其他',
+    'ico.credit':'信用卡','ico.cash':'现金','ico.transfer':'转账','ico.wallet':'钱包',
+    'ico.easypay':'便捷支付','ico.qr':'二维码','ico.pay':'支付','ico.points':'积分',
+    'ico.voucher':'礼券','ico.bank':'银行','ico.piggyBank':'存钱罐','ico.coins':'零钱',
+    'ico.autoTransfer':'自动转账',
+    'ico.allowance':'零花钱','ico.invest':'投资','ico.interest':'利息','ico.save':'存款',
+    'ico.sideIncome':'副业','ico.refund':'退款','ico.bonus':'奖金',
+    'ico.regularIncome':'定期收入','ico.reward':'奖励',
+  },
+  es: {
+    'app.title':'Mi Libreta','tab.ledger':'Libro','tab.stats':'Estadísticas','tab.report':'Análisis','tab.me':'Yo',
+    'grid.settings':'Ajustes','grid.upgrade':'Premium','grid.help':'Ayuda','grid.data':'Datos','grid.contact':'Contacto',
+    'page.appSettings':'Ajustes','page.data':'Datos',
+    'section.records':'Gestión de registros','section.environment':'Entorno','section.dataManagement':'Gestión de datos',
+    'row.fixedExpense':'Gastos fijos','row.categories':'Editar categorías','row.payments':'Editar pagos',
+    'row.currency':'Moneda predeterminada','row.notifications':'Notificaciones','row.theme':'Tema','row.fontSize':'Tamaño de fuente','row.language':'Idioma',
+    'row.backup':'Copia de seguridad','row.export':'Exportar a Excel','row.deleteAll':'Eliminar todo',
+    'lbl.income':'Ingresos','lbl.expense':'Gastos','lbl.balance':'Saldo','lbl.category':'Categoría','lbl.payment':'Pago',
+    'lbl.type':'Tipo','lbl.amount':'Importe','lbl.content':'Nota','lbl.date':'Fecha','lbl.other':'Otros','lbl.cntFmt':'{n} registros','lbl.user':'Usuario',
+    'day.sun':'Dom','day.mon':'Lun','day.tue':'Mar','day.wed':'Mié','day.thu':'Jue','day.fri':'Vie','day.sat':'Sáb',
+    'period.week':'Sem','period.month':'Mes','period.year':'Año',
+    'stats.rankTitle':'Ranking de gastos por categoría',
+    'form.amount':'Importe','form.desc':'Nota / Memo','form.descPh':'Ej: Café, Autobús','form.date':'Fecha',
+    'form.catName':'Nombre de categoría','form.payName':'Nombre de pago','form.catSelect':'Seleccionar',
+    'btn.save':'Guardar','btn.add':'Añadir','btn.close':'Cerrar',
+    'search.ph':'Buscar por nota, categoría, importe...','search.empty':'Introduce un término de búsqueda',
+    'modal.addTx':'Añadir registro','modal.editTx':'Editar registro',
+    'section.txHistory':'Transacciones',
+    'ledger.empty':'Sin registros este mes<br>Toca <b>＋</b> para añadir uno!',
+    'widget.champ':'Mayor gasto','widget.dow':'Gastos por día de semana','widget.survival':'Presupuesto',
+    'widget.top3':'Categoría TOP 3','widget.mbti':'MBTI de consumo',
+    'widget.feelOk':'Satisfecho','widget.feelRegret':'Me arrepiento',
+    'widget.survNotSet':'Sin definir','widget.survUnit':'','widget.survTotal':'Total gastos variables','widget.calculating':'Calculando...',
+    'stats.totalLabel':'Total {type}','stats.rankFmt':'{type} por {group}',
+    'report.monthExpense':'Mes {m} Gasto','report.noExpense':'Sin gastos este mes',
+    'report.champPct':'{pct} del gasto total de este mes en una sola transacción!',
+    'report.addWidget':'Añadir elemento',
+    'wdef.insight':'Resumen mensual','wdef.champion':'Mayor gasto','wdef.dayofweek':'Gastos por día',
+    'wdef.survival':'Presupuesto','wdef.mbti':'MBTI de consumo','wdef.top3cats':'Categoría TOP 3',
+    'me.streak':'🔥 {n} días seguidos','me.streakZero':'¡Empieza a registrar hoy!',
+    'badge.guard':'Guardián de activos 🛡️','badge.explorer':'Explorador ahorrativo 🧭','badge.sprout':'Brote de registros 🌱',
+    'cat.dining':'Comida','cat.transport':'Transporte','cat.shopping':'Compras','cat.medical':'Médico',
+    'cat.culture':'Cultura','cat.telecom':'Telecom','cat.housing':'Vivienda','cat.other':'Otros',
+    'cat.salary':'Salario','cat.allowance':'Paga','cat.otherIncome':'Otros ingresos',
+    'pay.cash':'Efectivo','pay.credit':'Tarjeta crédito','pay.debit':'Tarjeta débito','pay.transfer':'Transferencia',
+    'pay.kakao':'KakaoPay','pay.naver':'NaverPay','pay.toss':'Toss','pay.other':'Otros','pay.auto':'Auto',
+    'stats.yearTotal':'Todo {y}',
+    'fmt.dateGroup':'{dow} {d}',
+    'empty.noRecords':'Sin registros',
+    'stats.noData':'¡Sin registros en este período!',
+    'stats.noDataSub':'Añade registros de {type}<br>para {period}',
+    'wpop.moveUp':'↑ Subir','wpop.moveDown':'↓ Bajar','wpop.delete':'🗑️ Eliminar',
+    'toast.feelOk':'¡Buena elección! 😊','toast.feelRegret':'¡Intenta aguantar la próxima vez! 💪',
+    'report.empty':'Aún no hay elementos.<br>¡Activa los elementos de abajo para añadirlos! ✨',
+    'surv.thisWeek':'Esta semana','surv.lastWeek':'Semana pasada','surv.weeksAgo':'Hace {n} semanas',
+    'surv.thisYear':'Este año','surv.lastYear':'Año pasado','surv.yearFmt':'{y}',
+    'surv.thisMonth':'Este mes','surv.lastMonth':'Mes pasado',
+    'surv.weekRange':'{m1}/{d1}(Lun) ~ {m2}/{d2}(Dom)',
+    'surv.budgetPct':'{pct}% gastado','surv.noGoal':'Sin objetivo','surv.notSet':'Sin definir',
+    'surv.weekNoGoal':'No se definió objetivo para esta semana',
+    'surv.totalVar':'Total gastos variables (excl. fijos)',
+    'surv.danger':'🚨 ¡Alerta de presupuesto! Gasta menos',
+    'surv.remaining':'Presupuesto restante','surv.over':'Exceso de gasto',
+    'surv.msgNoGoal':'Sin objetivo de presupuesto para {period} 📭',
+    'surv.msgEnterGoal':'Introduce un presupuesto<br>para ver tu gasto diario disponible 💡',
+    'surv.msgOver':'Objetivo de {period} superado en <b>{amt}</b> 😰',
+    'surv.msgSaved':'¡Ahorraste <b>{amt}</b> vs el objetivo de {period}! 🎉',
+    'surv.msgDanger':'Solo <b>{daily}</b>/día para los <b>{days}</b> días restantes 🚨',
+    'surv.msgOk':'<b>{daily}</b>/día disponibles para <b>{days}</b> días 💰',
+    'insight.tagStart':'#EmpezarRegistro','insight.tagFirst':'#PrimerRegistro','insight.tagEqual':'#Equilibrado',
+    'insight.tagThrifty':'#Ahorrador','insight.tagSaved':'#AhorroConseguido','insight.tagSaving':'#Ahorrando',
+    'insight.tagOverspend':'#AlertaGasto','insight.tagUpBig':'#GranAumento','insight.tagUpWarn':'#AlertaGasto','insight.tagUpSmall':'#PequeñoAumento',
+    'insight.noData':'{name}, ¡aún no hay gastos este mes!',
+    'insight.noDataSub':'Empieza a registrar hoy ✏️',
+    'insight.firstRecord':'{name}, ¡has gastado {amt} este mes hasta ahora!',
+    'insight.firstRecordSub':'Sin datos previos — la comparación estará disponible el mes que viene 📖',
+    'insight.equal':'{name}, gastaste exactamente lo mismo que el mes pasado.',
+    'insight.equalSub':'Patrón de gasto equilibrado.',
+    'insight.down30':'{name}, ¡bajó {pct}% respecto al mes pasado! Experto en ahorro 👑',
+    'insight.down30Sub':'¡Ahorraste {amt}! Sigue así 💚',
+    'insight.down10':'{name}, ¡{pct}% menos que el mes pasado! Muy bien 👏',
+    'insight.downSmall':'{name}, {pct}% menos que el mes pasado. ¡Buen trabajo!',
+    'insight.downSub':'Ahorraste {amt}. ¡Sigue así!',
+    'insight.up50':'{name}, ¡los gastos subieron {pct}% respecto al mes pasado! Alerta 😰',
+    'insight.up30':'{name}, los gastos subieron {pct}% este mes. La cartera se adelgaza 😅',
+    'insight.up10':'{name}, este mes gastaste {pct}% más. ¡Intenta controlarte! 💪',
+    'insight.upSmall':'{name}, subió {pct}% respecto al mes pasado. ¡Aún manejable!',
+    'insight.upSub':'Gastaste {amt} más que el mes pasado.',
+    'export.all':'Total',
+    'dow.noData':'Aún no hay datos de gastos este mes.',
+    'dow.balanced':'¡Los gastos están distribuidos uniformemente!',
+    'dow.peak':'El <b>{day}</b> tiene el mayor gasto este mes',
+    'dow.txCount':'{n} transacciones',
+    'dow.msg.mon':'¡Mucha energía gastada para empezar la semana!<br>¿Combatiendo el lunes con el gasto? 😂',
+    'dow.msg.tue':'El gasto constante entre semana se acumula.<br>¡Reducir pequeños gastos = mes exitoso! 🌱',
+    'dow.msg.wed':'El gasto constante entre semana se acumula.<br>¡Reducir pequeños gastos = mes exitoso! 🌱',
+    'dow.msg.thu':'El gasto constante entre semana se acumula.<br>¡Reducir pequeños gastos = mes exitoso! 🌱',
+    'dow.msg.fri':'¡Explosión de TGIF! El fin de semana empieza 🍺',
+    'dow.msg.sat':'¡Alerta FLEX de fin de semana! 🚨<br>¿Cómo disfrutarlo dentro del presupuesto?',
+    'dow.msg.sun':'¡El domingo es tu mayor día de gasto!<br>Ahorra un poco para la semana que viene 🏠',
+    'mbti.title.eatj':'Foodie','mbti.title.shop':'Trendsetter','mbti.title.yolo':'YOLO',
+    'mbti.title.move':'Movilidad','mbti.title.hlth':'Salud primero','mbti.title.digi':'Nómada Digital',
+    'mbti.title.home':'Hogareño','mbti.title.none':'Recopilando datos','mbti.title.free':'Espíritu libre',
+    'mbti.desc.eatj':'¡La comida es lo primero! Siempre explorando restaurantes. ¡Tu cartera solo se abre por la comida!',
+    'mbti.desc.shop':'¡Las compras son terapia! El carrito se llena sin darte cuenta. ¿Haciendo el tour de compras hoy?',
+    'mbti.desc.yolo':'¡Invirtiendo sin dudarlo en experiencias! Solo se vive una vez. ¡Los recuerdos son la mejor inversión!',
+    'mbti.desc.move':'¡Siempre en movimiento! Tipo activo y ocupado. ¿Todavía corriendo hoy?',
+    'mbti.desc.hlth':'¡La salud es lo primero! Sin escatimar en el cuidado del cuerpo. ¡La salud es tu verdadera riqueza!',
+    'mbti.desc.digi':'¡Maestro de la vida digital! No puedes vivir sin servicios de suscripción. ¿Todavía haciendo streaming?',
+    'mbti.desc.home':'¡El hogar es lo mejor! Serio en decorar tu propio espacio. ¿Modo café en casa hoy?',
+    'mbti.desc.none':'¡Añade registros de gastos este mes para analizar tu MBTI de consumo!',
+    'mbti.desc.free':'¡Libre sin patrones fijos! Tipo flexible que gasta de manera uniforme en diversas áreas.',
+    'mbti.budget.great':'¡Un consumidor perfecto con gran capacidad de ahorro! 💪',
+    'mbti.budget.ok':'Un consumidor con sentido del equilibrio 👍',
+    'mbti.budget.warn':'¡Casi en el límite! Intenta ahorrar un poco más 😅',
+    'mbti.budget.over':'¡Presupuesto superado! El próximo mes en modo ahorro 😰',
+    'fx.weekly':'Cada {dow}','fx.monthly':'Día {d} de cada mes','fx.yearly':'Cada {m}/{d}',
+    'fx.pastDateMonth':'¡Esta fecha ya pasó! ¿Registrar en este mes ({label}) ahora?',
+    'fx.pastDateYear':'¡Esta fecha ya pasó! ¿Registrar en este año ({m}/{d}) ahora?',
+    'toast.coming':'Próximamente','toast.langSet':'Idioma actualizado ✓','toast.fontChanged':'Tamaño de fuente cambiado',
+    'toast.catDeleted':'Categoría eliminada','toast.catEmptyName':'Introduce el nombre de la categoría',
+    'toast.catDuplicate':'La categoría ya existe','toast.catAdded':'Categoría añadida 🏷️',
+    'toast.payDeleted':'Método de pago eliminado','toast.payEmptyName':'Introduce el nombre del método de pago',
+    'toast.payDuplicate':'El método de pago ya existe','toast.payAdded':'Método de pago añadido',
+    'toast.fxEmptyName':'Introduce el nombre del elemento','toast.fxEmptyAmt':'Introduce el importe',
+    'toast.fxSaved':'¡Registrado en el calendario! 📌','toast.fxAdded':'Elemento fijo añadido 📌',
+    'toast.fxAddFail':'Error al añadir: {msg}','toast.fxError':'Ocurrió un error. Por favor, inténtalo de nuevo.',
+    'toast.fxDeleted':'Elemento fijo eliminado','toast.deleted':'Eliminado',
+    'toast.notifSet':'Recordatorio diario programado para las {time} 🔔',
+    'toast.noNotifSupport':'Este navegador no soporta notificaciones',
+    'toast.backupDown':'Copia de seguridad descargada ✅','toast.backupError':'No se puede leer el archivo: {err}',
+    'toast.csvDown':'CSV descargado 📊',
+    'toast.allDeleted':'Todos los registros eliminados 🗑️','toast.deleteFail':'Error al eliminar: {msg}',
+    'toast.serverError':'Error de servidor',
+    'toast.inquirySent':'Consulta enviada ✓','toast.inquiryEmpty':'Introduce título y contenido',
+    'fx.loadingList':'Cargando...','fx.emptyList':'Sin elementos fijos aún<br>Añade uno abajo',
+    'confirm.deleteLinked':'"{name}" tiene {count} registro(s) este mes. ¿Eliminarlos también?\n\nCancelar para eliminar solo la configuración del elemento fijo.',
+    'opt.selectCat':'Seleccionar categoría',
+    'fontsize.normal':'Normal','fontsize.large':'Grande','fontsize.xlarge':'Muy grande',
+    'lang.ko':'Coreano','lang.en':'Inglés','lang.ja':'Japonés','lang.zh':'Chino','lang.es':'Español',
+    'alert.dateRange':'Selecciona fecha de inicio y fin.','alert.dateOrder':'La fecha de fin no puede ser anterior a la de inicio.',
+    'alert.enterAmt':'Por favor introduce un importe.','alert.enterDate':'Por favor selecciona una fecha.',
+    'ico.food':'Comida','ico.shopping':'Compras','ico.transport':'Transporte','ico.car':'Coche',
+    'ico.housing':'Vivienda','ico.health':'Salud','ico.telecom':'Telecom','ico.culture':'Cultura',
+    'ico.salary':'Salario','ico.gift':'Regalo','ico.travel':'Viaje','ico.cafe':'Café',
+    'ico.alcohol':'Alcohol','ico.education':'Educación','ico.sports':'Deporte','ico.pet':'Mascota',
+    'ico.repair':'Reparación','ico.electronics':'Electrónica','ico.clothing':'Ropa','ico.child':'Infantil',
+    'ico.grocery':'Verduras','ico.beauty':'Belleza','ico.social':'Social','ico.savings':'Ahorros',
+    'ico.donation':'Donación','ico.smoking':'Tabaco','ico.otherIncome':'Otros ingresos','ico.other':'Otros',
+    'ico.credit':'Tarjeta crédito','ico.cash':'Efectivo','ico.transfer':'Transferencia','ico.wallet':'Cartera',
+    'ico.easypay':'Pago rápido','ico.qr':'Pago QR','ico.pay':'Pago','ico.points':'Puntos',
+    'ico.voucher':'Vale','ico.bank':'Banco','ico.piggyBank':'Hucha','ico.coins':'Monedas',
+    'ico.autoTransfer':'Transferencia auto',
+    'ico.allowance':'Paga','ico.invest':'Inversión','ico.interest':'Interés','ico.save':'Ahorro',
+    'ico.sideIncome':'Ingreso extra','ico.refund':'Reembolso','ico.bonus':'Bonus',
+    'ico.regularIncome':'Ingreso regular','ico.reward':'Premio',
+  },
+};
+function tr(key) {
+  const name = localStorage.getItem(LANG_SK) || '한국어';
+  const T = TRANSLATIONS[LANG_CODE_MAP[name] || 'ko'];
+  return T[key] || TRANSLATIONS.ko[key] || key;
+}
+const _FONTSIZE_KEY = {'보통':'fontsize.normal','크게':'fontsize.large','아주 크게':'fontsize.xlarge'};
+const _LANG_KEY = {'한국어':'lang.ko','영어':'lang.en','일본어':'lang.ja','중국어':'lang.zh','스페인어':'lang.es'};
+function trFontSize(v) { return _FONTSIZE_KEY[v] ? tr(_FONTSIZE_KEY[v]) : v; }
+function trLang(v) { return _LANG_KEY[v] ? tr(_LANG_KEY[v]) : v; }
+function applyLang() {
+  const name = localStorage.getItem(LANG_SK) || '한국어';
+  const T = TRANSLATIONS[LANG_CODE_MAP[name] || 'ko'];
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const k = el.getAttribute('data-i18n'); if (T[k] !== undefined) el.textContent = T[k];
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+    const k = el.getAttribute('data-i18n-ph'); if (T[k] !== undefined) el.placeholder = T[k];
+  });
+  const badgeEl = document.getElementById('meBadge');
+  if (badgeEl) {
+    const b = BADGE_COUNT >= 50 ? tr('badge.guard') : BADGE_COUNT >= 20 ? tr('badge.explorer') : BADGE_COUNT >= 5 ? tr('badge.sprout') : '';
+    if (b) badgeEl.textContent = b;
+  }
+  const streakEl = document.getElementById('meStreak');
+  if (streakEl && typeof txs === 'undefined') {
+    const initStreak = <?= (int)($dbStats['streak'] ?? 0) ?>;
+    streakEl.textContent = initStreak > 0 ? tr('me.streak').replace('{n}', initStreak) : tr('me.streakZero');
+  }
+  const rowVal = document.getElementById('langRowValue');
+  if (rowVal) rowVal.textContent = trLang(name);
+  const fszVal = document.getElementById('fontSizeRowValue');
+  if (fszVal) { const fv = localStorage.getItem('design_fontsize')||'보통'; fszVal.textContent = trFontSize(fv); }
+}
+function fmtYearMonth(y, m) {
+  const lang = localStorage.getItem(LANG_SK) || '한국어';
+  const code = LANG_CODE_MAP[lang] || 'ko';
+  if (code === 'ko') return y + '년 ' + parseInt(m) + '월';
+  if (code === 'ja') return y + '年' + parseInt(m) + '月';
+  if (code === 'zh') return y + '年' + parseInt(m) + '月';
+  const date = new Date(parseInt(y), parseInt(m) - 1, 1);
+  const locale = code === 'es' ? 'es' : 'en';
+  return date.toLocaleDateString(locale, { year: 'numeric', month: 'long' });
+}
+function setLang(name) {
+  localStorage.setItem(LANG_SK, name);
+  applyLang();
+  closeLangModal();
+  showToast(tr('toast.langSet'));
+}
+function openLangModal() {
+  const cur = localStorage.getItem(LANG_SK) || '한국어';
+  ['한국어','영어','일본어','중국어','스페인어'].forEach(v => {
+    const el = document.getElementById('langOpt' + v);
+    if (el) el.style.borderColor = (cur === v) ? '#364A6D' : '#e0e0e0';
+  });
+  document.getElementById('langModal').classList.add('show');
+}
+function closeLangModal() {
+  document.getElementById('langModal').classList.remove('show');
+}
+
 // ── 초기화 ───────────────────────────────────────────────────
 load();
 loadFixed();
@@ -4665,6 +5527,7 @@ applyDarkMode();
 startNotifScheduler();
 setMonthLabel();
 refreshIcons();
+applyLang();
 // DB 카테고리를 먼저 로드한 뒤 렌더 (로그인 상태에서 카테고리 즉시 반영)
 loadDbCats(() => {
   renderLedger();
