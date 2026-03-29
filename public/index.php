@@ -1074,9 +1074,9 @@ body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C;
       <button class="cal-btn" onclick="toggleCalendar()" title="달력"><i data-lucide="calendar" style="width:20px;height:20px;stroke-width:1.75"></i></button>
     </div>
     <div id="haStats" class="header-period-filter" style="display:none">
-      <button class="hpf-btn" id="hpf-week"  onclick="setStatsPeriod('week')">주</button>
-      <button class="hpf-btn on" id="hpf-month" onclick="setStatsPeriod('month')">월</button>
-      <button class="hpf-btn" id="hpf-year"  onclick="setStatsPeriod('year')">년</button>
+      <button class="hpf-btn" id="hpf-week"  onclick="setStatsPeriod('week')"  data-i18n="period.week">주</button>
+      <button class="hpf-btn on" id="hpf-month" onclick="setStatsPeriod('month')" data-i18n="period.month">월</button>
+      <button class="hpf-btn" id="hpf-year"  onclick="setStatsPeriod('year')"  data-i18n="period.year">년</button>
     </div>
   </div>
 </div>
@@ -1145,8 +1145,8 @@ body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C;
     <div class="ranking-header">
       <span class="ranking-header-title" id="rankingHeaderTitle">카테고리별 지출 순위</span>
       <div class="rank-group-toggle">
-        <button id="sg-category" class="rg-btn on" onclick="setStatsGroup('category')">카테고리</button>
-        <button id="sg-payment"  class="rg-btn"    onclick="setStatsGroup('payment')">결제수단</button>
+        <button id="sg-category" class="rg-btn on" onclick="setStatsGroup('category')" data-i18n="lbl.category">카테고리</button>
+        <button id="sg-payment"  class="rg-btn"    onclick="setStatsGroup('payment')"  data-i18n="lbl.payment">결제수단</button>
       </div>
     </div>
     <div id="rankingList"></div>
@@ -1705,11 +1705,11 @@ body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C;
 
 <!-- 하단 탭바 -->
 <div class="tab-bar">
-  <button class="t-btn on" id="tb-ledger" onclick="goTab('ledger')"><i data-lucide="book-open" class="ico-sv"></i>가계부</button>
-  <button class="t-btn"    id="tb-stats"  onclick="goTab('stats')"><i data-lucide="bar-chart-2" class="ico-sv"></i>통계</button>
+  <button class="t-btn on" id="tb-ledger" onclick="goTab('ledger')"><i data-lucide="book-open" class="ico-sv"></i><span data-i18n="tab.ledger">가계부</span></button>
+  <button class="t-btn"    id="tb-stats"  onclick="goTab('stats')"><i data-lucide="bar-chart-2" class="ico-sv"></i><span data-i18n="tab.stats">통계</span></button>
   <button class="fab-wrap" onclick="openModal()"><div class="fab">＋</div></button>
-  <button class="t-btn"    id="tb-report" onclick="goTab('report')"><i data-lucide="file-text" class="ico-sv"></i>분석</button>
-  <button class="t-btn"    id="tb-me"     onclick="goTab('me')"><i data-lucide="user" class="ico-sv"></i>나</button>
+  <button class="t-btn"    id="tb-report" onclick="goTab('report')"><i data-lucide="file-text" class="ico-sv"></i><span data-i18n="tab.report">분석</span></button>
+  <button class="t-btn"    id="tb-me"     onclick="goTab('me')"><i data-lucide="user" class="ico-sv"></i><span data-i18n="tab.me">나</span></button>
 </div>
 
 <!-- 내역 추가 모달 -->
@@ -2080,7 +2080,7 @@ function txRowHtml(t, extraOnclick) {
   return `<div class="tx-row" onclick="${extraOnclick||''}openTxAction('${t.id}')">
     <div class="tx-icon" style="background:${ibg}">${getIconHtml(t.category)}</div>
     <div class="tx-info">
-      <div class="tx-desc">${t.description ? esc(t.description) : dn(t.category, CAT_NAME_MAP)}</div>
+      <div class="tx-desc">${(t.description && t.description !== t.category) ? esc(t.description) : dn(t.category, CAT_NAME_MAP)}</div>
       <div class="tx-cat">${dn(t.category, CAT_NAME_MAP)}${t.payment?` · ${dn(t.payment, PAY_NAME_MAP)}`:''}</div>
     </div>
     <div class="tx-right">
@@ -2210,8 +2210,8 @@ function getStatsHeaderLabel() {
     return `${f}~${t}`;
   }
   const [y,m] = curMonth.split('-');
-  if (statsPeriod === 'month') return `${y}년 ${parseInt(m)}월`;
-  if (statsPeriod === 'year')  return `${y}년 전체`;
+  if (statsPeriod === 'month') return fmtYearMonth(y, m);
+  if (statsPeriod === 'year')  return tr('stats.yearTotal').replace('{y}', y);
   const {from: wf, to: wt} = getWeekRange();
   const pad = s => s.slice(5).replace('-','.');
   return `${pad(wf)}~${pad(wt)}`;
@@ -2220,7 +2220,7 @@ function getStatsHeaderLabel() {
 function setMonthLabel() {
   const active = TABS.find(t => document.getElementById('pane-'+t)?.classList.contains('active'));
   const [y,m] = curMonth.split('-');
-  const monthText = y+'년 '+parseInt(m)+'월';
+  const monthText = fmtYearMonth(y, m);
   if (active === 'stats') {
     document.getElementById('monthLabel').textContent = getStatsHeaderLabel();
     const sh = document.getElementById('statsHdrLabel');
@@ -2235,7 +2235,7 @@ function setMonthLabel() {
   const now = new Date();
   const nowYM = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
   const cLabel = document.getElementById('rChampMLabel');
-  if (cLabel) cLabel.textContent = ry+'년 '+parseInt(rm)+'월';
+  if (cLabel) cLabel.textContent = fmtYearMonth(ry, rm);
   const cNext = document.getElementById('rChampMNext');
   if (cNext) cNext.disabled = curMonth >= nowYM;
   updateNextBtn(active);
@@ -2477,8 +2477,8 @@ function getStatsPeriodLabel() {
   if (statsCustomActive && statsCustomFrom && statsCustomTo)
     return `${statsCustomFrom} ~ ${statsCustomTo}`;
   const [y,m] = curMonth.split('-');
-  if (statsPeriod === 'month') return `${y}년 ${parseInt(m)}월`;
-  if (statsPeriod === 'year')  return `${y}년 전체`;
+  if (statsPeriod === 'month') return fmtYearMonth(y, m);
+  if (statsPeriod === 'year')  return tr('stats.yearTotal').replace('{y}', y);
   const today = new Date();
   const from  = new Date(today); from.setDate(from.getDate()-6);
   return `${from.getMonth()+1}/${from.getDate()} ~ ${today.getMonth()+1}/${today.getDate()}`;
@@ -4035,8 +4035,8 @@ function openTxAction(id) {
     <div class="txa-summary">
       <div class="txa-icon" style="background:${getIconBg(t.category)}">${getIconHtml(t.category,18)}</div>
       <div class="txa-mid">
-        <div class="txa-desc">${esc(t.description||t.category)}</div>
-        <div class="txa-sub">${esc(t.category)}${t.payment?' · '+esc(t.payment):''} · ${t.date}</div>
+        <div class="txa-desc">${(t.description && t.description !== t.category) ? esc(t.description) : dn(t.category, CAT_NAME_MAP)}</div>
+        <div class="txa-sub">${dn(t.category, CAT_NAME_MAP)}${t.payment?' · '+dn(t.payment, PAY_NAME_MAP):''} · ${t.date}</div>
       </div>
       <div class="txa-amt ${t.type}">${_sign}${fmtH(t.amount)}</div>
     </div>
