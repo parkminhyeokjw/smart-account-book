@@ -1113,9 +1113,9 @@ body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C;
 <div class="tab-pane" id="pane-calendar">
   <div class="cal-grid-wrap">
     <div class="cal-dow-row">
-      <div class="cal-dow">일</div><div class="cal-dow">월</div><div class="cal-dow">화</div>
-      <div class="cal-dow">수</div><div class="cal-dow">목</div><div class="cal-dow">금</div>
-      <div class="cal-dow">토</div>
+      <div class="cal-dow" data-i18n="day.sun">일</div><div class="cal-dow" data-i18n="day.mon">월</div><div class="cal-dow" data-i18n="day.tue">화</div>
+      <div class="cal-dow" data-i18n="day.wed">수</div><div class="cal-dow" data-i18n="day.thu">목</div><div class="cal-dow" data-i18n="day.fri">금</div>
+      <div class="cal-dow" data-i18n="day.sat">토</div>
     </div>
     <div class="cal-grid" id="calGrid"></div>
   </div>
@@ -1292,7 +1292,7 @@ body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C;
 <div class="overlay" id="fixedModal" onclick="if(event.target===this)closeFixedModal()">
   <div class="modal">
     <div class="modal-hd">
-      <span class="modal-hd-title">고정 지출 설정</span>
+      <span class="modal-hd-title" data-i18n="row.fixedExpense">고정 지출 설정</span>
       <button class="modal-x" onclick="closeFixedModal()">×</button>
     </div>
 
@@ -1301,13 +1301,13 @@ body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C;
 
     <!-- 추가 폼 -->
     <div style="padding:12px 16px 16px;border-top:1px solid #f0f0f0">
-      <div style="font-size:12px;color:#9e9e9e;margin-bottom:10px">새 고정 항목 추가</div>
+      <div style="font-size:12px;color:#9e9e9e;margin-bottom:10px" data-i18n="fx.addNew">새 고정 항목 추가</div>
 
       <!-- 이름 + 금액 -->
       <div style="display:flex;gap:8px;margin-bottom:8px">
-        <input id="fxName" placeholder="항목명 (예: 월세)"
+        <input id="fxName" placeholder="항목명 (예: 월세)" data-i18n-ph="fx.namePh"
           style="flex:1;border:1px solid #e0e0e0;border-radius:8px;padding:10px 12px;font-size:14px;outline:none">
-        <input id="fxAmt" type="text" inputmode="numeric" placeholder="금액"
+        <input id="fxAmt" type="text" inputmode="numeric" placeholder="금액" data-i18n-ph="fx.amtPh"
           style="width:100px;border:1px solid #e0e0e0;border-radius:8px;padding:10px 12px;font-size:14px;outline:none;text-align:right"
           oninput="fmtFixedAmt(this)">
       </div>
@@ -1315,25 +1315,29 @@ body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C;
       <!-- 수입/지출 + 카테고리 -->
       <div style="display:flex;gap:8px;margin-bottom:8px">
         <select id="fxType" style="flex:1;border:1px solid #e0e0e0;border-radius:8px;padding:10px 10px;font-size:14px;outline:none;background:#fff">
-          <option value="expense">💸 지출</option>
-          <option value="income">💰 수입</option>
+          <option value="expense" data-i18n="fx.typeExp">💸 지출</option>
+          <option value="income" data-i18n="fx.typeInc">💰 수입</option>
         </select>
         <select id="fxCat" style="flex:1;border:1px solid #e0e0e0;border-radius:8px;padding:10px 10px;font-size:14px;outline:none;background:#fff">
-          <option value="">카테고리 선택</option>
+          <option value="" data-i18n="fx.catPh">카테고리 선택</option>
         </select>
       </div>
 
       <!-- 주기 선택 -->
       <div style="display:flex;gap:6px;margin-bottom:8px">
-        <button class="fx-cycle-btn on" data-cycle="weekly"  onclick="setFxCycle('weekly')">매주</button>
-        <button class="fx-cycle-btn"    data-cycle="monthly" onclick="setFxCycle('monthly')">매달</button>
-        <button class="fx-cycle-btn"    data-cycle="yearly"  onclick="setFxCycle('yearly')">매년</button>
+        <button class="fx-cycle-btn on" data-cycle="weekly"  onclick="setFxCycle('weekly')" data-i18n="fx.weekly">매주</button>
+        <button class="fx-cycle-btn"    data-cycle="monthly" onclick="setFxCycle('monthly')" data-i18n="fx.monthly">매달</button>
+        <button class="fx-cycle-btn"    data-cycle="yearly"  onclick="setFxCycle('yearly')" data-i18n="fx.yearly">매년</button>
       </div>
 
       <!-- 매주 → 요일 -->
       <div id="fxWeekRow" style="display:flex;gap:4px;margin-bottom:8px">
-        <?php foreach(['일','월','화','수','목','금','토'] as $i=>$d): ?>
-        <button class="fx-dow-btn<?=$i===1?' on':''?>" data-dow="<?=$i?>" onclick="setFxDow(<?=$i?>)"><?=$d?></button>
+        <?php
+        $dowKeys = ['day.sun','day.mon','day.tue','day.wed','day.thu','day.fri','day.sat'];
+        $dowLabels = ['일','월','화','수','목','금','토'];
+        foreach($dowLabels as $i=>$d):
+        ?>
+        <button class="fx-dow-btn<?=$i===1?' on':''?>" data-dow="<?=$i?>" onclick="setFxDow(<?=$i?>)" data-i18n="<?=$dowKeys[$i]?>"><?=$d?></button>
         <?php endforeach; ?>
       </div>
 
@@ -1357,9 +1361,9 @@ body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C;
       </div>
 
 
-      <button onclick="addFixed()"
+      <button onclick="addFixed()" data-i18n="fx.addBtn"
         style="width:100%;background:var(--p);color:#fff;border:none;border-radius:var(--r);padding:12px;font-size:15px;font-weight:700;cursor:pointer">
-        + 추가하기
+        ＋ 추가하기
       </button>
     </div>
   </div>
@@ -1369,15 +1373,15 @@ body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C;
 <div class="overlay" id="fxRetroModal" style="display:none;z-index:1200">
   <div class="modal" style="max-width:340px">
     <div class="modal-hd">
-      <span class="modal-hd-title">📅 이미 지난 날짜예요!</span>
+      <span class="modal-hd-title" data-i18n="fx.retroTitle">📅 이미 지난 날짜예요!</span>
     </div>
     <div style="padding:20px 20px 8px">
       <p id="fxRetroMsg" style="font-size:15px;line-height:1.6;color:#37474F;margin-bottom:20px"></p>
-      <button onclick="submitFixed(true)"
+      <button onclick="submitFixed(true)" data-i18n="fx.retroConfirm"
         style="width:100%;background:var(--p);color:#fff;border:none;border-radius:var(--r);padding:12px;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:8px">
         ✅ 네, 지금 바로 기록할게요
       </button>
-      <button onclick="submitFixed(false)"
+      <button onclick="submitFixed(false)" data-i18n="fx.retroSkip"
         style="width:100%;background:var(--bg);color:var(--p);border:1px solid var(--border);border-radius:var(--r);padding:12px;font-size:14px;cursor:pointer">
         다음 달부터만 적용할게요
       </button>
@@ -1389,26 +1393,26 @@ body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C;
 <div class="overlay" id="catEditModal" onclick="if(event.target===this)closeCatEditModal()">
   <div class="modal">
     <div class="modal-hd">
-      <span class="modal-hd-title">🏷️ 카테고리 편집</span>
+      <span class="modal-hd-title" data-i18n="row.categories">🏷️ 카테고리 편집</span>
       <button class="modal-x" onclick="closeCatEditModal()">×</button>
     </div>
     <div style="padding:0 20px">
       <div class="catedit-type-tabs">
-        <button class="catedit-tab on" id="cetab-expense" onclick="setCatEditType('expense')">지출</button>
-        <button class="catedit-tab" id="cetab-income"  onclick="setCatEditType('income')">수입</button>
+        <button class="catedit-tab on" id="cetab-expense" onclick="setCatEditType('expense')" data-i18n="cat.tabExp">지출</button>
+        <button class="catedit-tab" id="cetab-income"  onclick="setCatEditType('income')" data-i18n="cat.tabInc">수입</button>
       </div>
     </div>
     <div id="catEditList" style="padding:0 12px;max-height:46vh;overflow-y:auto"></div>
     <div style="padding:10px 16px 16px;border-top:1px solid #f0f0f0;margin-top:4px">
-      <div style="font-size:12px;color:#9e9e9e;margin-bottom:8px">새 카테고리 추가</div>
+      <div style="font-size:12px;color:#9e9e9e;margin-bottom:8px" data-i18n="cat.addNew">새 카테고리 추가</div>
       <div style="display:flex;gap:8px;align-items:center">
         <input id="ceEmoji" type="text" maxlength="2" placeholder="😀"
           style="width:48px;text-align:center;border:1px solid #e0e0e0;border-radius:8px;padding:10px 4px;font-size:18px;outline:none">
-        <input id="ceName" type="text" placeholder="카테고리 이름"
+        <input id="ceName" type="text" placeholder="카테고리 이름" data-i18n-ph="cat.namePh"
           style="flex:1;border:1px solid #e0e0e0;border-radius:8px;padding:10px 12px;font-size:14px;outline:none"
           onkeydown="if(event.key==='Enter')addCatEdit()">
         <button onclick="addCatEdit()"
-          style="background:var(--p);color:#fff;border:none;border-radius:8px;padding:10px 16px;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap">추가</button>
+          style="background:var(--p);color:#fff;border:none;border-radius:8px;padding:10px 16px;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap" data-i18n="btn.add">추가</button>
       </div>
     </div>
   </div>
@@ -1418,21 +1422,21 @@ body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C;
 <div class="overlay" id="payEditModal" onclick="if(event.target===this)closePayEditModal()">
   <div class="modal">
     <div class="modal-hd">
-      <span class="modal-hd-title">💳 결제수단 편집</span>
+      <span class="modal-hd-title" data-i18n="row.payments">💳 결제수단 편집</span>
       <button class="modal-x" onclick="closePayEditModal()">×</button>
     </div>
     <div id="payEditList" style="padding:0 12px;max-height:46vh;overflow-y:auto"></div>
     <div style="padding:10px 16px 16px;border-top:1px solid #f0f0f0;margin-top:4px">
-      <div style="font-size:12px;color:#9e9e9e;margin-bottom:8px">새 결제수단 추가</div>
+      <div style="font-size:12px;color:#9e9e9e;margin-bottom:8px" data-i18n="pay.addNew">새 결제수단 추가</div>
       <div style="display:flex;gap:8px;align-items:center">
         <div id="peIconPreview" onclick="openIconPicker('pay-edit')"
           style="width:42px;height:42px;border-radius:50%;background:#607D8B;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer">
           <i data-lucide="credit-card" style="width:18px;height:18px;color:#fff;stroke-width:1.75"></i>
         </div>
-        <input id="peName" type="text" placeholder="결제수단 이름"
+        <input id="peName" type="text" placeholder="결제수단 이름" data-i18n-ph="pay.namePh"
           style="flex:1;border:1px solid #e0e0e0;border-radius:8px;padding:10px 12px;font-size:14px;outline:none"
           onkeydown="if(event.key==='Enter')addPayEdit()">
-        <button onclick="addPayEdit()"
+        <button onclick="addPayEdit()" data-i18n="btn.add"
           style="background:var(--p);color:#fff;border:none;border-radius:8px;padding:10px 16px;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap">추가</button>
       </div>
     </div>
@@ -1443,25 +1447,24 @@ body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C;
 <div class="center-overlay" id="notifModal" onclick="if(event.target===this)closeNotifModal()">
   <div class="center-modal">
     <div class="center-modal-hd">
-      <span class="center-modal-hd-title">🔔 알림 설정</span>
+      <span class="center-modal-hd-title" data-i18n="row.notifications">🔔 알림 설정</span>
       <button class="center-modal-x" onclick="closeNotifModal()">×</button>
     </div>
     <div class="center-modal-body">
       <div class="notif-status">
         <div class="notif-status-dot" id="notifDot"></div>
-        <div class="notif-status-text" id="notifStatusText">알림 권한 확인 중...</div>
+        <div class="notif-status-text" id="notifStatusText" data-i18n="notif.checking">알림 권한 확인 중...</div>
       </div>
       <div class="notif-time-row">
-        <span class="notif-time-label">알림 시간</span>
+        <span class="notif-time-label" data-i18n="notif.timeLabel">알림 시간</span>
         <input class="notif-time-input" id="notifTimeInput" type="time" value="21:00">
       </div>
-      <div style="font-size:12px;color:#9e9e9e;line-height:1.7">
-        설정한 시간에 가계부 작성 리마인드를 보내드립니다.<br>
-        앱이 열려 있을 때 작동합니다.
+      <div style="font-size:12px;color:#9e9e9e;line-height:1.7" data-i18n="notif.desc">
+        설정한 시간에 가계부 작성 리마인드를 보내드립니다. 앱이 열려 있을 때 작동합니다.
       </div>
     </div>
     <div class="center-modal-footer">
-      <button class="center-modal-btn" id="notifPermBtn" onclick="handleNotifPermission()">권한 허용 후 저장</button>
+      <button class="center-modal-btn" id="notifPermBtn" onclick="handleNotifPermission()" data-i18n="notif.saveBtn">권한 허용 후 저장</button>
     </div>
   </div>
 </div>
@@ -1470,22 +1473,22 @@ body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C;
 <div class="center-overlay" id="backupModal" onclick="if(event.target===this)closeBackupModal()">
   <div class="center-modal">
     <div class="center-modal-hd">
-      <span class="center-modal-hd-title">☁️ 백업 및 복구</span>
+      <span class="center-modal-hd-title" data-i18n="row.backup">☁️ 백업 및 복구</span>
       <button class="center-modal-x" onclick="closeBackupModal()">×</button>
     </div>
     <div class="center-modal-body">
       <div class="backup-option" onclick="doBackup()">
         <div class="backup-option-ico">⬇️</div>
         <div class="backup-option-info">
-          <div class="backup-option-title">데이터 백업 (JSON 다운로드)</div>
-          <div class="backup-option-sub">모든 내역·카테고리·설정을 파일로 저장합니다</div>
+          <div class="backup-option-title" data-i18n="backup.backupTitle">데이터 백업 (JSON 다운로드)</div>
+          <div class="backup-option-sub" data-i18n="backup.backupSub">모든 내역·카테고리·설정을 파일로 저장합니다</div>
         </div>
       </div>
       <div class="backup-option" onclick="document.getElementById('restoreFileInput').click()">
         <div class="backup-option-ico">⬆️</div>
         <div class="backup-option-info">
-          <div class="backup-option-title">데이터 복구 (파일 업로드)</div>
-          <div class="backup-option-sub">백업 JSON 파일로 복원합니다 (현재 데이터 덮어쓰기)</div>
+          <div class="backup-option-title" data-i18n="backup.restoreTitle">데이터 복구 (파일 업로드)</div>
+          <div class="backup-option-sub" data-i18n="backup.restoreSub">백업 JSON 파일로 복원합니다 (현재 데이터 덮어쓰기)</div>
         </div>
       </div>
       <input type="file" id="restoreFileInput" accept=".json,application/json" style="display:none" onchange="doRestore(this)">
@@ -1497,21 +1500,21 @@ body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C;
 <div class="center-overlay" id="exportModal" onclick="if(event.target===this)closeExportModal()">
   <div class="center-modal">
     <div class="center-modal-hd">
-      <span class="center-modal-hd-title">📊 엑셀로 내보내기</span>
+      <span class="center-modal-hd-title" data-i18n="row.export">📊 엑셀로 내보내기</span>
       <button class="center-modal-x" onclick="closeExportModal()">×</button>
     </div>
     <div class="center-modal-body">
       <div class="export-option" onclick="doExportCSV('month');closeExportModal()">
         <div class="export-option-ico">📅</div>
         <div class="export-option-info">
-          <div class="export-option-title">이번 달 내역</div>
+          <div class="export-option-title" data-i18n="export.thisMonth">이번 달 내역</div>
           <div class="export-option-sub" id="exportMonthLabel"></div>
         </div>
       </div>
       <div class="export-option" onclick="doExportCSV('all');closeExportModal()">
         <div class="export-option-ico">📋</div>
         <div class="export-option-info">
-          <div class="export-option-title">전체 기간 내역</div>
+          <div class="export-option-title" data-i18n="export.allTime">전체 기간 내역</div>
           <div class="export-option-sub" id="exportAllLabel"></div>
         </div>
       </div>
@@ -1523,16 +1526,16 @@ body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C;
 <div class="center-overlay" id="deleteAllModal" onclick="if(event.target===this)closeDeleteAllModal()">
   <div class="danger-modal">
     <div class="danger-modal-hd">
-      <div class="danger-modal-hd-title">⚠️ 전체 내역 삭제</div>
+      <div class="danger-modal-hd-title" data-i18n="row.deleteAll">⚠️ 전체 내역 삭제</div>
     </div>
     <div class="danger-modal-body">
       <div class="danger-modal-icon">🗑️</div>
-      <div class="danger-modal-msg">정말로 모든 데이터를 삭제할까요?</div>
-      <div class="danger-modal-sub">삭제된 데이터는 복구할 수 없습니다.<br>삭제 전에 반드시 백업하세요.</div>
+      <div class="danger-modal-msg" data-i18n="del.confirm">정말로 모든 데이터를 삭제할까요?</div>
+      <div class="danger-modal-sub" data-i18n="del.warn">삭제된 데이터는 복구할 수 없습니다. 삭제 전에 반드시 백업하세요.</div>
     </div>
     <div class="danger-modal-footer">
-      <button class="danger-modal-cancel" onclick="closeDeleteAllModal()">취소</button>
-      <button class="danger-modal-confirm" onclick="confirmDeleteAll()">모두 삭제</button>
+      <button class="danger-modal-cancel" onclick="closeDeleteAllModal()" data-i18n="del.cancel">취소</button>
+      <button class="danger-modal-confirm" onclick="confirmDeleteAll()" data-i18n="del.deleteAll">모두 삭제</button>
     </div>
   </div>
 </div>
@@ -1576,42 +1579,42 @@ body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C;
 <div class="overlay" id="helpModal" onclick="if(event.target===this)closeHelpModal()">
   <div class="modal">
     <div class="modal-hd">
-      <span class="modal-hd-title">💬 도움말</span>
+      <span class="modal-hd-title">💬 <span data-i18n="grid.help">도움말</span></span>
       <button class="modal-x" onclick="closeHelpModal()">×</button>
     </div>
     <div style="padding:16px 20px 28px">
       <div class="help-section">
-        <div class="help-section-title">가계부 탭</div>
-        <div class="help-item">하단 <b>+</b> 버튼으로 지출·수입을 기록하세요.</div>
-        <div class="help-item">거래 항목을 탭하면 수정·삭제·상세보기가 가능해요.</div>
-        <div class="help-item">📅 버튼으로 달력 뷰를, 🔍로 내역을 검색해요.</div>
-        <div class="help-item">상단 ‹ › 버튼으로 월을 이동할 수 있어요.</div>
+        <div class="help-section-title" data-i18n="help.ledgerTitle">가계부 탭</div>
+        <div class="help-item" data-i18n="help.ledger1">하단 + 버튼으로 지출·수입을 기록하세요.</div>
+        <div class="help-item" data-i18n="help.ledger2">거래 항목을 탭하면 수정·삭제·상세보기가 가능해요.</div>
+        <div class="help-item" data-i18n="help.ledger3">📅 버튼으로 달력 뷰를, 🔍로 내역을 검색해요.</div>
+        <div class="help-item" data-i18n="help.ledger4">상단 ‹ › 버튼으로 월을 이동할 수 있어요.</div>
       </div>
       <div class="help-section">
-        <div class="help-section-title">통계 탭</div>
-        <div class="help-item">카테고리별·결제수단별 지출 비중을 확인하세요.</div>
-        <div class="help-item">우측 상단에서 주·월·년 단위로 조회 가능해요.</div>
-        <div class="help-item">도넛 차트를 탭하면 해당 카테고리 내역을 볼 수 있어요.</div>
+        <div class="help-section-title" data-i18n="help.statsTitle">통계 탭</div>
+        <div class="help-item" data-i18n="help.stats1">카테고리별·결제수단별 지출 비중을 확인하세요.</div>
+        <div class="help-item" data-i18n="help.stats2">우측 상단에서 주·월·년 단위로 조회 가능해요.</div>
+        <div class="help-item" data-i18n="help.stats3">도넛 차트를 탭하면 해당 카테고리 내역을 볼 수 있어요.</div>
       </div>
       <div class="help-section">
-        <div class="help-section-title">분석 탭</div>
-        <div class="help-item">이번 달 소비 패턴을 위젯으로 분석해드립니다.</div>
-        <div class="help-item">위젯 우측 <b>···</b> 버튼으로 추가·제거·순서 변경이 가능해요.</div>
-        <div class="help-item">목표 예산에서 예산을 설정하면 남은 금액을 알 수 있어요.</div>
-        <div class="help-item">최고 지출 항목에서 😊/💸 버튼으로 소비를 돌아보세요.</div>
+        <div class="help-section-title" data-i18n="help.reportTitle">분석 탭</div>
+        <div class="help-item" data-i18n="help.report1">이번 달 소비 패턴을 위젯으로 분석해드립니다.</div>
+        <div class="help-item" data-i18n="help.report2">위젯 우측 ··· 버튼으로 추가·제거·순서 변경이 가능해요.</div>
+        <div class="help-item" data-i18n="help.report3">목표 예산에서 예산을 설정하면 남은 금액을 알 수 있어요.</div>
+        <div class="help-item" data-i18n="help.report4">최고 지출 항목에서 😊/💸 버튼으로 소비를 돌아보세요.</div>
       </div>
       <div class="help-section">
-        <div class="help-section-title">나 탭 — 데이터 관리</div>
-        <div class="help-item"><b>고정 지출 설정</b>: 월세·통신비 등 정기 지출을 등록하면 지정일에 자동 기록돼요.</div>
-        <div class="help-item"><b>카테고리 편집</b>: 이모지와 이름을 변경하거나 새 카테고리를 추가할 수 있어요.</div>
-        <div class="help-item"><b>백업/복구</b>: JSON 파일로 데이터를 안전하게 보관하고 복원하세요.</div>
-        <div class="help-item"><b>엑셀 내보내기</b>: 이번 달 또는 전체 내역을 CSV로 다운로드할 수 있어요.</div>
-        <div class="help-item"><b>푸시 알림</b>: 원하는 시간에 가계부 작성 리마인드를 받을 수 있어요.</div>
+        <div class="help-section-title" data-i18n="help.meTitle">나 탭 — 데이터 관리</div>
+        <div class="help-item" data-i18n="help.me1">고정 지출 설정: 월세·통신비 등 정기 지출을 등록하면 지정일에 자동 기록돼요.</div>
+        <div class="help-item" data-i18n="help.me2">카테고리 편집: 이모지와 이름을 변경하거나 새 카테고리를 추가할 수 있어요.</div>
+        <div class="help-item" data-i18n="help.me3">백업/복구: JSON 파일로 데이터를 안전하게 보관하고 복원하세요.</div>
+        <div class="help-item" data-i18n="help.me4">엑셀 내보내기: 이번 달 또는 전체 내역을 CSV로 다운로드할 수 있어요.</div>
+        <div class="help-item" data-i18n="help.me5">푸시 알림: 원하는 시간에 가계부 작성 리마인드를 받을 수 있어요.</div>
       </div>
       <div class="help-section">
-        <div class="help-section-title">앱 정보</div>
-        <div class="help-item">마이가계부 v1.0 — 현명한 소비 습관을 만들어드립니다.</div>
-        <div class="help-item">데이터는 기기 브라우저에 저장되며 서버에도 연동됩니다.</div>
+        <div class="help-section-title" data-i18n="help.appTitle">앱 정보</div>
+        <div class="help-item" data-i18n="help.app1">마이가계부 v1.0 — 현명한 소비 습관을 만들어드립니다.</div>
+        <div class="help-item" data-i18n="help.app2">데이터는 기기 브라우저에 저장되며 서버에도 연동됩니다.</div>
       </div>
     </div>
   </div>
@@ -1788,7 +1791,7 @@ body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C;
       <label class="mf-label" data-i18n="form.date">날짜</label>
       <input class="mf-input" id="fDate" type="date">
     </div>
-    <button class="modal-save" onclick="saveTx()">저장</button>
+    <button class="modal-save" onclick="saveTx()" data-i18n="btn.save">저장</button>
   </div>
 </div>
 
@@ -2333,8 +2336,9 @@ function openModalForDate() {
 function openDaySheet(dateStr) {
   daySheetDate = dateStr;
   const [,, dd] = dateStr.split('-');
-  const dow = ['일','월','화','수','목','금','토'][new Date(dateStr).getDay()];
-  document.getElementById('daySheetTitle').textContent = parseInt(dd)+'일 ('+dow+')';
+  const _DOW_KEYS = ['day.sun','day.mon','day.tue','day.wed','day.thu','day.fri','day.sat'];
+  const dow = tr(_DOW_KEYS[new Date(dateStr).getDay()]);
+  document.getElementById('daySheetTitle').textContent = tr('fmt.daySheet').replace('{d}', parseInt(dd)).replace('{dow}', dow);
   const rows = txs.filter(t=>t.date===dateStr);
   if (!rows.length) {
     document.getElementById('daySheetBody').innerHTML = '<div class="empty-msg" style="padding:30px">내역이 없어요</div>';
@@ -3276,8 +3280,8 @@ function fillSurvival() {
     spent     = txs.filter(t => t.type==='expense' && t.date>=monStr && t.date<=sunStr
                              && !FIXED_KEYS.some(k=>t.category.includes(k)))
                    .reduce((s,t)=>s+t.amount, 0);
-    navLabel  = wOff===0 ? '이번 주' : wOff===1 ? '지난 주' : `${wOff}주 전`;
-    rangeLabel= `${mon.getMonth()+1}/${mon.getDate()}(월) ~ ${sun.getMonth()+1}/${sun.getDate()}(일)`;
+    navLabel  = wOff===0 ? tr('surv.thisWeek') : wOff===1 ? tr('surv.lastWeek') : tr('surv.weeksAgo').replace('{n}', wOff);
+    rangeLabel= tr('surv.weekRange').replace('{m1}', mon.getMonth()+1).replace('{d1}', mon.getDate()).replace('{m2}', sun.getMonth()+1).replace('{d2}', sun.getDate());
 
   } else if (survGoal.mode === 'year') {
     const yOff = survGoal.yearOffset || 0;
@@ -3288,8 +3292,8 @@ function fillSurvival() {
     spent     = txs.filter(t => t.type==='expense' && t.date.startsWith(String(y))
                              && !FIXED_KEYS.some(k=>t.category.includes(k)))
                    .reduce((s,t)=>s+t.amount, 0);
-    navLabel  = yOff===0 ? '올해' : yOff===1 ? '작년' : `${y}년`;
-    rangeLabel= `${y}년`;
+    navLabel  = yOff===0 ? tr('surv.thisYear') : yOff===1 ? tr('surv.lastYear') : tr('surv.yearFmt').replace('{y}', y);
+    rangeLabel= tr('surv.yearFmt').replace('{y}', y);
 
   } else {
     const mOff = survGoal.monthOffset || 0;
@@ -3302,8 +3306,8 @@ function fillSurvival() {
     spent    = txs.filter(t => t.type==='expense' && t.date.startsWith(ym)
                             && !FIXED_KEYS.some(k=>t.category.includes(k)))
                   .reduce((s,t)=>s+t.amount, 0);
-    navLabel  = mOff===0 ? '이번 달' : mOff===1 ? '지난 달' : `${cy2}년 ${cm2}월`;
-    rangeLabel= mOff===0 ? '이번 달' : `${cy2}년 ${cm2}월`;
+    navLabel  = mOff===0 ? tr('surv.thisMonth') : mOff===1 ? tr('surv.lastMonth') : fmtYearMonth(cy2, cm2);
+    rangeLabel= mOff===0 ? tr('surv.thisMonth') : fmtYearMonth(cy2, cm2);
   }
 
   // period nav 레이블 + 다음 버튼 비활성화
@@ -3347,7 +3351,7 @@ function fillSurvival() {
     barEl.className = 'surv-progress-bar' + (isDanger ? ' danger' : isWarn ? ' warn' : '');
   }
   const pctEl = document.getElementById('rSurvUsedPct');
-  if (pctEl) pctEl.textContent = isWeekPastUnset ? '미설정' : budget > 0 ? `지출 ${Math.round(usageRate*100)}%` : '목표 미설정';
+  if (pctEl) pctEl.textContent = isWeekPastUnset ? tr('surv.notSet') : budget > 0 ? tr('surv.budgetPct').replace('{pct}', Math.round(usageRate*100)) : tr('surv.noGoal');
   const prdEl = document.getElementById('rSurvPeriodLabel');
   if (prdEl) prdEl.textContent = navLabel;
 
@@ -4138,10 +4142,10 @@ function setFxDow(d) {
 }
 function fxCycleLabel(f) {
   const c = f.cycle || 'monthly';
-  const days = ['일','월','화','수','목','금','토'];
-  if (c === 'weekly')  return `매주 ${days[f.day_of_week]||''}요일`;
-  if (c === 'monthly') return `매달 ${f.day_of_month}일`;
-  if (c === 'yearly')  return `매년 ${f.month_of_year}월 ${f.day_of_month}일`;
+  const _DOW_KEYS = ['day.sun','day.mon','day.tue','day.wed','day.thu','day.fri','day.sat'];
+  if (c === 'weekly')  return tr('fx.cycleWeekly').replace('{dow}', tr(_DOW_KEYS[f.day_of_week]||'day.mon'));
+  if (c === 'monthly') return tr('fx.cycleMonthly').replace('{d}', f.day_of_month);
+  if (c === 'yearly')  return tr('fx.cycleYearly').replace('{m}', f.month_of_year).replace('{d}', f.day_of_month);
   return '';
 }
 
@@ -4928,6 +4932,29 @@ const TRANSLATIONS = {
     'form.catName':'카테고리 이름','form.payName':'결제수단 이름','form.catSelect':'선택',
     'btn.save':'저장','btn.add':'추가','btn.close':'닫기',
     'btn.detail':'상세정보','btn.edit':'수정','btn.copy':'복사','btn.delete':'삭제',
+    'fmt.daySheet':'{d}일 ({dow})',
+    'fx.addNew':'새 고정 항목 추가','fx.namePh':'항목명 (예: 월세)','fx.amtPh':'금액','fx.catPh':'카테고리 선택',
+    'fx.typeExp':'💸 지출','fx.typeInc':'💰 수입',
+    'fx.weekly':'매주','fx.monthly':'매달','fx.yearly':'매년','fx.addBtn':'＋ 추가하기',
+    'fx.retroTitle':'📅 이미 지난 날짜예요!','fx.retroConfirm':'✅ 네, 지금 바로 기록할게요','fx.retroSkip':'다음 달부터만 적용할게요',
+    'fx.cycleWeekly':'매주 {dow}요일','fx.cycleMonthly':'매달 {d}일','fx.cycleYearly':'매년 {m}월 {d}일',
+    'fx.domFmt':'매달 {d}일','fx.moyFmt':'{m}월','fx.dFmt':'{d}일',
+    'cat.addNew':'새 카테고리 추가','cat.namePh':'카테고리 이름','cat.tabExp':'지출','cat.tabInc':'수입',
+    'pay.addNew':'새 결제수단 추가','pay.namePh':'결제수단 이름',
+    'notif.checking':'알림 권한 확인 중...','notif.timeLabel':'알림 시간',
+    'notif.desc':'설정한 시간에 가계부 작성 리마인드를 보내드립니다. 앱이 열려 있을 때 작동합니다.',
+    'notif.saveBtn':'권한 허용 후 저장',
+    'backup.backupTitle':'데이터 백업 (JSON 다운로드)','backup.backupSub':'모든 내역·카테고리·설정을 파일로 저장합니다',
+    'backup.restoreTitle':'데이터 복구 (파일 업로드)','backup.restoreSub':'백업 JSON 파일로 복원합니다 (현재 데이터 덮어쓰기)',
+    'export.thisMonth':'이번 달 내역','export.allTime':'전체 기간 내역',
+    'del.confirm':'정말로 모든 데이터를 삭제할까요?',
+    'del.warn':'삭제된 데이터는 복구할 수 없습니다. 삭제 전에 반드시 백업하세요.',
+    'del.cancel':'취소','del.deleteAll':'모두 삭제',
+    'help.ledgerTitle':'가계부 탭','help.ledger1':'하단 + 버튼으로 지출·수입을 기록하세요.','help.ledger2':'거래 항목을 탭하면 수정·삭제·상세보기가 가능해요.','help.ledger3':'📅 버튼으로 달력 뷰를, 🔍로 내역을 검색해요.','help.ledger4':'상단 ‹ › 버튼으로 월을 이동할 수 있어요.',
+    'help.statsTitle':'통계 탭','help.stats1':'카테고리별·결제수단별 지출 비중을 확인하세요.','help.stats2':'우측 상단에서 주·월·년 단위로 조회 가능해요.','help.stats3':'도넛 차트를 탭하면 해당 카테고리 내역을 볼 수 있어요.',
+    'help.reportTitle':'분석 탭','help.report1':'이번 달 소비 패턴을 위젯으로 분석해드립니다.','help.report2':'위젯 우측 ··· 버튼으로 추가·제거·순서 변경이 가능해요.','help.report3':'목표 예산에서 예산을 설정하면 남은 금액을 알 수 있어요.','help.report4':'최고 지출 항목에서 😊/💸 버튼으로 소비를 돌아보세요.',
+    'help.meTitle':'나 탭 — 데이터 관리','help.me1':'고정 지출 설정: 월세·통신비 등 정기 지출을 등록하면 지정일에 자동 기록돼요.','help.me2':'카테고리 편집: 이모지와 이름을 변경하거나 새 카테고리를 추가할 수 있어요.','help.me3':'백업/복구: JSON 파일로 데이터를 안전하게 보관하고 복원하세요.','help.me4':'엑셀 내보내기: 이번 달 또는 전체 내역을 CSV로 다운로드할 수 있어요.','help.me5':'푸시 알림: 원하는 시간에 가계부 작성 리마인드를 받을 수 있어요.',
+    'help.appTitle':'앱 정보','help.app1':'마이가계부 v1.0 — 현명한 소비 습관을 만들어드립니다.','help.app2':'데이터는 기기 브라우저에 저장되며 서버에도 연동됩니다.',
     'lbl.detail':'상세정보',
     'form.amount':'금액 (원)','form.amountPh':'0',
     'form.category':'카테고리','form.catSelect':'선택',
@@ -5029,7 +5056,6 @@ const TRANSLATIONS = {
     'mbti.budget.ok':'적당한 균형감각을 가진 소비러예요 👍',
     'mbti.budget.warn':'거의 한계선! 조금만 더 아껴봐요 😅',
     'mbti.budget.over':'예산 초과! 다음 달엔 절약 모드 고고 😰',
-    'fx.weekly':'매주 {dow}요일','fx.monthly':'매달 {d}일','fx.yearly':'매년 {m}월 {d}일',
     'fx.pastDateMonth':'이미 지난 날짜네요! 이번 달({label}) 내역에도 지금 바로 기록할까요?',
     'fx.pastDateYear':'이미 지난 날짜네요! 올해({m}월 {d}일) 내역에도 지금 바로 기록할까요?',
     'toast.coming':'준비 중이에요','toast.langSet':'언어가 변경됐어요 ✓','toast.fontChanged':'글꼴 크기가 변경됐어요',
@@ -5087,6 +5113,29 @@ const TRANSLATIONS = {
     'form.catName':'Category name','form.payName':'Payment name','form.catSelect':'Select',
     'btn.save':'Save','btn.add':'Add','btn.close':'Close',
     'btn.detail':'Detail','btn.edit':'Edit','btn.copy':'Copy','btn.delete':'Delete',
+    'fmt.daySheet':'Day {d} ({dow})',
+    'fx.addNew':'Add New Fixed Item','fx.namePh':'Item name (e.g. Rent)','fx.amtPh':'Amount','fx.catPh':'Select Category',
+    'fx.typeExp':'💸 Expense','fx.typeInc':'💰 Income',
+    'fx.weekly':'Weekly','fx.monthly':'Monthly','fx.yearly':'Yearly','fx.addBtn':'＋ Add',
+    'fx.retroTitle':'📅 This date has passed!','fx.retroConfirm':'✅ Yes, record now','fx.retroSkip':'Apply from next month',
+    'fx.cycleWeekly':'Every {dow}','fx.cycleMonthly':'Day {d} each month','fx.cycleYearly':'Every {m}/{d}',
+    'fx.domFmt':'Day {d}','fx.moyFmt':'Month {m}','fx.dFmt':'Day {d}',
+    'cat.addNew':'Add New Category','cat.namePh':'Category name','cat.tabExp':'Expense','cat.tabInc':'Income',
+    'pay.addNew':'Add New Payment','pay.namePh':'Payment method name',
+    'notif.checking':'Checking notification permission...','notif.timeLabel':'Notification time',
+    'notif.desc':'Sends a reminder at the set time. Works when the app is open.',
+    'notif.saveBtn':'Allow & Save',
+    'backup.backupTitle':'Data Backup (JSON Download)','backup.backupSub':'Save all records, categories & settings to a file',
+    'backup.restoreTitle':'Data Restore (File Upload)','backup.restoreSub':'Restore from backup JSON (overwrites current data)',
+    'export.thisMonth':'This month\'s records','export.allTime':'All-time records',
+    'del.confirm':'Are you sure you want to delete all data?',
+    'del.warn':'Deleted data cannot be recovered. Back up before deleting.',
+    'del.cancel':'Cancel','del.deleteAll':'Delete All',
+    'help.ledgerTitle':'Ledger Tab','help.ledger1':'Record expenses and income with the + button below.','help.ledger2':'Tap a transaction to edit, delete, or view details.','help.ledger3':'Use 📅 for calendar view and 🔍 to search.','help.ledger4':'Use ‹ › buttons at the top to navigate months.',
+    'help.statsTitle':'Stats Tab','help.stats1':'View expense breakdown by category and payment method.','help.stats2':'Filter by week, month, or year from the top right.','help.stats3':'Tap the donut chart to see category details.',
+    'help.reportTitle':'Analysis Tab','help.report1':'Analyze spending patterns with widgets.','help.report2':'Use ··· to add, remove, or reorder widgets.','help.report3':'Set a budget goal to see remaining balance.','help.report4':'Reflect on spending with 😊/💸 in the top expense widget.',
+    'help.meTitle':'Me Tab — Data Management','help.me1':'Fixed Expenses: Register recurring expenses to auto-record on the set date.','help.me2':'Edit Categories: Change emoji/name or add new categories.','help.me3':'Backup/Restore: Keep data safe in a JSON file and restore anytime.','help.me4':'Export: Download this month\'s or all records as CSV.','help.me5':'Push Notifications: Get reminders at your preferred time.',
+    'help.appTitle':'App Info','help.app1':'MyBudget v1.0 — Build smart spending habits.','help.app2':'Data is stored in your browser and synced to the server.',
     'lbl.detail':'Detail',
     'form.amount':'Amount','form.amountPh':'0',
     'form.category':'Category','form.catSelect':'Select',
@@ -5188,7 +5237,6 @@ const TRANSLATIONS = {
     'mbti.budget.ok':'A spender with balanced sense 👍',
     'mbti.budget.warn':'Almost at the limit! Try to save a little more 😅',
     'mbti.budget.over':'Over budget! Let\'s go saving mode next month 😰',
-    'fx.weekly':'Every {dow}','fx.monthly':'Day {d} of every month','fx.yearly':'Every {m}/{d}',
     'fx.pastDateMonth':'This date has passed! Record it for this month ({label}) now?',
     'fx.pastDateYear':'This date has passed! Record it for this year ({m}/{d}) now?',
     'toast.coming':'Coming soon','toast.langSet':'Language updated ✓','toast.fontChanged':'Font size changed',
@@ -5246,6 +5294,29 @@ const TRANSLATIONS = {
     'form.catName':'カテゴリ名','form.payName':'支払方法名','form.catSelect':'選択',
     'btn.save':'保存','btn.add':'追加','btn.close':'閉じる',
     'btn.detail':'詳細','btn.edit':'編集','btn.copy':'コピー','btn.delete':'削除',
+    'fmt.daySheet':'{d}日（{dow}）',
+    'fx.addNew':'新規固定項目追加','fx.namePh':'項目名（例：家賃）','fx.amtPh':'金額','fx.catPh':'カテゴリ選択',
+    'fx.typeExp':'💸 支出','fx.typeInc':'💰 収入',
+    'fx.weekly':'毎週','fx.monthly':'毎月','fx.yearly':'毎年','fx.addBtn':'＋追加',
+    'fx.retroTitle':'📅 日付を過ぎています！','fx.retroConfirm':'✅ はい、今すぐ記録します','fx.retroSkip':'来月から適用します',
+    'fx.cycleWeekly':'毎週{dow}曜日','fx.cycleMonthly':'毎月{d}日','fx.cycleYearly':'毎年{m}月{d}日',
+    'fx.domFmt':'毎月{d}日','fx.moyFmt':'{m}月','fx.dFmt':'{d}日',
+    'cat.addNew':'新規カテゴリ追加','cat.namePh':'カテゴリ名','cat.tabExp':'支出','cat.tabInc':'収入',
+    'pay.addNew':'新規支払方法追加','pay.namePh':'支払方法名',
+    'notif.checking':'通知権限確認中...','notif.timeLabel':'通知時間',
+    'notif.desc':'設定した時間に記録リマインドを送ります。アプリ起動時に動作します。',
+    'notif.saveBtn':'許可して保存',
+    'backup.backupTitle':'データバックアップ (JSONダウンロード)','backup.backupSub':'全履歴・カテゴリ・設定をファイル保存します',
+    'backup.restoreTitle':'データ復元 (ファイルアップロード)','backup.restoreSub':'バックアップJSONで復元します（現在データ上書き）',
+    'export.thisMonth':'今月の履歴','export.allTime':'全期間履歴',
+    'del.confirm':'本当に全データを削除しますか？',
+    'del.warn':'削除されたデータは復元できません。削除前に必ずバックアップしてください。',
+    'del.cancel':'キャンセル','del.deleteAll':'全て削除',
+    'help.ledgerTitle':'家計簿タブ','help.ledger1':'下部の+ボタンで支出・収入を記録してください。','help.ledger2':'取引をタップすると編集・削除・詳細表示できます。','help.ledger3':'📅でカレンダービュー、🔍で履歴を検索します。','help.ledger4':'上部の‹ ›ボタンで月を移動できます。',
+    'help.statsTitle':'統計タブ','help.stats1':'カテゴリ別・支払方法別の支出割合を確認できます。','help.stats2':'右上から週・月・年単位で確認できます。','help.stats3':'ドーナツグラフをタップするとカテゴリ詳細が表示されます。',
+    'help.reportTitle':'分析タブ','help.report1':'今月の消費パターンをウィジェットで分析します。','help.report2':'ウィジェット右側の···ボタンで追加・削除・並び替えができます。','help.report3':'予算目標を設定すると残高が確認できます。','help.report4':'最高支出ウィジェットで😊/💸ボタンを使って消費を振り返りましょう。',
+    'help.meTitle':'私タブ — データ管理','help.me1':'固定支出設定：家賃・通信費などを登録すると指定日に自動記録されます。','help.me2':'カテゴリ編集：絵文字や名前の変更、新規カテゴリ追加ができます。','help.me3':'バックアップ/復元：JSONファイルでデータを安全に保管・復元できます。','help.me4':'エクスポート：今月または全期間の履歴をCSVでダウンロードできます。','help.me5':'プッシュ通知：希望の時間に記録リマインドを受け取れます。',
+    'help.appTitle':'アプリ情報','help.app1':'マイ家計簿 v1.0 — 賢い消費習慣を作りましょう。','help.app2':'データはブラウザに保存され、サーバーとも連携されます。',
     'lbl.detail':'詳細情報',
     'form.amount':'金額 (円)','form.amountPh':'0',
     'form.category':'カテゴリ','form.catSelect':'選択',
@@ -5347,7 +5418,6 @@ const TRANSLATIONS = {
     'mbti.budget.ok':'適度なバランス感覚を持つ消費者 👍',
     'mbti.budget.warn':'限界ライン！もう少し節約しましょう 😅',
     'mbti.budget.over':'予算超過！来月は節約モードで行こう 😰',
-    'fx.weekly':'毎週{dow}曜日','fx.monthly':'毎月{d}日','fx.yearly':'毎年{m}月{d}日',
     'fx.pastDateMonth':'すでに過ぎた日付です！今月({label})の記録にも今すぐ記録しますか？',
     'fx.pastDateYear':'すでに過ぎた日付です！今年({m}月{d}日)の記録にも今すぐ記録しますか？',
     'toast.coming':'準備中です','toast.langSet':'言語が変更されました ✓','toast.fontChanged':'フォントサイズが変更されました',
@@ -5405,6 +5475,29 @@ const TRANSLATIONS = {
     'form.catName':'分类名称','form.payName':'支付方式名称','form.catSelect':'选择',
     'btn.save':'保存','btn.add':'添加','btn.close':'关闭',
     'btn.detail':'详情','btn.edit':'编辑','btn.copy':'复制','btn.delete':'删除',
+    'fmt.daySheet':'{d}日（{dow}）',
+    'fx.addNew':'添加新固定项目','fx.namePh':'项目名（例：房租）','fx.amtPh':'金额','fx.catPh':'选择分类',
+    'fx.typeExp':'💸 支出','fx.typeInc':'💰 收入',
+    'fx.weekly':'每周','fx.monthly':'每月','fx.yearly':'每年','fx.addBtn':'＋添加',
+    'fx.retroTitle':'📅 日期已过！','fx.retroConfirm':'✅ 是，立即记录','fx.retroSkip':'从下月开始应用',
+    'fx.cycleWeekly':'每周{dow}','fx.cycleMonthly':'每月{d}日','fx.cycleYearly':'每年{m}月{d}日',
+    'fx.domFmt':'每月{d}日','fx.moyFmt':'{m}月','fx.dFmt':'{d}日',
+    'cat.addNew':'添加新分类','cat.namePh':'分类名称','cat.tabExp':'支出','cat.tabInc':'收入',
+    'pay.addNew':'添加新支付方式','pay.namePh':'支付方式名称',
+    'notif.checking':'检查通知权限...','notif.timeLabel':'通知时间',
+    'notif.desc':'在设置的时间发送记账提醒，应用打开时有效。',
+    'notif.saveBtn':'允许并保存',
+    'backup.backupTitle':'数据备份 (JSON下载)','backup.backupSub':'将所有记录、分类和设置保存到文件',
+    'backup.restoreTitle':'数据恢复 (文件上传)','backup.restoreSub':'从备份JSON恢复（覆盖当前数据）',
+    'export.thisMonth':'本月记录','export.allTime':'全部记录',
+    'del.confirm':'确定删除所有数据吗？',
+    'del.warn':'已删除数据无法恢复。删除前请务必备份。',
+    'del.cancel':'取消','del.deleteAll':'全部删除',
+    'help.ledgerTitle':'账本标签','help.ledger1':'点击底部+按钮记录支出和收入。','help.ledger2':'点击交易可进行修改、删除和详细查看。','help.ledger3':'📅查看日历视图，🔍搜索记录。','help.ledger4':'使用顶部‹ ›按钮切换月份。',
+    'help.statsTitle':'统计标签','help.stats1':'查看按分类和支付方式的支出比例。','help.stats2':'在右上角按周、月、年查看。','help.stats3':'点击甜甜圈图查看分类详情。',
+    'help.reportTitle':'分析标签','help.report1':'用小部件分析本月消费模式。','help.report2':'点击···添加、删除或调整小部件顺序。','help.report3':'设置预算目标可查看剩余金额。','help.report4':'在最高支出小部件中用😊/💸回顾消费。',
+    'help.meTitle':'我的标签 — 数据管理','help.me1':'固定支出：登记房租、话费等定期支出，到期自动记录。','help.me2':'编辑分类：修改表情/名称或添加新分类。','help.me3':'备份/恢复：用JSON文件安全保存和恢复数据。','help.me4':'导出：将本月或全部记录下载为CSV。','help.me5':'推送通知：在设定时间收到记账提醒。',
+    'help.appTitle':'应用信息','help.app1':'我的账本 v1.0 — 培养明智的消费习惯。','help.app2':'数据存储在设备浏览器中，并与服务器同步。',
     'lbl.detail':'详细信息',
     'form.amount':'金额','form.amountPh':'0',
     'form.category':'类别','form.catSelect':'选择',
@@ -5506,7 +5599,6 @@ const TRANSLATIONS = {
     'mbti.budget.ok':'有适度平衡感的消费者 👍',
     'mbti.budget.warn':'几乎到达极限！再省一点吧 😅',
     'mbti.budget.over':'超支！下个月省钱模式出发 😰',
-    'fx.weekly':'每周{dow}','fx.monthly':'每月{d}日','fx.yearly':'每年{m}月{d}日',
     'fx.pastDateMonth':'日期已过！现在记录到本月({label})的账单中吗？',
     'fx.pastDateYear':'日期已过！现在记录到今年({m}月{d}日)的账单中吗？',
     'toast.coming':'敬请期待','toast.langSet':'语言已更改 ✓','toast.fontChanged':'字体大小已更改',
@@ -5564,6 +5656,29 @@ const TRANSLATIONS = {
     'form.catName':'Nombre de categoría','form.payName':'Nombre de pago','form.catSelect':'Seleccionar',
     'btn.save':'Guardar','btn.add':'Añadir','btn.close':'Cerrar',
     'btn.detail':'Detalle','btn.edit':'Editar','btn.copy':'Copiar','btn.delete':'Eliminar',
+    'fmt.daySheet':'Día {d} ({dow})',
+    'fx.addNew':'Agregar nuevo fijo','fx.namePh':'Nombre (ej. Alquiler)','fx.amtPh':'Importe','fx.catPh':'Seleccionar categoría',
+    'fx.typeExp':'💸 Gasto','fx.typeInc':'💰 Ingreso',
+    'fx.weekly':'Semanal','fx.monthly':'Mensual','fx.yearly':'Anual','fx.addBtn':'＋Agregar',
+    'fx.retroTitle':'📅 ¡Esta fecha ya pasó!','fx.retroConfirm':'✅ Sí, registrar ahora','fx.retroSkip':'Aplicar desde el próximo mes',
+    'fx.cycleWeekly':'Cada {dow}','fx.cycleMonthly':'Día {d} cada mes','fx.cycleYearly':'Cada {m}/{d}',
+    'fx.domFmt':'Día {d} mensual','fx.moyFmt':'Mes {m}','fx.dFmt':'Día {d}',
+    'cat.addNew':'Agregar nueva categoría','cat.namePh':'Nombre de categoría','cat.tabExp':'Gasto','cat.tabInc':'Ingreso',
+    'pay.addNew':'Agregar nuevo método','pay.namePh':'Nombre del método',
+    'notif.checking':'Verificando permiso de notificación...','notif.timeLabel':'Hora de notificación',
+    'notif.desc':'Envía un recordatorio a la hora configurada. Funciona con la app abierta.',
+    'notif.saveBtn':'Permitir y guardar',
+    'backup.backupTitle':'Copia de datos (JSON)','backup.backupSub':'Guarda todos los registros, categorías y configuraciones',
+    'backup.restoreTitle':'Restaurar datos (subir archivo)','backup.restoreSub':'Restaurar desde JSON de copia (sobrescribe datos)',
+    'export.thisMonth':'Registros de este mes','export.allTime':'Todos los registros',
+    'del.confirm':'¿Eliminar todos los datos?',
+    'del.warn':'Los datos eliminados no se pueden recuperar. Haz una copia antes.',
+    'del.cancel':'Cancelar','del.deleteAll':'Eliminar todo',
+    'help.ledgerTitle':'Pestaña Libro','help.ledger1':'Registra gastos e ingresos con el botón + abajo.','help.ledger2':'Toca una transacción para editar, eliminar o ver detalles.','help.ledger3':'Usa 📅 para vista de calendario y 🔍 para buscar.','help.ledger4':'Usa ‹ › para cambiar de mes.',
+    'help.statsTitle':'Pestaña Estadísticas','help.stats1':'Ve el desglose de gastos por categoría y método de pago.','help.stats2':'Filtra por semana, mes o año en la esquina superior derecha.','help.stats3':'Toca el gráfico de dona para ver detalles por categoría.',
+    'help.reportTitle':'Pestaña Análisis','help.report1':'Analiza los patrones de gasto con widgets.','help.report2':'Usa ··· para agregar, quitar o reordenar widgets.','help.report3':'Establece un objetivo de presupuesto para ver el saldo restante.','help.report4':'Reflexiona con 😊/💸 en el widget de mayor gasto.',
+    'help.meTitle':'Pestaña Yo — Gestión de datos','help.me1':'Gastos fijos: Registra gastos recurrentes para autoregistrar en la fecha.','help.me2':'Editar categorías: Cambia emoji/nombre o añade nuevas categorías.','help.me3':'Copia/Restaurar: Guarda datos en JSON y restáuralos cuando quieras.','help.me4':'Exportar: Descarga registros del mes o de todo el período en CSV.','help.me5':'Notificaciones: Recibe recordatorios a la hora preferida.',
+    'help.appTitle':'Información de la app','help.app1':'MyBudget v1.0 — Crea hábitos de gasto inteligentes.','help.app2':'Los datos se guardan en tu navegador y se sincronizan con el servidor.',
     'lbl.detail':'Detalle',
     'form.amount':'Monto','form.amountPh':'0',
     'form.category':'Categoría','form.catSelect':'Seleccionar',
@@ -5665,7 +5780,6 @@ const TRANSLATIONS = {
     'mbti.budget.ok':'Un consumidor con sentido del equilibrio 👍',
     'mbti.budget.warn':'¡Casi en el límite! Intenta ahorrar un poco más 😅',
     'mbti.budget.over':'¡Presupuesto superado! El próximo mes en modo ahorro 😰',
-    'fx.weekly':'Cada {dow}','fx.monthly':'Día {d} de cada mes','fx.yearly':'Cada {m}/{d}',
     'fx.pastDateMonth':'¡Esta fecha ya pasó! ¿Registrar en este mes ({label}) ahora?',
     'fx.pastDateYear':'¡Esta fecha ya pasó! ¿Registrar en este año ({m}/{d}) ahora?',
     'toast.coming':'Próximamente','toast.langSet':'Idioma actualizado ✓','toast.fontChanged':'Tamaño de fuente cambiado',
@@ -5741,6 +5855,36 @@ function applyLang() {
   if (fszVal) { const fv = localStorage.getItem('design_fontsize')||'보통'; fszVal.textContent = trFontSize(fv); }
   const currVal = document.getElementById('currencyRowValue');
   if (currVal) { const sym = getCurrSymbol(); const code = getCurrCode(); currVal.textContent = sym + ' ' + code; }
+  buildFxDynamicOptions();
+}
+function buildFxDynamicOptions() {
+  const domSel = document.getElementById('fxDom');
+  if (domSel) {
+    const cur = domSel.value;
+    domSel.innerHTML = Array.from({length:31}, (_,i) => {
+      const d = i+1;
+      return `<option value="${d}">${tr('fx.domFmt').replace('{d}',d)}</option>`;
+    }).join('');
+    if (cur) domSel.value = cur;
+  }
+  const moySel = document.getElementById('fxMoy');
+  if (moySel) {
+    const cur = moySel.value;
+    moySel.innerHTML = Array.from({length:12}, (_,i) => {
+      const m = i+1;
+      return `<option value="${m}">${tr('fx.moyFmt').replace('{m}',m)}</option>`;
+    }).join('');
+    if (cur) moySel.value = cur;
+  }
+  const domySel = document.getElementById('fxDomY');
+  if (domySel) {
+    const cur = domySel.value;
+    domySel.innerHTML = Array.from({length:31}, (_,i) => {
+      const d = i+1;
+      return `<option value="${d}">${tr('fx.dFmt').replace('{d}',d)}</option>`;
+    }).join('');
+    if (cur) domySel.value = cur;
+  }
 }
 function fmtYearMonth(y, m) {
   const lang = localStorage.getItem(LANG_SK) || '한국어';
