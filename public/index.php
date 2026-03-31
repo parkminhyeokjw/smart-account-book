@@ -606,6 +606,18 @@ body {
 .prof-btn-login { display:block; text-align:center; text-decoration:none; background:var(--theme-primary,#1D2C55); color:#fff; }
 body.dark .prof-btn-logout { background:#263447; color:#e0e0e0; }
 body.dark .prof-btn-delete { background:#3b1a1a; color:#ef9a9a; }
+/* 통계 탭 달력 버튼 */
+.stats-cal-btn { background:rgba(255,255,255,.18); border:none; color:#fff; border-radius:8px; width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0; }
+.stats-cal-btn.on { background:rgba(255,255,255,.35); }
+.stats-cal-btn:active { opacity:.75; }
+/* 날짜 범위 선택 */
+.stats-date-range { display:flex; align-items:center; gap:8px; padding:4px 0 12px; }
+.stats-date-row { flex:1; display:flex; flex-direction:column; gap:4px; }
+.stats-date-row label { font-size:11px; color:#9e9e9e; font-weight:600; }
+.stats-date-input { width:100%; border:1.5px solid #e0e0e0; border-radius:10px; padding:9px 10px; font-size:14px; font-family:inherit; color:#212121; background:#fafafa; outline:none; }
+.stats-date-input:focus { border-color:var(--theme-primary,#1D2C55); }
+.stats-date-sep { font-size:18px; color:#bdbdbd; flex-shrink:0; margin-top:16px; }
+body.dark .stats-date-input { background:#1e293b; border-color:#334155; color:#e0e0e0; }
 /* 아바타 액션 시트 */
 .avatar-sheet-backdrop { position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:9100; display:none; }
 .avatar-sheet-backdrop.show { display:block; }
@@ -1125,10 +1137,13 @@ body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C;
       <button class="search-btn" onclick="openSearch()" title="검색"><i data-lucide="search" style="width:20px;height:20px;stroke-width:1.75"></i></button>
       <button class="cal-btn" onclick="toggleCalendar()" title="달력"><i data-lucide="calendar" style="width:20px;height:20px;stroke-width:1.75"></i></button>
     </div>
-    <div id="haStats" class="header-period-filter" style="display:none">
-      <button class="hpf-btn" id="hpf-week"  onclick="setStatsPeriod('week')"  data-i18n="period.week">주</button>
-      <button class="hpf-btn on" id="hpf-month" onclick="setStatsPeriod('month')" data-i18n="period.month">월</button>
-      <button class="hpf-btn" id="hpf-year"  onclick="setStatsPeriod('year')"  data-i18n="period.year">년</button>
+    <div id="haStats" style="display:none;align-items:center;gap:6px">
+      <button class="stats-cal-btn" id="statsCalBtn" onclick="openStatsDatePicker()" title="기간 직접 선택"><i data-lucide="calendar-range" style="width:18px;height:18px;stroke-width:1.75"></i></button>
+      <div class="header-period-filter">
+        <button class="hpf-btn" id="hpf-week"  onclick="setStatsPeriod('week')"  data-i18n="period.week">주</button>
+        <button class="hpf-btn on" id="hpf-month" onclick="setStatsPeriod('month')" data-i18n="period.month">월</button>
+        <button class="hpf-btn" id="hpf-year"  onclick="setStatsPeriod('year')"  data-i18n="period.year">년</button>
+      </div>
     </div>
   </div>
 </div>
@@ -1381,6 +1396,33 @@ body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C;
       </div>
     </div>
 
+  </div>
+</div>
+
+<!-- 통계 탭 기간 직접 선택 모달 -->
+<div class="center-overlay" id="statsDateModal" onclick="if(event.target===this)closeStatsDatePicker()">
+  <div class="center-modal" style="max-width:340px">
+    <div class="center-modal-hd">
+      <span class="center-modal-hd-title" data-i18n="stats.customRange">기간 직접 선택</span>
+      <button class="center-modal-x" onclick="closeStatsDatePicker()">×</button>
+    </div>
+    <div class="center-modal-body">
+      <div class="stats-date-range">
+        <div class="stats-date-row">
+          <label data-i18n="stats.startDate">시작일</label>
+          <input type="date" id="statsFromInput" class="stats-date-input">
+        </div>
+        <div class="stats-date-sep">→</div>
+        <div class="stats-date-row">
+          <label data-i18n="stats.endDate">종료일</label>
+          <input type="date" id="statsToInput" class="stats-date-input">
+        </div>
+      </div>
+    </div>
+    <div class="center-modal-footer" style="display:flex;gap:8px">
+      <button class="center-modal-btn" style="background:#f5f5f5;color:#424242" onclick="closeStatsDatePicker()" data-i18n="btn.cancel">취소</button>
+      <button class="center-modal-btn" onclick="applyStatsCustomRange()" data-i18n="stats.applyRange">적용</button>
+    </div>
   </div>
 </div>
 
@@ -2691,11 +2733,12 @@ function localDateStr(d) {
 function getWeekRange() {
   const today = new Date();
   const day = today.getDay(); // 0=일, 6=토
-  const sun = new Date(today);
-  sun.setDate(today.getDate() - day - weekOffset * 7); // 해당 주 일요일
-  const sat = new Date(sun);
-  sat.setDate(sun.getDate() + 6); // 해당 주 토요일
-  return { from: localDateStr(sun), to: localDateStr(sat) };
+  const diffToMon = (day === 0) ? -6 : 1 - day; // 월요일까지의 차이
+  const mon = new Date(today);
+  mon.setDate(today.getDate() + diffToMon - weekOffset * 7);
+  const sun = new Date(mon);
+  sun.setDate(mon.getDate() + 6); // 해당 주 일요일
+  return { from: localDateStr(mon), to: localDateStr(sun) };
 }
 
 function setStatsPeriod(p) {
@@ -2705,6 +2748,40 @@ function setStatsPeriod(p) {
   ['week','month','year'].forEach(k =>
     document.getElementById('hpf-'+k).classList.toggle('on', k===p)
   );
+  document.getElementById('statsCalBtn')?.classList.remove('on');
+  document.getElementById('statsHdrNav').style.display = 'flex';
+  setMonthLabel();
+  renderStats();
+}
+function openStatsDatePicker() {
+  const today = localDateStr(new Date());
+  const fromEl = document.getElementById('statsFromInput');
+  const toEl   = document.getElementById('statsToInput');
+  if (statsCustomActive && statsCustomFrom) fromEl.value = statsCustomFrom;
+  else { const [y,m] = curMonth.split('-'); fromEl.value = `${y}-${m}-01`; }
+  if (statsCustomActive && statsCustomTo)   toEl.value   = statsCustomTo;
+  else toEl.value = today;
+  toEl.max = today;
+  document.getElementById('statsDateModal').classList.add('show');
+  applyLang();
+}
+function closeStatsDatePicker() {
+  document.getElementById('statsDateModal').classList.remove('show');
+}
+function applyStatsCustomRange() {
+  const from = document.getElementById('statsFromInput').value;
+  const to   = document.getElementById('statsToInput').value;
+  if (!from || !to) { showToast(tr('stats.selectBothDates')); return; }
+  if (from > to)    { showToast(tr('stats.dateOrderError')); return; }
+  closeStatsDatePicker();
+  statsCustomActive = true;
+  statsCustomFrom   = from;
+  statsCustomTo     = to;
+  ['week','month','year'].forEach(k =>
+    document.getElementById('hpf-'+k).classList.remove('on')
+  );
+  document.getElementById('statsCalBtn')?.classList.add('on');
+  document.getElementById('statsHdrNav').style.display = 'none';
   setMonthLabel();
   renderStats();
 }
@@ -5355,6 +5432,7 @@ const TRANSLATIONS = {
     'lbl.type':'유형','lbl.amount':'금액','lbl.content':'내용','lbl.date':'날짜','lbl.other':'기타','lbl.cntFmt':'{n}건','lbl.user':'사용자',
     'day.sun':'일','day.mon':'월','day.tue':'화','day.wed':'수','day.thu':'목','day.fri':'금','day.sat':'토',
     'period.week':'주','period.month':'월','period.year':'년',
+    'stats.customRange':'기간 직접 선택','stats.startDate':'시작일','stats.endDate':'종료일','stats.applyRange':'적용','stats.selectBothDates':'시작일과 종료일을 모두 선택해주세요','stats.dateOrderError':'시작일이 종료일보다 늦을 수 없어요',
     'stats.rankTitle':'카테고리별 지출 순위',
     'form.amount':'금액 (원)','form.desc':'내용 / 메모','form.descPh':'예) 편의점, 버스','form.date':'날짜',
     'form.catName':'카테고리 이름','form.payName':'결제수단 이름','form.catSelect':'선택',
@@ -5558,6 +5636,7 @@ const TRANSLATIONS = {
     'lbl.type':'Type','lbl.amount':'Amount','lbl.content':'Note','lbl.date':'Date','lbl.other':'Other','lbl.cntFmt':'{n} records','lbl.user':'User',
     'day.sun':'Sun','day.mon':'Mon','day.tue':'Tue','day.wed':'Wed','day.thu':'Thu','day.fri':'Fri','day.sat':'Sat',
     'period.week':'Wk','period.month':'Mo','period.year':'Yr',
+    'stats.customRange':'Custom Range','stats.startDate':'Start','stats.endDate':'End','stats.applyRange':'Apply','stats.selectBothDates':'Please select both dates','stats.dateOrderError':'Start date cannot be after end date',
     'stats.rankTitle':'Expense Ranking by Category',
     'form.amount':'Amount','form.desc':'Note / Memo','form.descPh':'e.g. Coffee, Bus','form.date':'Date',
     'form.catName':'Category name','form.payName':'Payment name','form.catSelect':'Select',
@@ -5761,6 +5840,7 @@ const TRANSLATIONS = {
     'lbl.type':'種類','lbl.amount':'金額','lbl.content':'内容','lbl.date':'日付','lbl.other':'その他','lbl.cntFmt':'{n}件','lbl.user':'ユーザー',
     'day.sun':'日','day.mon':'月','day.tue':'火','day.wed':'水','day.thu':'木','day.fri':'金','day.sat':'土',
     'period.week':'週','period.month':'月','period.year':'年',
+    'stats.customRange':'期間を選択','stats.startDate':'開始日','stats.endDate':'終了日','stats.applyRange':'適用','stats.selectBothDates':'開始日と終了日を選択してください','stats.dateOrderError':'開始日は終了日より遅くなりません',
     'stats.rankTitle':'カテゴリ別支出ランキング',
     'form.amount':'金額','form.desc':'内容 / メモ','form.descPh':'例）コンビニ、バス','form.date':'日付',
     'form.catName':'カテゴリ名','form.payName':'支払方法名','form.catSelect':'選択',
@@ -5964,6 +6044,7 @@ const TRANSLATIONS = {
     'lbl.type':'类型','lbl.amount':'金额','lbl.content':'内容','lbl.date':'日期','lbl.other':'其他','lbl.cntFmt':'{n}条','lbl.user':'用户',
     'day.sun':'日','day.mon':'一','day.tue':'二','day.wed':'三','day.thu':'四','day.fri':'五','day.sat':'六',
     'period.week':'周','period.month':'月','period.year':'年',
+    'stats.customRange':'自定义期间','stats.startDate':'开始日期','stats.endDate':'结束日期','stats.applyRange':'应用','stats.selectBothDates':'请选择开始和结束日期','stats.dateOrderError':'开始日期不能晚于结束日期',
     'stats.rankTitle':'按分类支出排名',
     'form.amount':'金额','form.desc':'内容 / 备注','form.descPh':'例：便利店、公交','form.date':'日期',
     'form.catName':'分类名称','form.payName':'支付方式名称','form.catSelect':'选择',
@@ -6167,6 +6248,7 @@ const TRANSLATIONS = {
     'lbl.type':'Tipo','lbl.amount':'Importe','lbl.content':'Nota','lbl.date':'Fecha','lbl.other':'Otros','lbl.cntFmt':'{n} registros','lbl.user':'Usuario',
     'day.sun':'Dom','day.mon':'Lun','day.tue':'Mar','day.wed':'Mié','day.thu':'Jue','day.fri':'Vie','day.sat':'Sáb',
     'period.week':'Sem','period.month':'Mes','period.year':'Año',
+    'stats.customRange':'Rango personalizado','stats.startDate':'Inicio','stats.endDate':'Fin','stats.applyRange':'Aplicar','stats.selectBothDates':'Selecciona ambas fechas','stats.dateOrderError':'La fecha de inicio no puede ser posterior a la de fin',
     'stats.rankTitle':'Ranking de gastos por categoría',
     'form.amount':'Importe','form.desc':'Nota / Memo','form.descPh':'Ej: Café, Autobús','form.date':'Fecha',
     'form.catName':'Nombre de categoría','form.payName':'Nombre de pago','form.catSelect':'Seleccionar',
