@@ -733,10 +733,17 @@ body.dark .avatar-sheet-sep { background:#334155; }
 .search-empty { text-align: center; padding: 60px 20px; color: #bdbdbd; font-size: 15px; }
 
 /* ── 사진 풀스크린 뷰어 ── */
-.photo-viewer { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.92); z-index: 900; align-items: center; justify-content: center; }
+.photo-viewer { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.92); z-index: 900; align-items: center; justify-content: center; flex-direction: column; touch-action: pan-y; }
 .photo-viewer.show { display: flex; }
-.photo-viewer img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 6px; }
+.photo-viewer img { max-width: 100%; max-height: 82vh; object-fit: contain; border-radius: 6px; user-select: none; pointer-events: none; }
 .photo-viewer-x { position: absolute; top: 16px; right: 18px; background: rgba(255,255,255,.15); border: none; color: #fff; font-size: 28px; width: 42px; height: 42px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.pv-counter { position: absolute; top: 22px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,.8); font-size: 13px; font-weight: 600; }
+.pv-dots { position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; }
+.pv-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,.4); transition: background .2s, transform .2s; cursor: pointer; }
+.pv-dot.on { background: #fff; transform: scale(1.3); }
+.pv-arrow { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,.18); border: none; color: #fff; font-size: 22px; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.pv-arrow.left { left: 12px; }
+.pv-arrow.right { right: 12px; }
 
 /* ── 모달 ── */
 .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 500; align-items: center; justify-content: center; padding: 16px; }
@@ -1068,15 +1075,70 @@ body.dark .export-option { border-bottom-color:#2a2a2a; }
 body.dark .export-option-title { color:#e0e0e0; }
 
 /* ── 업그레이드 ── */
-.upgrade-feature-list { display:flex; flex-direction:column; gap:12px; }
-.upgrade-feature-item { display:flex; align-items:center; gap:12px; padding:10px 12px; background:#fafafa; border-radius:12px; }
-.upgrade-feat-ico { font-size:22px; width:30px; text-align:center; flex-shrink:0; }
-.upgrade-feat-text { flex:1; min-width:0; }
-.upgrade-feat-name { font-size:14px; font-weight:700; color:#212121; }
-.upgrade-feat-sub { font-size:11px; color:#9e9e9e; margin-top:1px; }
+.upg-modal { overflow:hidden; padding:0 !important; }
+.upg-hero {
+  background:linear-gradient(145deg,#1D2C55 0%,#2A3D80 60%,#1a2560 100%);
+  padding:32px 24px 28px; text-align:center; position:relative;
+}
+.upg-hero-close {
+  position:absolute; top:14px; right:14px;
+  background:rgba(255,255,255,.15); border:none; color:#fff;
+  width:30px; height:30px; border-radius:50%; font-size:18px; line-height:1;
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+}
+.upg-hero-close:hover { background:rgba(255,255,255,.25); }
+.upg-hero-icon { font-size:52px; margin-bottom:10px; display:block; filter:drop-shadow(0 4px 12px rgba(0,0,0,.3)); }
+.upg-hero-title { font-size:22px; font-weight:900; color:#fff; margin-bottom:6px; letter-spacing:-.3px; }
+.upg-hero-sub { font-size:13px; color:rgba(255,255,255,.65); line-height:1.5; }
+.upg-body { padding:22px 20px 24px; }
+.upg-section-label { font-size:11px; font-weight:800; color:var(--p); letter-spacing:1px; text-transform:uppercase; margin-bottom:6px; }
+.upg-headline { font-size:17px; font-weight:900; color:#1a1a2e; margin-bottom:16px; line-height:1.35; }
+.upg-benefits { display:flex; flex-direction:column; gap:9px; margin-bottom:20px; }
+.upg-benefit-row { display:flex; align-items:flex-start; gap:10px; font-size:13.5px; color:#374151; line-height:1.45; }
+.upg-benefit-check { width:20px; height:20px; background:var(--p); border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
+.upg-benefit-check::after { content:'✓'; color:#fff; font-size:11px; font-weight:800; }
+.upg-benefit-text strong { font-weight:700; color:#1a1a2e; }
+.upg-benefit-text span { color:#6B7280; font-size:12px; display:block; margin-top:1px; }
+.upg-plans { display:flex; gap:8px; margin-bottom:18px; }
+.upg-plan-card {
+  flex:1; border:2px solid #e5e7eb; border-radius:14px;
+  padding:12px 8px; text-align:center; cursor:pointer;
+  transition:all .18s; position:relative; background:#fff;
+}
+.upg-plan-card:hover { border-color:var(--p); }
+.upg-plan-card.sel { border-color:var(--p); background:#f0f4ff; }
+.upg-plan-card.sel .upg-plan-price { color:var(--p); }
+.upg-plan-badge {
+  position:absolute; top:-10px; left:50%; transform:translateX(-50%);
+  background:linear-gradient(90deg,#FF6B35,#FF8C42); color:#fff;
+  font-size:10px; font-weight:800; padding:3px 10px; border-radius:20px;
+  white-space:nowrap; letter-spacing:.3px;
+}
+.upg-plan-period { font-size:11px; font-weight:700; color:#6B7280; margin-bottom:4px; margin-top:4px; }
+.upg-plan-price { font-size:16px; font-weight:900; color:#1a1a2e; line-height:1.2; }
+.upg-plan-price sub { font-size:11px; font-weight:600; vertical-align:baseline; }
+.upg-plan-unit { font-size:10px; color:#9e9e9e; margin-top:2px; }
+.upg-cta {
+  display:block; width:100%; padding:15px;
+  background:linear-gradient(135deg,var(--p) 0%,color-mix(in srgb,var(--p) 70%,#000) 100%);
+  color:#fff; border:none; border-radius:14px;
+  font-size:16px; font-weight:800; cursor:pointer;
+  box-shadow:0 4px 16px rgba(29,44,85,.25);
+  transition:opacity .15s,transform .1s;
+}
+.upg-cta:active { opacity:.88; transform:scale(.98); }
+.upg-restore-link { display:block; text-align:center; margin-top:10px; font-size:12px; color:#9e9e9e; cursor:pointer; }
+.upg-restore-link:hover { color:var(--p); }
+body.dark .upg-body { background:#1a1a2e; }
+body.dark .upg-headline { color:#e0e0e0; }
+body.dark .upg-benefit-row { color:#c0c0c0; }
+body.dark .upg-benefit-text strong { color:#e0e0e0; }
+body.dark .upg-plan-card { background:#252535; border-color:#3a3a5c; }
+body.dark .upg-plan-card.sel { background:#1e2a4a; }
+body.dark .upg-plan-price { color:#e0e0e0; }
+body.dark .upg-plan-period { color:#9e9e9e; }
+/* 구버전 호환 유지 */
 .upgrade-badge-soon { background:#EDE9FE; color:#7C3AED; font-size:10px; font-weight:800; padding:3px 8px; border-radius:10px; white-space:nowrap; flex-shrink:0; }
-body.dark .upgrade-feature-item { background:#1a2638; }
-body.dark .upgrade-feat-name { color:#e0e0e0; }
 /* ── 도움말 ── */
 .help-section { margin-bottom:20px; }
 .help-section-title { font-size:13px; font-weight:800; color:var(--p); margin-bottom:8px; display:flex; align-items:center; gap:6px; }
@@ -1761,81 +1823,71 @@ body.dark .widget-card.surv-danger { background:#2d1515; }
 
 <!-- ── 업그레이드 모달 ── -->
 <div class="center-overlay" id="upgradeModal" onclick="if(event.target===this)closeUpgradeModal()">
-  <div class="center-modal" style="max-width:420px">
-    <div class="center-modal-hd" style="background:linear-gradient(135deg,#7C3AED,#4F46E5);padding:20px">
-      <span class="center-modal-hd-title" style="font-size:18px">⚡ <span data-i18n="upgrade.title">프리미엄</span></span>
-      <button class="center-modal-x" onclick="closeUpgradeModal()">×</button>
+  <div class="center-modal upg-modal" style="max-width:400px">
+    <!-- 히어로 섹션 -->
+    <div class="upg-hero">
+      <button class="upg-hero-close" onclick="closeUpgradeModal()">×</button>
+      <span class="upg-hero-icon">🚀</span>
+      <div class="upg-hero-title">똑똑가계부 프리미엄</div>
+      <div class="upg-hero-sub">더 스마트한 가계부 관리를 경험하세요</div>
     </div>
-    <div class="center-modal-body" style="padding:0">
-      <!-- 현재 플랜 -->
-      <div style="padding:16px 20px;background:#f9f5ff;border-bottom:1px solid #ede9fe">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div>
-            <div style="font-size:13px;color:#7C3AED;font-weight:700" data-i18n="upgrade.currentPlan">현재 플랜</div>
-            <div style="font-size:16px;font-weight:800;color:#212121;margin-top:2px" data-i18n="upgrade.freePlan">무료 (Free)</div>
+    <!-- 바디 섹션 -->
+    <div class="upg-body">
+      <div class="upg-section-label">프리미엄으로 이동</div>
+      <div class="upg-headline">지출을 완전히 통제하는<br>스마트한 방법</div>
+      <!-- 혜택 목록 -->
+      <div class="upg-benefits">
+        <div class="upg-benefit-row">
+          <div class="upg-benefit-check"></div>
+          <div class="upg-benefit-text">
+            <strong>PDF 리포트 내보내기</strong>
+            <span>월간 소비 리포트를 PDF로 저장·공유</span>
           </div>
-          <div style="background:#e0e7ff;color:#4338CA;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px" data-i18n="upgrade.freeBadge">FREE</div>
         </div>
-      </div>
-      <!-- 프리미엄 기능 목록 -->
-      <div style="padding:16px 20px">
-        <div style="font-size:12px;font-weight:800;color:#7C3AED;margin-bottom:12px;letter-spacing:.5px" data-i18n="upgrade.featuresTitle">PREMIUM 기능</div>
-        <div class="upgrade-feature-list">
-          <div class="upgrade-feature-item">
-            <span class="upgrade-feat-ico">📊</span>
-            <div class="upgrade-feat-text">
-              <div class="upgrade-feat-name" data-i18n="upgrade.feat1">PDF 리포트 내보내기</div>
-              <div class="upgrade-feat-sub" data-i18n="upgrade.feat1sub">월간 소비 리포트를 PDF로 저장</div>
-            </div>
-            <span class="upgrade-badge-soon" data-i18n="upgrade.soon">준비 중</span>
+        <div class="upg-benefit-row">
+          <div class="upg-benefit-check"></div>
+          <div class="upg-benefit-text">
+            <strong>멀티 디바이스 실시간 동기화</strong>
+            <span>폰, 태블릿, PC 어디서든 데이터 공유</span>
           </div>
-          <div class="upgrade-feature-item">
-            <span class="upgrade-feat-ico">☁️</span>
-            <div class="upgrade-feat-text">
-              <div class="upgrade-feat-name" data-i18n="upgrade.feat2">멀티 디바이스 동기화</div>
-              <div class="upgrade-feat-sub" data-i18n="upgrade.feat2sub">여러 기기에서 실시간 데이터 공유</div>
-            </div>
-            <span class="upgrade-badge-soon" data-i18n="upgrade.soon">준비 중</span>
+        </div>
+        <div class="upg-benefit-row">
+          <div class="upg-benefit-check"></div>
+          <div class="upg-benefit-text">
+            <strong>AI 소비 분석 & 절약 코칭</strong>
+            <span>지출 패턴 기반 맞춤 절약 팁 제공</span>
           </div>
-          <div class="upgrade-feature-item">
-            <span class="upgrade-feat-ico">🔒</span>
-            <div class="upgrade-feat-text">
-              <div class="upgrade-feat-name" data-i18n="upgrade.feat3">PIN / 생체 인증 잠금</div>
-              <div class="upgrade-feat-sub" data-i18n="upgrade.feat3sub">앱 보안을 강화하세요</div>
-            </div>
-            <span class="upgrade-badge-soon" data-i18n="upgrade.soon">준비 중</span>
-          </div>
-          <div class="upgrade-feature-item">
-            <span class="upgrade-feat-ico">💳</span>
-            <div class="upgrade-feat-text">
-              <div class="upgrade-feat-name" data-i18n="upgrade.feat4">다중 지갑 / 계좌 관리</div>
-              <div class="upgrade-feat-sub" data-i18n="upgrade.feat4sub">현금, 카드, 계좌별 분리 관리</div>
-            </div>
-            <span class="upgrade-badge-soon" data-i18n="upgrade.soon">준비 중</span>
-          </div>
-          <div class="upgrade-feature-item">
-            <span class="upgrade-feat-ico">🎨</span>
-            <div class="upgrade-feat-text">
-              <div class="upgrade-feat-name" data-i18n="upgrade.feat5">프리미엄 테마 잠금 해제</div>
-              <div class="upgrade-feat-sub" data-i18n="upgrade.feat5sub">더 많은 컬러 & 폰트 선택</div>
-            </div>
-            <span class="upgrade-badge-soon" data-i18n="upgrade.soon">준비 중</span>
-          </div>
-          <div class="upgrade-feature-item">
-            <span class="upgrade-feat-ico">📈</span>
-            <div class="upgrade-feat-text">
-              <div class="upgrade-feat-name" data-i18n="upgrade.feat6">AI 소비 예측 & 조언</div>
-              <div class="upgrade-feat-sub" data-i18n="upgrade.feat6sub">지출 패턴 기반 맞춤 절약 팁</div>
-            </div>
-            <span class="upgrade-badge-soon" data-i18n="upgrade.soon">준비 중</span>
+        </div>
+        <div class="upg-benefit-row">
+          <div class="upg-benefit-check"></div>
+          <div class="upg-benefit-text">
+            <strong>다중 계좌 & 프리미엄 테마</strong>
+            <span>계좌별 분리 관리 + 독점 디자인 테마</span>
           </div>
         </div>
       </div>
-    </div>
-    <div class="center-modal-footer">
-      <button class="center-modal-btn" style="background:linear-gradient(135deg,#7C3AED,#4F46E5)" onclick="closeUpgradeModal()">
-        <span data-i18n="upgrade.closeBtn">확인했어요 👍</span>
-      </button>
+      <!-- 플랜 선택 -->
+      <div class="upg-plans" id="upgPlans">
+        <div class="upg-plan-card" onclick="upgSelectPlan(this,'month')">
+          <div class="upg-plan-period">1개월</div>
+          <div class="upg-plan-price">₩3,900</div>
+          <div class="upg-plan-unit">/ 월</div>
+        </div>
+        <div class="upg-plan-card sel" onclick="upgSelectPlan(this,'year')">
+          <div class="upg-plan-badge">57% 절약</div>
+          <div class="upg-plan-period">1년</div>
+          <div class="upg-plan-price">₩19,900</div>
+          <div class="upg-plan-unit">₩1,658 / 월</div>
+        </div>
+        <div class="upg-plan-card" onclick="upgSelectPlan(this,'forever')">
+          <div class="upg-plan-period">평생</div>
+          <div class="upg-plan-price">₩49,900</div>
+          <div class="upg-plan-unit">1회 결제</div>
+        </div>
+      </div>
+      <!-- CTA 버튼 -->
+      <button class="upg-cta" onclick="closeUpgradeModal();showToast('🔔 곧 오픈 예정이에요!')">지금 시작하기 →</button>
+      <span class="upg-restore-link" onclick="closeUpgradeModal();showToast('복원 기능은 준비 중이에요.')">구매 복원</span>
     </div>
   </div>
 </div>
@@ -2019,9 +2071,13 @@ body.dark .widget-card.surv-danger { background:#2d1515; }
 </div>
 
 <!-- 사진 풀스크린 뷰어 -->
-<div class="photo-viewer" id="photoViewer" onclick="document.getElementById('photoViewer').classList.remove('show')">
+<div class="photo-viewer" id="photoViewer" onclick="pvBgClose(event)">
   <img id="photoViewerImg" src="" alt="사진">
-  <button class="photo-viewer-x" onclick="document.getElementById('photoViewer').classList.remove('show')">×</button>
+  <button class="photo-viewer-x" onclick="closePhotoViewer()">×</button>
+  <div class="pv-counter" id="pvCounter"></div>
+  <div class="pv-dots" id="pvDots" style="display:none"></div>
+  <button class="pv-arrow left" id="pvLeft" style="display:none" onclick="event.stopPropagation();pvMove(-1)">‹</button>
+  <button class="pv-arrow right" id="pvRight" style="display:none" onclick="event.stopPropagation();pvMove(1)">›</button>
 </div>
 
 <!-- 하단 탭바 -->
@@ -2294,7 +2350,7 @@ const WIDGET_DEFS = [
   { id: 'top3cats',  label: '카테고리 TOP 3',   icon: '🥇' },
 ];
 const WIDGETS_SK = 'ddgb_widgets_v1';
-let reportWidgets  = JSON.parse(localStorage.getItem(WIDGETS_SK) || '["insight","champion","dayofweek"]');
+let reportWidgets  = JSON.parse(localStorage.getItem(WIDGETS_SK) || '["insight","survival","champion","dayofweek","top3cats","mbti"]');
 let reportEditMode = false;
 const SURV_SK  = 'ddgb_surv_v1';
 let survGoal = (() => {
@@ -2353,7 +2409,10 @@ function load() {
     if (c.lu && c.bg) CAT_ICON_MAP[c.name] = { lu: c.lu, bg: c.bg, c: '#fff' };
   });
 }
-function persist()     { localStorage.setItem(SK,      JSON.stringify(txs)); }
+function persist() {
+  try { localStorage.setItem(SK, JSON.stringify(txs)); }
+  catch(e) { showToast('⚠️ 저장 공간이 부족해요. 오래된 사진 내역을 삭제해보세요.'); }
+}
 function persistCats() { localStorage.setItem(CATS_SK, JSON.stringify(customCats)); }
 
 // ── 유틸 ──────────────────────────────────────────────────────
@@ -2391,9 +2450,10 @@ function getIcon(cat) {
 // ── tx-row HTML 공통 빌더 ───────────────────────────────────
 function txRowHtml(t, extraOnclick) {
   const photos = Array.isArray(t.photos) ? t.photos : (t.photo ? [t.photo] : []);
+  if (photos.length) _photoSets['tx_' + t.id] = photos;
   const firstPhoto = photos[0] || null;
   const thumb = firstPhoto
-    ? `<div class="tx-thumb-slot" onclick="event.stopPropagation();openPhoto('${firstPhoto}')">
+    ? `<div class="tx-thumb-slot" onclick="event.stopPropagation();openPhotoSet('tx_${t.id}',0)">
          <img src="${firstPhoto}" alt="">
        </div>`
     : '';
@@ -2413,9 +2473,11 @@ function txRowHtml(t, extraOnclick) {
 }
 
 // ── 사진 캐러셀 빌더 ────────────────────────────────────────
+const _photoSets = {};
 function buildCarousel(photos, id) {
-  const slides = photos.map(src =>
-    `<img src="${src}" alt="" onclick="openPhoto('${src}')">`
+  _photoSets[id] = photos;
+  const slides = photos.map((src, i) =>
+    `<img src="${src}" alt="" onclick="openPhotoSet('${id}',${i})">`
   ).join('');
   const dots = photos.length > 1
     ? `<div class="photo-carousel-dots" id="dots-${id}">` +
@@ -3157,14 +3219,14 @@ function widgetSurvivalHTML() {
   </div>`;
 }
 function widgetTop3HTML() {
-  return `<div class="widget-card" id="rTop3Card">
+  return `<div class="widget-card wfull" id="rTop3Card">
     <button class="widget-menu-btn" onclick="openWidgetAction(event, this.closest('.widget-card').id)">···</button>
     <div class="wgt-title">🥇 <span data-i18n="widget.top3">TOP 3</span></div>
     <div class="top3-body" id="rTop3Body"></div>
   </div>`;
 }
 function widgetMbtiHTML() {
-  return `<div class="widget-card" id="rMbtiCard">
+  return `<div class="widget-card wfull" id="rMbtiCard">
     <button class="widget-menu-btn" onclick="openWidgetAction(event, this.closest('.widget-card').id)">···</button>
     <div class="wgt-title">🧬 <span data-i18n="widget.mbti">소비 MBTI</span></div>
     <div class="mbti-body">
@@ -4294,8 +4356,19 @@ function onPhotoSelect(input) {
   const file = input.files[0];
   const reader = new FileReader();
   reader.onload = e => {
-    photosData.push(e.target.result);
-    renderPhotoGrid();
+    const img = new Image();
+    img.onload = () => {
+      const MAX = 900;
+      let w = img.width, h = img.height;
+      if (w > MAX || h > MAX) { const r = Math.min(MAX/w, MAX/h); w = Math.round(w*r); h = Math.round(h*r); }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.78);
+      photosData.push(dataUrl);
+      renderPhotoGrid();
+    };
+    img.src = e.target.result;
   };
   reader.readAsDataURL(file);
   input.value = '';
@@ -4311,16 +4384,55 @@ function renderPhotoGrid() {
   grid.style.display = 'block';
   items.innerHTML = photosData.map((src, i) =>
     `<div class="photo-grid-item">
-      <img src="${src}" alt="" onclick="openPhoto('${src}')">
+      <img src="${src}" alt="" onclick="openModalPhoto(${i})">
       <button class="photo-grid-x" onclick="removePhoto(${i})">✕</button>
     </div>`
   ).join('') +
   `<div class="photo-add-btn" onclick="document.getElementById('photoInput').click()">＋</div>`;
 }
-function openPhoto(src) {
-  document.getElementById('photoViewerImg').src = src;
-  document.getElementById('photoViewer').classList.add('show');
+// ── 사진 뷰어 ────────────────────────────────────────────────
+let _pvPhotos = [], _pvIdx = 0, _pvTouchX = 0;
+function openPhoto(src) { _pvOpen([src], 0); }
+function openPhotoSet(setId, idx) { _pvOpen(_photoSets[setId] || [], idx); }
+function openModalPhoto(idx) { _pvOpen(photosData, idx); }
+function _pvOpen(photos, idx) {
+  if (!photos.length) return;
+  _pvPhotos = photos;
+  _pvIdx = Math.max(0, Math.min(photos.length - 1, idx));
+  _pvRender();
+  const v = document.getElementById('photoViewer');
+  v.classList.add('show');
+  // 스와이프
+  v.ontouchstart = e => { _pvTouchX = e.touches[0].clientX; };
+  v.ontouchend   = e => {
+    const dx = e.changedTouches[0].clientX - _pvTouchX;
+    if (Math.abs(dx) > 40) pvMove(dx < 0 ? 1 : -1);
+  };
 }
+function _pvRender() {
+  const img = document.getElementById('photoViewerImg');
+  if (img) img.src = _pvPhotos[_pvIdx];
+  const multi = _pvPhotos.length > 1;
+  const counter = document.getElementById('pvCounter');
+  if (counter) counter.textContent = multi ? `${_pvIdx+1} / ${_pvPhotos.length}` : '';
+  const dots = document.getElementById('pvDots');
+  if (dots) {
+    dots.style.display = multi ? 'flex' : 'none';
+    if (multi) dots.innerHTML = _pvPhotos.map((_,i) =>
+      `<div class="pv-dot${i===_pvIdx?' on':''}" onclick="event.stopPropagation();pvMove(${i-_pvIdx})"></div>`
+    ).join('');
+  }
+  const pl = document.getElementById('pvLeft');
+  const pr = document.getElementById('pvRight');
+  if (pl) pl.style.display  = multi && _pvIdx > 0                    ? 'flex' : 'none';
+  if (pr) pr.style.display  = multi && _pvIdx < _pvPhotos.length - 1 ? 'flex' : 'none';
+}
+function pvMove(d) {
+  _pvIdx = Math.max(0, Math.min(_pvPhotos.length - 1, _pvIdx + d));
+  _pvRender();
+}
+function closePhotoViewer() { document.getElementById('photoViewer').classList.remove('show'); }
+function pvBgClose(e) { if (e.target === document.getElementById('photoViewer')) closePhotoViewer(); }
 
 // ── 검색 ──────────────────────────────────────────────────────
 function openSearch() {
@@ -4365,9 +4477,12 @@ function saveTx() {
   const pay  = document.getElementById('fPay').value;
   if (!amt||amt<=0) { alert('금액을 입력해주세요.'); return; }
   if (!date)        { alert('날짜를 선택해주세요.');  return; }
-  if (editingTxId) {
+  const isEdit = !!editingTxId;
+  let dbId = null;
+  if (isEdit) {
     const idx = txs.findIndex(t => t.id === editingTxId);
     if (idx !== -1) {
+      dbId = txs[idx].db_id || null;
       txs[idx] = { ...txs[idx], type:curType, amount:amt, category:cat, description:desc||cat, date, payment:pay, photos:[...photosData] };
       delete txs[idx].photo; // 구버전 필드 제거
     }
@@ -4375,10 +4490,20 @@ function saveTx() {
   } else {
     txs.push({ id:Date.now()+Math.random().toString(36).slice(2), type:curType, amount:amt, category:cat, description:desc||cat, date, payment:pay, photos:[...photosData] });
   }
-  persist();
+  // 모달 먼저 닫기 (persist 실패해도 UI는 닫힘)
   closeModal();
+  document.getElementById('txaOverlay')?.classList.remove('show');
+  persist();
   if (date.slice(0,7)!==curMonth) { curMonth=date.slice(0,7); setMonthLabel(); }
   if (calVisible) { renderCalendar(); } else { goTab('ledger'); }
+  // DB 저장 (로그인 + 수정인 경우 서버에도 반영)
+  if (IS_LOGGED_IN && isEdit && dbId) {
+    const fd = new FormData();
+    fd.append('id', dbId); fd.append('amount', amt); fd.append('category', cat);
+    fd.append('description', desc||cat); fd.append('date', date); fd.append('payment', pay);
+    fd.append('type', curType);
+    fetch('../api/?action=update', { method:'POST', body:fd, credentials:'same-origin' }).catch(()=>{});
+  }
 }
 
 // ── 내역 액션 시트 ───────────────────────────────────────────
@@ -5365,6 +5490,10 @@ function closeDeleteAllModal() {
 // ── 업그레이드 ───────────────────────────────────────────────
 function openUpgradeModal()  { document.getElementById('upgradeModal').classList.add('show'); applyLang(); }
 function closeUpgradeModal() { document.getElementById('upgradeModal').classList.remove('show'); }
+function upgSelectPlan(el, plan) {
+  document.querySelectorAll('.upg-plan-card').forEach(c => c.classList.remove('sel'));
+  el.classList.add('sel');
+}
 
 // ── 문의하기 ─────────────────────────────────────────────────
 function openContactModal() {
