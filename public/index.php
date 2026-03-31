@@ -1104,6 +1104,38 @@ body.dark .fx-cycle-btn.on { background:#78909C; color:#fff; border-color:#78909
 body.dark .fx-dow-btn { background:#37474F; color:#CFD8DC; border-color:#546E7A; }
 body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C; }
 #currencyGrid::-webkit-scrollbar { display:none; }
+
+/* ── 분석 대시보드 리디자인 ── */
+.report-wrap { padding:8px 12px 100px !important; display:grid !important; grid-template-columns:1fr 1fr; gap:10px; align-items:start; }
+.widget-card.wfull { grid-column:1 / -1; }
+.wgt-title { display:flex; align-items:center; gap:5px; padding:10px 13px 8px; font-size:11px; font-weight:700; color:#9e9e9e; letter-spacing:.5px; border-bottom:1px solid #f5f5f5; }
+body.dark .wgt-title { border-bottom-color:#1e293b; }
+.champ-header, .top3-header, .mbti-header { display:none; }
+.surv-header { background:none !important; padding:0 !important; height:0; overflow:hidden; }
+.widget-card.surv-danger { background:#fff5f5; border-top:3px solid #EF4444; }
+body.dark .widget-card.surv-danger { background:#2d1515; }
+.rc-body { padding:10px 13px 12px !important; }
+.champ-body { padding:8px 13px 14px !important; }
+.dow-body { padding:10px 13px 12px !important; }
+.surv-body { padding:8px 14px 14px !important; }
+.top3-body { padding:2px 10px 10px !important; }
+.mbti-body { padding:8px 10px 12px !important; }
+.rc-emoji { display:none !important; }
+.rc-cmp-val { font-size:19px !important; font-weight:800 !important; }
+.rc-cmp-val.this-month { font-size:22px !important; }
+.champ-amt { font-size:22px !important; }
+.surv-remaining-amt { font-size:24px !important; }
+.top3-row { padding:7px 0; gap:8px; }
+.top3-rank { font-size:15px !important; width:20px; }
+.top3-cat { font-size:12px !important; }
+.top3-sub { display:none; }
+.top3-amt { font-size:13px !important; }
+.mbti-emoji { font-size:30px !important; margin-bottom:3px !important; }
+.mbti-code { font-size:20px !important; }
+.mbti-title { font-size:12px !important; }
+.mbti-desc { font-size:10px !important; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.mbti-top3 { font-size:10px !important; }
+@keyframes widgetIn { from { opacity:0; transform:scale(.97); } to { opacity:1; transform:none; } }
 </style>
 </head>
 <body class="<?= $darkMode ? 'dark' : '' ?>">
@@ -3033,25 +3065,26 @@ function applyDateRange() {
 // ── 결산 위젯 HTML 생성 ────────────────────────────────────
 const CARD_IDS = { insight:'rInsightCard', champion:'rChampCard', dayofweek:'rDowCard', survival:'rSurvivalCard', mbti:'rMbtiCard', top3cats:'rTop3Card' };
 function widgetInsightHTML() {
-  return `<div class="widget-card" id="rInsightCard">
+  return `<div class="widget-card wfull" id="rInsightCard">
     <button class="widget-menu-btn" onclick="openWidgetAction(event, this.closest('.widget-card').id)">···</button>
+    <div class="wgt-title">📊 <span data-i18n="widget.insight">이번 달 요약</span></div>
     <div class="rc-body">
       <div class="rc-tag neutral" id="rInsightTag">#분석중</div>
-      <div class="rc-emoji" id="rEmoji">📊</div>
       <div class="rc-insight" id="rInsight">분석 중...</div>
       <div class="rc-sub" id="rInsightSub"></div>
+      <div id="rEmoji" style="display:none"></div>
       <div class="rc-compare">
         <div class="rc-cmp-col"><div class="rc-cmp-label" id="rLabelPrev"></div><div class="rc-cmp-val" id="rValPrev">₩0</div></div>
         <div class="rc-cmp-arr">→</div>
-        <div class="rc-cmp-col"><div class="rc-cmp-label" id="rLabelThis"></div><div class="rc-cmp-val" id="rValThis">₩0</div></div>
+        <div class="rc-cmp-col"><div class="rc-cmp-label" id="rLabelThis"></div><div class="rc-cmp-val this-month" id="rValThis">₩0</div></div>
       </div>
     </div>
   </div>`;
 }
 function widgetChampHTML() {
-  return `<div class="widget-card" id="rChampCard">
+  return `<div class="widget-card wfull" id="rChampCard">
     <button class="widget-menu-btn" onclick="openWidgetAction(event, this.closest('.widget-card').id)">···</button>
-    <div class="champ-header"><span class="champ-header-label">🏆 <span data-i18n="widget.champ">최고 지출</span></span></div>
+    <div class="wgt-title">🏆 <span data-i18n="widget.champ">최고 지출</span></div>
     <div class="champ-body">
       <div class="champ-mnav">
         <button class="champ-mnav-btn" id="rChampMPrev" onclick="changeMonth(-1)">‹</button>
@@ -3080,19 +3113,20 @@ function widgetChampHTML() {
   </div>`;
 }
 function widgetDowHTML() {
-  return `<div class="widget-card" id="rDowCard">
+  return `<div class="widget-card wfull" id="rDowCard">
     <button class="widget-menu-btn" onclick="openWidgetAction(event, this.closest('.widget-card').id)">···</button>
+    <div class="wgt-title">📅 <span data-i18n="widget.dow">요일별 소비 패턴</span></div>
     <div class="dow-body">
-      <div class="dow-title">📅 <span data-i18n="widget.dow">요일별 소비 패턴</span></div>
       <div class="dow-bars"    id="rDowBars"></div>
       <div class="dow-insight" id="rDowInsight"></div>
     </div>
   </div>`;
 }
 function widgetSurvivalHTML() {
-  return `<div class="widget-card" id="rSurvivalCard">
+  return `<div class="widget-card wfull" id="rSurvivalCard">
     <button class="widget-menu-btn" onclick="openWidgetAction(event, this.closest('.widget-card').id)">···</button>
-    <div class="surv-header" id="rSurvHeader"><span class="surv-header-label">💰 <span data-i18n="widget.survival">목표 예산</span></span></div>
+    <div class="wgt-title">💰 <span data-i18n="widget.survival">목표 예산</span></div>
+    <div class="surv-header" id="rSurvHeader" style="display:none"></div>
     <div class="surv-body">
       <div class="surv-tabs">
         <button class="surv-tab" id="survTab-week"  onclick="setSurvMode('week')"  data-i18n="period.week">주</button>
@@ -3125,14 +3159,14 @@ function widgetSurvivalHTML() {
 function widgetTop3HTML() {
   return `<div class="widget-card" id="rTop3Card">
     <button class="widget-menu-btn" onclick="openWidgetAction(event, this.closest('.widget-card').id)">···</button>
-    <div class="top3-header"><span class="top3-header-label">🥇 <span data-i18n="widget.top3">카테고리 TOP 3</span></span></div>
+    <div class="wgt-title">🥇 <span data-i18n="widget.top3">TOP 3</span></div>
     <div class="top3-body" id="rTop3Body"></div>
   </div>`;
 }
 function widgetMbtiHTML() {
   return `<div class="widget-card" id="rMbtiCard">
     <button class="widget-menu-btn" onclick="openWidgetAction(event, this.closest('.widget-card').id)">···</button>
-    <div class="mbti-header"><span class="mbti-header-label">🧬 <span data-i18n="widget.mbti">나의 소비 MBTI</span></span></div>
+    <div class="wgt-title">🧬 <span data-i18n="widget.mbti">소비 MBTI</span></div>
     <div class="mbti-body">
       <div class="mbti-emoji" id="rMbtiEmoji">🌈</div>
       <div class="mbti-code"  id="rMbtiCode">????</div>
