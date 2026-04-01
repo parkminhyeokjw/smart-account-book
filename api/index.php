@@ -400,21 +400,22 @@ try {
             if ($_SERVER['REQUEST_METHOD'] !== 'POST') { http_response_code(405); echo json_encode(['status'=>'error']); break; }
             $key     = trim($_POST['key'] ?? '');
             $val     = trim($_POST['value'] ?? '');
-            $allowed = ['dark_mode','notif_time','notif_enabled'];
+            $allowed = ['dark_mode','notif_time','notif_enabled','nickname','avatar_color','avatar_img','surv_budget'];
             if (!in_array($key, $allowed)) { http_response_code(400); echo json_encode(['status'=>'error','message'=>'Invalid key']); break; }
-            // 세션에 즉시 저장
             if (!isset($_SESSION['settings'])) $_SESSION['settings'] = [];
             $_SESSION['settings'][$key] = $val;
-            // DB upsert
             $pdo = getConnection();
+            // 컬럼 없으면 추가 (MySQL 5.x 호환: 에러 무시)
+            try { $pdo->exec("ALTER TABLE user_settings ADD COLUMN nickname VARCHAR(40) DEFAULT ''"); } catch(PDOException $e2){}
+            try { $pdo->exec("ALTER TABLE user_settings ADD COLUMN avatar_color TINYINT DEFAULT 0"); } catch(PDOException $e2){}
+            try { $pdo->exec("ALTER TABLE user_settings ADD COLUMN avatar_img LONGTEXT DEFAULT NULL"); } catch(PDOException $e2){}
+            try { $pdo->exec("ALTER TABLE user_settings ADD COLUMN surv_budget TEXT DEFAULT NULL"); } catch(PDOException $e2){}
             try {
                 $pdo->prepare("INSERT INTO user_settings (user_id) VALUES (:uid) ON DUPLICATE KEY UPDATE user_id=user_id")
                     ->execute([':uid'=>$userId]);
                 $pdo->prepare("UPDATE user_settings SET `$key`=:val WHERE user_id=:uid")
                     ->execute([':val'=>$val,':uid'=>$userId]);
-            } catch (PDOException $e) {
-                // user_settings 테이블 없으면 세션만으로 동작
-            }
+            } catch (PDOException $e) {}
             echo json_encode(['status'=>'ok']);
             break;
 
@@ -422,12 +423,16 @@ try {
         case 'settings_get':
             $pdo = getConnection();
             try {
-                $stmt = $pdo->prepare("SELECT dark_mode, notif_time, notif_enabled FROM user_settings WHERE user_id=:uid");
+                // 컬럼 누락 대비: 없으면 추가
+                try { $pdo->exec("ALTER TABLE user_settings ADD COLUMN nickname VARCHAR(40) DEFAULT ''"); } catch(PDOException $e2){}
+                try { $pdo->exec("ALTER TABLE user_settings ADD COLUMN avatar_img LONGTEXT DEFAULT NULL"); } catch(PDOException $e2){}
+                try { $pdo->exec("ALTER TABLE user_settings ADD COLUMN surv_budget TEXT DEFAULT NULL"); } catch(PDOException $e2){}
+                $stmt = $pdo->prepare("SELECT dark_mode, notif_time, notif_enabled, COALESCE(nickname,'') AS nickname, COALESCE(avatar_color,0) AS avatar_color, COALESCE(avatar_img,'') AS avatar_img, COALESCE(surv_budget,'') AS surv_budget FROM user_settings WHERE user_id=:uid");
                 $stmt->execute([':uid'=>$userId]);
                 $settings = $stmt->fetch(PDO::FETCH_ASSOC)
-                    ?: ['dark_mode'=>0,'notif_time'=>'21:00','notif_enabled'=>0];
+                    ?: ['dark_mode'=>0,'notif_time'=>'21:00','notif_enabled'=>0,'nickname'=>'','avatar_color'=>0,'avatar_img'=>'','surv_budget'=>''];
             } catch (PDOException $e) {
-                $settings = ['dark_mode'=>0,'notif_time'=>'21:00','notif_enabled'=>0];
+                $settings = ['dark_mode'=>0,'notif_time'=>'21:00','notif_enabled'=>0,'nickname'=>'','avatar_color'=>0,'avatar_img'=>'','surv_budget'=>''];
             }
             // 세션 값 우선
             if (!empty($_SESSION['settings'])) {
@@ -451,6 +456,24 @@ try {
             $stmt->execute([':uid'=>$userId]);
             $deleted = $stmt->rowCount();
             echo json_encode(['status'=>'ok','deleted'=>$deleted]);
+            break;
+
+        // ── 내역 추가 (카테고리명 → ID 자동 변환) ─────────────────
+        case 'add_tx':
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') { http_response_code(405); echo json_encode(['status'=>'error']); break; }
+            $amt     = (int)($_POST['amount'] ?? 0);
+            $desc    = trim($_POST['description'] ?? '');
+            $date    = trim($_POST['date'] ?? '');
+            $type    = in_array($_POST['type'] ?? '', ['expense','income']) ? $_POST['type'] : 'expense';
+            $catName = trim($_POST['category'] ?? '');
+            $pay     = trim($_POST['payment'] ?? '') ?: '현금';
+            if ($amt <= 0 || !$date) { http_response_code(400); echo json_encode(['status'=>'error','message'=>'필수값 누락']); break; }
+            $pdo = getConnection();
+            $cs  = $pdo->prepare("SELECT id FROM categories WHERE user_id=:uid AND name=:n LIMIT 1");
+            $cs->execute([':uid'=>$userId, ':n'=>$catName]);
+            $catId = $cs->fetchColumn() ?: null;
+            $newId = insertTransaction($userId, $catId, $amt, $desc ?: $catName, $date, 'manual', $pay, $type);
+            echo json_encode(['status'=>'ok','db_id'=>$newId]);
             break;
 
         // ── 전체 내역 동기화 (새 기기 로그인 시) ──────────────────

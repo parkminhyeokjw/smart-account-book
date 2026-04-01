@@ -168,7 +168,7 @@ body {
 }
 /* 나 탭 — 헤더+배너 한 덩어리 */
 .app-header.me-mode { background: #364A6D; box-shadow: none; }
-.app-header.me-mode .header-center-title { color: #fff; font-size: 20px; font-weight: 800; transform: translateX(-50%) translateY(20px); }
+.app-header.me-mode .header-center-title { color: #fff; font-size: 18px; font-weight: 800; transform: translateX(-50%) translateY(10px); align-items:center; }
 /* 가계부/달력 탭 — 진한 네이비 헤더 */
 .app-header.ledger-mode {
   background: #364B6D !important;
@@ -1163,20 +1163,37 @@ body.dark .upg-plan-period { color:#9e9e9e; }
 /* 구버전 호환 유지 */
 .upgrade-badge-soon { background:#EDE9FE; color:#7C3AED; font-size:10px; font-weight:800; padding:3px 8px; border-radius:10px; white-space:nowrap; flex-shrink:0; }
 /* ── 무지출 달력 ── */
-.nscal-hd-row { display:grid; grid-template-columns:repeat(7,1fr); gap:1px; margin-top:8px; }
-.nscal-hd-cell { font-size:9px; text-align:center; color:#9e9e9e; font-weight:700; padding:2px 0; }
-.nscal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:2px; margin-top:2px; }
-.nscal-cell { aspect-ratio:1; display:flex; align-items:center; justify-content:center; font-size:10px; border-radius:50%; color:#6B7280; }
-.nscal-cell.zero { background:none; font-size:14px; }
-.nscal-cell.today { outline:2px solid var(--p); outline-offset:-1px; border-radius:50%; }
-.nscal-cell.future { color:#d1d5db; }
-.nscal-footer { display:flex; align-items:center; justify-content:center; gap:6px; margin-top:10px; padding-top:8px; border-top:1px solid #f3f4f6; }
-.nscal-count { font-size:18px; font-weight:900; color:#16a34a; }
-.nscal-sub { font-size:12px; color:#6B7280; font-weight:600; }
-body.dark .nscal-cell { color:#64748b; }
-body.dark .nscal-cell.zero { background:none; }
-body.dark .nscal-cell.future { color:#334155; }
-body.dark .nscal-footer { border-top-color:#1e293b; }
+.nscal-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:4px; }
+.nscal-streak { font-size:11px; font-weight:700; color:#EA580C; background:#FFF7ED; border-radius:20px; padding:3px 9px; white-space:nowrap; }
+body.dark .nscal-streak { background:#2a1a08; color:#FB923C; }
+.nscal-dow-row { display:grid; grid-template-columns:repeat(7,1fr); margin-bottom:2px; }
+.nscal-dow { text-align:center; font-size:10px; font-weight:700; color:#9e9e9e; padding:3px 0; }
+.nscal-dow.sun { color:#EF4444; }
+.nscal-dow.sat { color:#42a5f5; }
+.nscal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:2px; }
+.nscal-cell { background:#fff; border-radius:8px; padding:5px 2px 4px; min-height:38px; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; position:relative; }
+.nscal-day { font-size:12px; font-weight:600; color:#212121; line-height:22px; }
+.nscal-day.sun { color:#EF4444; }
+.nscal-day.sat { color:#42a5f5; }
+.nscal-cell.today .nscal-day { background:var(--p); color:#fff; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; line-height:1; font-size:11px; }
+.nscal-cell.other-month { opacity:.35; }
+.nscal-cell.future .nscal-day { color:#d1d5db; }
+.nscal-cell.zero-day { background:#F0FDF4; }
+.nscal-cell.zero-day svg { width:16px; height:16px; margin-top:1px; }
+.nscal-divider { height:1px; background:#f3f4f6; margin:10px 0 8px; }
+.nscal-summary { font-size:13px; color:#374151; line-height:1.7; padding:0 2px; }
+.nscal-summary strong { color:#16a34a; font-weight:800; font-size:15px; }
+.nscal-summary .nscal-rate { display:inline-block; margin-left:6px; font-size:12px; color:#6B7280; background:#f3f4f6; border-radius:20px; padding:1px 8px; font-weight:600; }
+.nscal-insight { font-size:12px; color:#9e9e9e; margin-top:5px; padding:0 2px; }
+body.dark .nscal-cell { background:#131c27; }
+body.dark .nscal-day { color:#c0c0c0; }
+body.dark .nscal-day.sun { color:#ef9a9a; }
+body.dark .nscal-day.sat { color:#90caf9; }
+body.dark .nscal-cell.zero-day { background:#0a1f10; }
+body.dark .nscal-divider { background:#1e293b; }
+body.dark .nscal-summary { color:#cbd5e1; }
+body.dark .nscal-summary .nscal-rate { background:#1e293b; color:#94a3b8; }
+body.dark .nscal-insight { color:#64748b; }
 /* ── 지출 경고 ── */
 .widget-card.alert-card { background:#FFFBEB; border-left:4px solid #F59E0B; }
 body.dark .widget-card.alert-card { background:#1f1a0a; border-left-color:#b45309; }
@@ -1190,13 +1207,16 @@ body.dark .alert-item { background:#1e293b; }
 body.dark .alert-cat { color:#f87171; }
 body.dark .alert-diff { color:#f87171; }
 /* ── 일평균 지출 ── */
-.davg-body { display:flex; flex-direction:column; justify-content:center; min-height:80px; }
-.davg-num { font-size:20px; font-weight:900; color:var(--p); margin:6px 0 3px; line-height:1.1; }
-.davg-label { font-size:11px; color:#9e9e9e; }
-.davg-vs { font-size:11px; color:#9e9e9e; margin-top:4px; }
-.davg-trend { font-size:14px; font-weight:800; margin-top:6px; display:flex; align-items:center; gap:4px; line-height:1.3; }
-.davg-trend.up { color:#DC2626; }
-.davg-trend.down { color:#16a34a; }
+.davg-body { display:flex; flex-direction:column; gap:10px; padding:4px 0 2px; }
+.davg-top { display:flex; flex-direction:column; gap:4px; padding:14px 18px 12px; background:var(--bg2); border-radius:14px; }
+.davg-label { font-size:12px; font-weight:600; color:#9e9e9e; letter-spacing:.3px; }
+.davg-num { font-size:26px; font-weight:900; color:var(--p); line-height:1.15; }
+.davg-vs { font-size:12px; color:#9e9e9e; margin-top:2px; }
+.davg-trend { font-size:13px; font-weight:700; padding:10px 18px; border-radius:12px; background:var(--bg2); display:flex; align-items:center; gap:6px; line-height:1.4; }
+.davg-trend.up { color:#DC2626; background:#FFF0F0; }
+.davg-trend.down { color:#16a34a; background:#f0fdf4; }
+body.dark .davg-trend.up { background:#2a1010; }
+body.dark .davg-trend.down { background:#0d1f12; }
 /* ── 도움말 ── */
 .help-section { margin-bottom:20px; }
 .help-section-title { font-size:13px; font-weight:800; color:var(--p); margin-bottom:8px; display:flex; align-items:center; gap:6px; }
@@ -1263,11 +1283,14 @@ body.dark .widget-card.surv-danger { background:#2d1515; }
 <!-- 헤더 -->
 <div class="app-header ledger-mode" id="appHeader">
   <div class="header-title">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect x="3" y="3" width="18" height="18" rx="5" fill="rgba(255,255,255,0.25)"/>
-      <path d="M7 12h10M7 8.5h6M7 15.5h8" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>
-      <circle cx="17.5" cy="8.5" r="1.5" fill="#fff" opacity=".9"/>
-    </svg>
+    <div style="width:28px;height:28px;background:rgba(255,255,255,0.18);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="5" width="20" height="15" rx="3" stroke="#fff" stroke-width="1.8"/>
+        <path d="M2 10h20" stroke="#fff" stroke-width="1.8"/>
+        <circle cx="17" cy="15" r="1.5" fill="#fff"/>
+        <path d="M7 7V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2" stroke="#fff" stroke-width="1.6"/>
+      </svg>
+    </div>
     <span class="header-logo-text">마이가계부</span>
   </div>
   <span class="stats-header-month" id="statsHeaderMonth"></span>
@@ -1283,9 +1306,22 @@ body.dark .widget-card.surv-danger { background:#2d1515; }
     <span id="reportHdrLabel" style="font-size:13px;font-weight:700;color:#fff;min-width:90px;text-align:center;white-space:nowrap;"></span>
     <button class="month-btn" onclick="changeMonth(1)" id="reportHdrBtnNext" style="font-size:20px;padding:2px 6px;">›</button>
   </div>
-  <div class="header-center-title" id="headerCenterTitle">마이가계부</div>
+  <div class="header-center-title" id="headerCenterTitle" style="display:none;align-items:center;gap:7px">
+    <div style="width:28px;height:28px;background:rgba(255,255,255,0.18);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="5" width="20" height="15" rx="3" stroke="#fff" stroke-width="1.8"/>
+        <path d="M2 10h20" stroke="#fff" stroke-width="1.8"/>
+        <circle cx="17" cy="15" r="1.5" fill="#fff"/>
+        <path d="M7 7V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2" stroke="#fff" stroke-width="1.6"/>
+      </svg>
+    </div>
+    마이가계부
+  </div>
   <div class="header-actions" id="headerActions">
     <div id="haDefault" style="display:flex;align-items:center;gap:2px">
+      <?php if ($isLoggedIn): ?>
+      <button class="cal-btn" id="syncBtn" onclick="manualSync()" title="동기화"><i data-lucide="refresh-cw" style="width:20px;height:20px;stroke-width:1.75"></i></button>
+      <?php endif; ?>
       <button class="search-btn" onclick="openSearch()" title="검색"><i data-lucide="search" style="width:20px;height:20px;stroke-width:1.75"></i></button>
       <button class="cal-btn" onclick="toggleCalendar()" title="달력"><i data-lucide="calendar" style="width:20px;height:20px;stroke-width:1.75"></i></button>
     </div>
@@ -1395,18 +1431,14 @@ body.dark .widget-card.surv-danger { background:#2d1515; }
           </svg>
         </div>
         <?php if ($isLoggedIn): ?>
-          <div class="me-name">
-            <?=$userName?>님
+          <div class="me-name" id="meHomeName">
+            <span id="meHomeNameText"><?=$userName?>님</span>
             <?php if ($dbStats['badge']): ?>
               <span style="font-size:12px;font-weight:700;background:#FEF3C7;color:#92400E;border-radius:20px;padding:3px 10px;margin-left:6px;vertical-align:middle"><?=$dbStats['badge']?></span>
             <?php endif; ?>
           </div>
           <div class="me-email"><?=$userEmail?></div>
-          <div class="me-stats-row">
-            <div class="me-stat-col">
-              <div class="me-stat-num"><?=$dbStats['month_count']?></div>
-              <div class="me-stat-label" data-i18n="me.monthRecord">이번 달 기록</div>
-            </div>
+          <div class="me-stats-row" style="justify-content:center">
             <div class="me-stat-col">
               <div class="me-stat-streak-text" id="meStreak"><?= $dbStats['streak'] > 0 ? $dbStats['streak'].'일 연속 🔥' : '아직 기록을 시작해봐요! 🔥'?></div>
               <div class="me-stat-label" data-i18n="me.streakDays">연속 기록일</div>
@@ -2007,9 +2039,9 @@ body.dark .widget-card.surv-danger { background:#2d1515; }
       <div class="report-ob-sub" data-i18n="ob.sub">위젯으로 내 소비를 한눈에!</div>
     </div>
     <div class="center-modal-body" style="padding:0 20px 4px">
-      <div class="ob-item"><span class="ob-ico">📦</span><div><b data-i18n="ob.w1">6가지 위젯 제공</b><p data-i18n="ob.w1s">요약·챔피언·요일·예산·MBTI·TOP3</p></div></div>
-      <div class="ob-item"><span class="ob-ico">✏️</span><div><b data-i18n="ob.w2">편집 버튼으로 추가/삭제</b><p data-i18n="ob.w2s">우측 하단 편집 버튼을 눌러보세요</p></div></div>
-      <div class="ob-item"><span class="ob-ico">↕️</span><div><b data-i18n="ob.w3">드래그로 순서 변경</b><p data-i18n="ob.w3s">편집 모드에서 위젯을 길게 눌러 이동</p></div></div>
+      <div class="ob-item"><span class="ob-ico">📦</span><div><b data-i18n="ob.w1">9가지 위젯 제공</b><p data-i18n="ob.w1s">요약·챔피언·요일·예산·MBTI·TOP3·무지출달력·지출경고·일평균</p></div></div>
+      <div class="ob-item"><span class="ob-ico">➕</span><div><b data-i18n="ob.w2">+ 버튼으로 위젯 추가</b><p data-i18n="ob.w2s">헤더 우측 + 버튼을 눌러 원하는 위젯을 추가하세요</p></div></div>
+      <div class="ob-item"><span class="ob-ico">↕️</span><div><b data-i18n="ob.w3">위/아래로 순서 변경</b><p data-i18n="ob.w3s">각 위젯 ··· 버튼 → 위로/아래로 이동</p></div></div>
       <div class="ob-item"><span class="ob-ico">•••</span><div><b data-i18n="ob.w4">위젯 개별 옵션</b><p data-i18n="ob.w4s">각 위젯 우상단 ··· 버튼으로 이동·삭제</p></div></div>
     </div>
     <div class="center-modal-footer">
@@ -2612,7 +2644,7 @@ function goTab(name) {
   appHeader.classList.toggle('ledger-mode', isLedger);
   appHeader.style.position = isMe ? 'relative' : '';
   document.querySelector('.header-title').style.visibility = isMe ? 'hidden' : 'visible';
-  document.getElementById('headerCenterTitle').style.display = isMe ? 'block' : 'none';
+  document.getElementById('headerCenterTitle').style.display = isMe ? 'flex' : 'none';
   document.getElementById('statsHeaderMonth').style.display = 'none';
   document.getElementById('statsHdrNav').style.display = isStats ? 'flex' : 'none';
   document.getElementById('reportHdrNav').style.display = isReport ? 'flex' : 'none';
@@ -3315,18 +3347,23 @@ function widgetMbtiHTML() {
     </div>
   </div>`;
 }
+const NSCAL_CHECK_SVG = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" fill="#22C55E"/><path d="M7.5 12.5l3 3 6-6" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 function widgetNospendHTML() {
   return `<div class="widget-card wfull" id="rNospendCard">
     <button class="widget-menu-btn" onclick="openWidgetAction(event, this.closest('.widget-card').id)">···</button>
-    <div class="wgt-title">📆 무지출 달력</div>
-    <div class="nscal-hd-row">
-      ${['월','화','수','목','금','토','일'].map(d=>`<div class="nscal-hd-cell">${d}</div>`).join('')}
+    <div class="nscal-header">
+      <div class="wgt-title" style="margin-bottom:0">📆 무지출 달력</div>
+      <span class="nscal-streak" id="rNscalStreak" style="display:none"></span>
+    </div>
+    <div class="nscal-dow-row">
+      <div class="nscal-dow sun">일</div><div class="nscal-dow">월</div><div class="nscal-dow">화</div>
+      <div class="nscal-dow">수</div><div class="nscal-dow">목</div><div class="nscal-dow">금</div>
+      <div class="nscal-dow sat">토</div>
     </div>
     <div class="nscal-grid" id="rNscalGrid"></div>
-    <div class="nscal-footer">
-      <span class="nscal-count" id="rNscalCount">0일</span>
-      <span class="nscal-sub" id="rNscalSub">무지출</span>
-    </div>
+    <div class="nscal-divider"></div>
+    <div class="nscal-summary" id="rNscalSummary"></div>
+    <div class="nscal-insight" id="rNscalInsight"></div>
   </div>`;
 }
 function widgetAlertHTML() {
@@ -3341,9 +3378,11 @@ function widgetDailyAvgHTML() {
     <button class="widget-menu-btn" onclick="openWidgetAction(event, this.closest('.widget-card').id)">···</button>
     <div class="wgt-title">📉 일평균 지출</div>
     <div class="davg-body">
-      <div class="davg-label">하루 평균</div>
-      <div class="davg-num" id="rDavgNum">₩0</div>
-      <div class="davg-vs" id="rDavgVs"></div>
+      <div class="davg-top">
+        <div class="davg-label">하루 평균 지출</div>
+        <div class="davg-num" id="rDavgNum">₩0</div>
+        <div class="davg-vs" id="rDavgVs"></div>
+      </div>
       <div class="davg-trend" id="rDavgTrend"></div>
     </div>
   </div>`;
@@ -3637,30 +3676,72 @@ function renderReport() {
     const todayD = new Date();
     const todayStr = todayD.toISOString().slice(0,10);
     const isThisMon = curMonth === todayStr.slice(0,7);
-    const expDates = new Set(thisExps.map(t => t.date));
-    const firstSlot = (new Date(ny, nm-1, 1).getDay() + 6) % 7; // 월요일 기준
+    // 고정지출 카테고리 제외: '고정지출' 카테고리는 무시
+    const FIXED_CATS = new Set(['고정지출','월세','관리비','보험','통신비','구독']);
+    const expDates = new Set(
+      thisExps.filter(t => !FIXED_CATS.has(t.category)).map(t => t.date)
+    );
+    const firstSlot = new Date(ny, nm-1, 1).getDay(); // 일요일 시작
     let cells = '';
-    for (let i = 0; i < firstSlot; i++) cells += '<div class="nscal-cell"></div>';
+    for (let i = 0; i < firstSlot; i++) cells += '<div class="nscal-cell other-month"></div>';
     let zeroCnt = 0;
     for (let d = 1; d <= daysInMon; d++) {
       const ds = `${curMonth}-${String(d).padStart(2,'0')}`;
+      const dow = new Date(ds).getDay();
       const isFuture = ds > todayStr;
       const isToday  = ds === todayStr;
-      const isZero   = !isFuture && !expDates.has(ds);
+      const isZero   = !isFuture && !isToday && !expDates.has(ds);
       if (isZero) zeroCnt++;
+      const dowClass = dow===0 ? 'sun' : dow===6 ? 'sat' : '';
       let cls = 'nscal-cell';
-      if (isZero) cls += ' zero';
       if (isToday) cls += ' today';
       if (isFuture) cls += ' future';
-      cells += `<div class="${cls}">${isZero ? '⭐' : d}</div>`;
+      if (isZero) cls += ' zero-day';
+      cells += `<div class="${cls}">
+        <span class="nscal-day ${dowClass}">${d}</span>
+        ${isZero ? NSCAL_CHECK_SVG : ''}
+      </div>`;
     }
     const gridEl = document.getElementById('rNscalGrid');
     if (gridEl) gridEl.innerHTML = cells;
-    const elapsed = isThisMon ? todayD.getDate() : daysInMon;
-    const cntEl = document.getElementById('rNscalCount');
-    const subEl = document.getElementById('rNscalSub');
-    if (cntEl) cntEl.textContent = `${zeroCnt}일`;
-    if (subEl) subEl.textContent = `/ ${elapsed}일 무지출`;
+    // 연속 무지출 계산 (오늘 기준 역방향)
+    let streak = 0;
+    if (isThisMon) {
+      const startD = todayD.getDate() - 1; // 오늘 제외, 어제부터 역산
+      for (let d = startD; d >= 1; d--) {
+        const ds = `${curMonth}-${String(d).padStart(2,'0')}`;
+        if (!expDates.has(ds)) streak++;
+        else break;
+      }
+    }
+    const streakEl = document.getElementById('rNscalStreak');
+    if (streakEl) {
+      if (streak >= 2) { streakEl.textContent = `🔥 ${streak}일 연속`; streakEl.style.display = ''; }
+      else streakEl.style.display = 'none';
+    }
+    // 월간 요약
+    const elapsed = isThisMon ? Math.max(todayD.getDate() - 1, 0) : daysInMon;
+    // 작년 같은 달 비교
+    const lastYearMonth = `${ny-1}-${String(nm).padStart(2,'0')}`;
+    const lastYearExps = txs.filter(t => t.type==='expense' && t.date.startsWith(lastYearMonth) && !FIXED_CATS.has(t.category));
+    const lastYearExpDates = new Set(lastYearExps.map(t => t.date));
+    const lastYearDays = new Date(ny-1, nm, 0).getDate();
+    let lastYearZero = 0;
+    for (let d = 1; d <= lastYearDays; d++) {
+      const ds = `${lastYearMonth}-${String(d).padStart(2,'0')}`;
+      if (!lastYearExpDates.has(ds)) lastYearZero++;
+    }
+    const summaryEl = document.getElementById('rNscalSummary');
+    const insightEl = document.getElementById('rNscalInsight');
+    const rate = elapsed > 0 ? Math.round(zeroCnt / elapsed * 100) : 0;
+    if (summaryEl) summaryEl.innerHTML = `이번 달은 <strong>${daysInMon}일 중 ${zeroCnt}일</strong> 성공!<span class="nscal-rate">성공률 ${rate}%</span>`;
+    if (insightEl) {
+      const diff = zeroCnt - lastYearZero;
+      if (lastYearZero > 0 && diff > 0) insightEl.textContent = `작년 같은 달보다 ${diff}일 더 절약했어요 🎉`;
+      else if (lastYearZero > 0 && diff < 0) insightEl.textContent = ``;
+      else if (lastYearZero > 0) insightEl.textContent = `작년 같은 달과 동일해요!`;
+      else insightEl.textContent = `고정지출 카테고리는 무지출로 판정해요 ✓`;
+    }
   }
 
   // ── 지출 경고 ────────────────────────────────────────────────
@@ -3886,6 +3967,10 @@ function onSurvBudgetInput(el) {
 }
 function saveSurvBudget() {
   localStorage.setItem(SURV_SK, JSON.stringify(survGoal));
+  if (IS_LOGGED_IN) {
+    const fd = new FormData(); fd.append('key','surv_budget'); fd.append('value', JSON.stringify(survGoal));
+    fetch('../api/?action=settings_save', { method:'POST', body:fd, credentials:'same-origin' }).catch(()=>{});
+  }
   fillSurvival();
 }
 
@@ -4701,7 +4786,22 @@ function saveTx() {
     }
     editingTxId = null;
   } else {
-    txs.push({ id:Date.now()+Math.random().toString(36).slice(2), type:curType, amount:amt, category:cat, description:desc||cat, date, payment:pay, photos:[...photosData] });
+    const newTx = { id:Date.now()+Math.random().toString(36).slice(2), type:curType, amount:amt, category:cat, description:desc||cat, date, payment:pay, photos:[...photosData] };
+    txs.push(newTx);
+    // 로그인 시 서버 DB에도 저장하고 db_id 반영
+    if (IS_LOGGED_IN) {
+      const fd = new FormData();
+      fd.append('amount', amt); fd.append('description', desc||cat); fd.append('date', date);
+      fd.append('type', curType); fd.append('category', cat); fd.append('payment', pay);
+      fetch('../api/?action=add_tx', { method:'POST', body:fd, credentials:'same-origin' })
+        .then(r => r.json())
+        .then(res => {
+          if (res.status === 'ok' && res.db_id) {
+            const idx = txs.findIndex(t => t.id === newTx.id);
+            if (idx !== -1) { txs[idx].db_id = res.db_id; txs[idx].id = 'db_' + res.db_id; persist(); }
+          }
+        }).catch(()=>{});
+    }
   }
   // 모달 먼저 닫기 (persist 실패해도 UI는 닫힘)
   closeModal();
@@ -4920,18 +5020,30 @@ function fmtFixedAmt(el) {
 // 수입/지출 변경 시 카테고리 목록 갱신
 // ── 서버 동기화 ──────────────────────────────────────────────
 const SYNC_TS_SK = 'ddgb_sync_ts_v1';
-async function syncFromServer() {
+async function syncFromServer(force = false) {
   if (!IS_LOGGED_IN) return;
   const lastSync = parseInt(localStorage.getItem(SYNC_TS_SK) || '0');
   const now = Date.now();
-  // 데이터가 있고 1시간 이내면 스킵
-  if (txs.length > 0 && now - lastSync < 60 * 60 * 1000) return;
+  if (!force && now - lastSync < 5 * 60 * 1000) return;
   try {
+    // 1. db_id 없는 로컬 항목을 서버에 먼저 업로드
+    const localOnly = txs.filter(t => !t.db_id);
+    for (const t of localOnly) {
+      try {
+        const fd = new FormData();
+        fd.append('amount', t.amount); fd.append('description', t.description || t.category);
+        fd.append('date', t.date); fd.append('type', t.type || 'expense');
+        fd.append('category', t.category || '기타'); fd.append('payment', t.payment || '');
+        const r = await fetch('../api/?action=add_tx', { method:'POST', body:fd, credentials:'same-origin' });
+        const d = await r.json();
+        if (d.status === 'ok' && d.db_id) { t.db_id = d.db_id; t.id = 'db_' + d.db_id; }
+      } catch(e) {}
+    }
+    // 2. 서버 전체 데이터로 교체 (중복 방지)
     const res  = await fetch('../api/?action=sync_pull', {credentials:'same-origin'});
     const data = await res.json();
     if (data.status !== 'ok' || !Array.isArray(data.transactions)) return;
-    // 서버 데이터를 localStorage 형식으로 변환
-    const serverTxs = data.transactions.map(t => ({
+    txs = data.transactions.map(t => ({
       id:          'db_' + t.db_id,
       db_id:       t.db_id,
       type:        t.type,
@@ -4942,15 +5054,40 @@ async function syncFromServer() {
       payment:     t.payment || '',
       photos:      []
     }));
-    // 로컬에만 있는 항목(db_id 없는 것) 보존 후 병합
-    const serverDbIds = new Set(data.transactions.map(t => t.db_id));
-    const localOnly   = txs.filter(t => !t.db_id);
-    txs = [...serverTxs, ...localOnly];
     persist();
     localStorage.setItem(SYNC_TS_SK, String(now));
     renderLedger();
+    // 프로필 동기화
+    try {
+      const sr = await fetch('../api/?action=settings_get', {credentials:'same-origin'});
+      const ss = await sr.json();
+      if (ss.nickname) {
+        localStorage.setItem('profile_nickname', ss.nickname);
+        const rowVal = document.getElementById('profileRowValue');
+        if (rowVal) rowVal.textContent = ss.nickname;
+      }
+      if (ss.avatar_img) {
+        localStorage.setItem('profile_avatar_img', ss.avatar_img);
+      }
+      if (ss.surv_budget) {
+        try {
+          const sv = JSON.parse(ss.surv_budget);
+          survGoal = sv;
+          localStorage.setItem(SURV_SK, ss.surv_budget);
+          if (reportWidgets.includes('survival')) fillSurvival();
+        } catch(e) {}
+      }
+      updateMeHomeAvatar();
+    } catch(e) {}
     if (data.transactions.length > 0) showToast('☁️ 데이터 동기화 완료');
   } catch(e) {}
+}
+async function manualSync() {
+  const btn = document.getElementById('syncBtn');
+  if (btn) btn.style.opacity = '0.4';
+  localStorage.removeItem(SYNC_TS_SK);
+  await syncFromServer(true);
+  if (btn) btn.style.opacity = '1';
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -4964,8 +5101,31 @@ document.addEventListener('DOMContentLoaded', () => {
   const rowVal = document.getElementById('profileRowValue');
   if (rowVal) rowVal.textContent = localStorage.getItem('profile_nickname') || USER_NAME || '';
   updateMeHomeAvatar();
+  // 로컬 프로필 데이터를 서버에 업로드 (기존 데이터 동기화)
+  if (IS_LOGGED_IN) {
+    const localNick = localStorage.getItem('profile_nickname');
+    if (localNick) {
+      const fd = new FormData(); fd.append('key','nickname'); fd.append('value', localNick);
+      fetch('../api/?action=settings_save', { method:'POST', body:fd, credentials:'same-origin' }).catch(()=>{});
+    }
+    const localImg = localStorage.getItem('profile_avatar_img');
+    if (localImg) {
+      const fd2 = new FormData(); fd2.append('key','avatar_img'); fd2.append('value', localImg);
+      fetch('../api/?action=settings_save', { method:'POST', body:fd2, credentials:'same-origin' }).catch(()=>{});
+    }
+    const localSurv = localStorage.getItem(SURV_SK);
+    if (localSurv) {
+      const fd3 = new FormData(); fd3.append('key','surv_budget'); fd3.append('value', localSurv);
+      fetch('../api/?action=settings_save', { method:'POST', body:fd3, credentials:'same-origin' }).catch(()=>{});
+    }
+  }
   // 서버에서 데이터 동기화
   syncFromServer();
+  // 탭/창 포커스 시 자동 동기화 (다른 기기에서 추가한 내역 반영)
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') syncFromServer();
+  });
+  window.addEventListener('focus', () => syncFromServer());
 });
 
 // 소급 확인 팝업용 임시 저장
@@ -5361,6 +5521,10 @@ function updateMeHomeAvatar() {
     if (svg)  svg.style.display = '';
     if (wrap) wrap.style.background = '';
   }
+  // 닉네임 업데이트
+  const nick = localStorage.getItem('profile_nickname');
+  const nameTextEl = document.getElementById('meHomeNameText');
+  if (nameTextEl && nick) nameTextEl.textContent = nick + '님';
 }
 function updateAvatarThumb() {
   const thumb = document.getElementById('profAvatarThumb');
@@ -5407,6 +5571,10 @@ function handleAvatarFile(input) {
       canvas.getContext('2d').drawImage(img, 0, 0, w, h);
       const dataUrl = canvas.toDataURL('image/jpeg', 0.82);
       localStorage.setItem('profile_avatar_img', dataUrl);
+      if (IS_LOGGED_IN) {
+        const fd = new FormData(); fd.append('key','avatar_img'); fd.append('value', dataUrl);
+        fetch('../api/?action=settings_save', { method:'POST', body:fd, credentials:'same-origin' }).catch(()=>{});
+      }
       updateAvatarDisplay();
       updateAvatarThumb();
     };
@@ -5418,6 +5586,10 @@ function handleAvatarFile(input) {
 function removeAvatarPhoto() {
   closeAvatarPicker();
   localStorage.removeItem('profile_avatar_img');
+  if (IS_LOGGED_IN) {
+    const fd = new FormData(); fd.append('key','avatar_img'); fd.append('value', '');
+    fetch('../api/?action=settings_save', { method:'POST', body:fd, credentials:'same-origin' }).catch(()=>{});
+  }
   updateAvatarDisplay();
   updateAvatarThumb();
 }
@@ -5427,6 +5599,10 @@ function editNickname() {
   if (val === null) return;
   const trimmed = val.trim().slice(0, 20);
   localStorage.setItem('profile_nickname', trimmed);
+  if (IS_LOGGED_IN) {
+    const fd = new FormData(); fd.append('key','nickname'); fd.append('value', trimmed);
+    fetch('../api/?action=settings_save', { method:'POST', body:fd, credentials:'same-origin' }).catch(()=>{});
+  }
   initProfilePage();
 }
 function doProfLogout() {
@@ -5912,9 +6088,9 @@ const TRANSLATIONS = {
     'stats.noDataSub':'{period} 기간의<br>{type} 내역을 추가해 보세요',
     'wpop.moveUp':'↑ 위로 이동','wpop.moveDown':'↓ 아래로 이동','wpop.delete':'🗑️ 삭제',
     'ob.title':'분석 탭 가이드','ob.sub':'위젯으로 내 소비를 한눈에!',
-    'ob.w1':'6가지 위젯 제공','ob.w1s':'요약·챔피언·요일·예산·MBTI·TOP3',
-    'ob.w2':'편집 버튼으로 추가/삭제','ob.w2s':'우측 하단 편집 버튼을 눌러보세요',
-    'ob.w3':'드래그로 순서 변경','ob.w3s':'편집 모드에서 위젯을 길게 눌러 이동',
+    'ob.w1':'9가지 위젯 제공','ob.w1s':'요약·챔피언·요일·예산·MBTI·TOP3·무지출달력·지출경고·일평균',
+    'ob.w2':'+ 버튼으로 위젯 추가','ob.w2s':'헤더 우측 + 버튼을 눌러 원하는 위젯을 추가하세요',
+    'ob.w3':'위/아래로 순서 변경','ob.w3s':'각 위젯 ··· 버튼 → 위로/아래로 이동',
     'ob.w4':'위젯 개별 옵션','ob.w4s':'각 위젯 우상단 ··· 버튼으로 이동·삭제',
     'ob.start':'시작하기',
     'report.editDone':'✅ 편집 완료','report.editStart':'✏️ 분석 항목 편집',
@@ -6117,9 +6293,9 @@ const TRANSLATIONS = {
     'stats.noDataSub':'Add {type} records<br>for {period}',
     'wpop.moveUp':'↑ Move up','wpop.moveDown':'↓ Move down','wpop.delete':'🗑️ Delete',
     'ob.title':'Report Tab Guide','ob.sub':'See your spending at a glance!',
-    'ob.w1':'6 Widgets Available','ob.w1s':'Summary·Champion·Weekday·Budget·MBTI·TOP3',
-    'ob.w2':'Add/Remove via Edit Button','ob.w2s':'Tap the edit button at the bottom right',
-    'ob.w3':'Drag to Reorder','ob.w3s':'Long press a widget to move it in edit mode',
+    'ob.w1':'9 Widgets Available','ob.w1s':'Summary·Champion·Weekday·Budget·MBTI·TOP3·No-Spend·Alert·Daily Avg',
+    'ob.w2':'Add Widgets via + Button','ob.w2s':'Tap the + button in the header to add widgets',
+    'ob.w3':'Reorder Up/Down','ob.w3s':'Tap ··· on a widget → Move up / Move down',
     'ob.w4':'Per-Widget Options','ob.w4s':'Tap ··· on each widget to move or delete',
     'ob.start':'Get Started',
     'report.editDone':'✅ Done Editing','report.editStart':'✏️ Edit Widgets',
