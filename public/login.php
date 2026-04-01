@@ -145,6 +145,15 @@ body {
   text-decoration: none;
 }
 .forgot-link:hover { color: #1D2C55; text-decoration: underline; }
+.guest-link {
+  display: block;
+  text-align: center;
+  margin-top: 14px;
+  font-size: 13px;
+  color: #9e9e9e;
+  text-decoration: none;
+}
+.guest-link:hover { color: #1D2C55; text-decoration: underline; }
 </style>
 </head>
 <body>
@@ -182,6 +191,7 @@ body {
 
   <div class="divider">또는</div>
   <a href="register.php" class="btn-secondary">회원가입</a>
+  <a href="index.php" class="guest-link">로그인 없이 앱 사용하기</a>
   </div>
 </div>
 <script>

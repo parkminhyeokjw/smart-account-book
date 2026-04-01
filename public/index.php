@@ -589,7 +589,8 @@ body {
 /* ── 나 탭 ── */
 #pane-me { overflow: hidden; height: calc(100vh - 56px - 64px); padding-bottom: 0 !important; }
 .me-wrap { position: relative; height: 100%; overflow: hidden; }
-.me-subpage { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg); opacity: 0; pointer-events: none; transition: opacity .18s ease; overflow-y: auto; z-index: 10; }
+.me-subpage { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg); opacity: 0; pointer-events: none; transition: opacity .18s ease; overflow-y: auto; z-index: 10; scrollbar-width: none; -ms-overflow-style: none; }
+.me-subpage::-webkit-scrollbar { display: none; }
 .me-subpage.active { opacity: 1; pointer-events: auto; }
 .me-subpage-hd { display: flex; align-items: center; padding: 0 16px; height: 56px; background: #364A6D; flex-shrink: 0; position: sticky; top: 0; z-index: 1; }
 .me-subpage-back { background: none; border: none; cursor: pointer; padding: 4px; color: #fff; display: flex; align-items: center; margin-right: 8px; }
@@ -836,7 +837,7 @@ body.dark .cat-cs-option.selected { background: #1e2d3f; }
 body.dark { background:#0d1117; color:#cbd5e1; }
 body.dark .app-header { background:linear-gradient(135deg,#0F172A,#1e293b); }
 body.dark .app-header.ledger-mode { background: #0F172A !important; }
-body.dark .app-header.me-mode { background: #1e293b !important; box-shadow: none !important; }
+body.dark .app-header.me-mode { background: #0F172A !important; box-shadow: none !important; }
 body.dark .summary-card { background:linear-gradient(135deg,#1e293b,#0f172a); }
 body.dark .tx-row { background:#131c27; border-bottom-color:#1e293b; }
 body.dark .tx-row:active { background:#1a2638; }
@@ -845,12 +846,13 @@ body.dark .tx-icon { background:#1e293b; }
 body.dark .date-header { background:#0d1117; color:#64748b; }
 body.dark .tab-bar { background:#131c27; border-top-color:#1e293b; }
 body.dark .sum-strip { background:#131c27; border-bottom-color:#1e293b; }
+body.dark .sum-strip .month-nav { background:#0F172A; }
 body.dark .sum-strip .month-btn { color:#cbd5e1; }
 body.dark .sum-strip #monthLabel { color:#cbd5e1; }
 body.dark .sum-col { background:#1a2638; border-color:#263447; }
 body.dark .sum-col-label { color:#64748b; }
 body.dark .sum-col-value { color:#e0e0e0; }
-body.dark .me-profile { background: linear-gradient(to bottom, #1e293b 80px, #131c27 80px); }
+body.dark .me-profile { background: linear-gradient(to bottom, #0F172A 80px, #131c27 80px); }
 body.dark .me-app-title { background:linear-gradient(135deg,#1e293b,#0f172a); }
 body.dark .me-avatar { background:#263447; border-color:#1e293b; }
 body.dark .me-name { color:#e0e0e0; }
@@ -868,6 +870,8 @@ body.dark .me-row:active { background:#1a2638; }
 body.dark .me-row-label { color:#cbd5e1; }
 body.dark .me-section-title { color:#475569; }
 body.dark .me-footer { color:#334155; }
+body.dark .me-subpage { background:#0d1117; }
+body.dark .me-subpage-hd { background:#0F172A; }
 body.dark .me-grid-item { background:#131c27; border-color:#1e293b; }
 body.dark .me-grid-item:active { background:#1a2638; }
 body.dark .me-grid-icon { background:#1e2d42; }
@@ -1139,6 +1143,37 @@ body.dark .upg-plan-price { color:#e0e0e0; }
 body.dark .upg-plan-period { color:#9e9e9e; }
 /* 구버전 호환 유지 */
 .upgrade-badge-soon { background:#EDE9FE; color:#7C3AED; font-size:10px; font-weight:800; padding:3px 8px; border-radius:10px; white-space:nowrap; flex-shrink:0; }
+/* ── 무지출 달력 ── */
+.nscal-hd-row { display:grid; grid-template-columns:repeat(7,1fr); gap:1px; margin-top:8px; }
+.nscal-hd-cell { font-size:9px; text-align:center; color:#9e9e9e; font-weight:700; padding:2px 0; }
+.nscal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:2px; margin-top:2px; }
+.nscal-cell { aspect-ratio:1; display:flex; align-items:center; justify-content:center; font-size:10px; border-radius:50%; color:#6B7280; }
+.nscal-cell.zero { background:#DCFCE7; color:#16a34a; font-weight:800; }
+.nscal-cell.today { outline:2px solid var(--p); outline-offset:-1px; }
+.nscal-cell.future { color:#d1d5db; }
+.nscal-footer { display:flex; align-items:baseline; gap:4px; margin-top:8px; }
+.nscal-count { font-size:20px; font-weight:900; color:#16a34a; }
+.nscal-sub { font-size:11px; color:#9e9e9e; }
+body.dark .nscal-cell { color:#64748b; }
+body.dark .nscal-cell.zero { background:#14532d; color:#4ade80; }
+body.dark .nscal-cell.future { color:#334155; }
+/* ── 지출 경고 ── */
+.alert-list { display:flex; flex-direction:column; gap:8px; margin-top:10px; }
+.alert-item { display:flex; align-items:flex-start; gap:10px; background:#FFF7ED; border-radius:10px; padding:10px 12px; }
+.alert-ico { font-size:18px; flex-shrink:0; margin-top:1px; }
+.alert-cat { font-size:13px; font-weight:700; color:#212121; }
+.alert-diff { font-size:11px; color:#ef4444; margin-top:2px; }
+.alert-none { text-align:center; padding:16px 0; font-size:13px; color:#6B7280; }
+body.dark .alert-item { background:#2d1a0e; }
+body.dark .alert-cat { color:#e0e0e0; }
+/* ── 일평균 지출 ── */
+.davg-body { display:flex; flex-direction:column; justify-content:center; min-height:80px; }
+.davg-num { font-size:20px; font-weight:900; color:var(--p); margin:6px 0 3px; line-height:1.1; }
+.davg-label { font-size:11px; color:#9e9e9e; }
+.davg-vs { font-size:11px; color:#9e9e9e; margin-top:4px; }
+.davg-trend { font-size:12px; font-weight:700; margin-top:3px; }
+.davg-trend.up { color:#ef4444; }
+.davg-trend.down { color:#16a34a; }
 /* ── 도움말 ── */
 .help-section { margin-bottom:20px; }
 .help-section-title { font-size:13px; font-weight:800; color:var(--p); margin-bottom:8px; display:flex; align-items:center; gap:6px; }
@@ -2345,9 +2380,12 @@ const WIDGET_DEFS = [
   { id: 'insight',   label: '이번 달 요약',    icon: '📊' },
   { id: 'champion',  label: '최고 지출 항목',  icon: '🏆' },
   { id: 'dayofweek', label: '요일별 소비 패턴', icon: '📅' },
-  { id: 'survival',  label: '목표 예산',  icon: '💰' },
+  { id: 'survival',  label: '목표 예산',        icon: '💰' },
   { id: 'mbti',      label: '나의 소비 MBTI',   icon: '🧬' },
   { id: 'top3cats',  label: '카테고리 TOP 3',   icon: '🥇' },
+  { id: 'nospend',   label: '무지출 달력',      icon: '📆' },
+  { id: 'alert',     label: '지출 경고',        icon: '⚠️' },
+  { id: 'dailyavg',  label: '일평균 지출',      icon: '📉' },
 ];
 const WIDGETS_SK = 'ddgb_widgets_v1';
 let reportWidgets  = JSON.parse(localStorage.getItem(WIDGETS_SK) || '["insight","survival","champion","dayofweek","top3cats","mbti"]');
@@ -3125,7 +3163,7 @@ function applyDateRange() {
 }
 
 // ── 결산 위젯 HTML 생성 ────────────────────────────────────
-const CARD_IDS = { insight:'rInsightCard', champion:'rChampCard', dayofweek:'rDowCard', survival:'rSurvivalCard', mbti:'rMbtiCard', top3cats:'rTop3Card' };
+const CARD_IDS = { insight:'rInsightCard', champion:'rChampCard', dayofweek:'rDowCard', survival:'rSurvivalCard', mbti:'rMbtiCard', top3cats:'rTop3Card', nospend:'rNospendCard', alert:'rAlertCard', dailyavg:'rDailyAvgCard' };
 function widgetInsightHTML() {
   return `<div class="widget-card wfull" id="rInsightCard">
     <button class="widget-menu-btn" onclick="openWidgetAction(event, this.closest('.widget-card').id)">···</button>
@@ -3239,6 +3277,39 @@ function widgetMbtiHTML() {
     </div>
   </div>`;
 }
+function widgetNospendHTML() {
+  return `<div class="widget-card wfull" id="rNospendCard">
+    <button class="widget-menu-btn" onclick="openWidgetAction(event, this.closest('.widget-card').id)">···</button>
+    <div class="wgt-title">📆 무지출 달력</div>
+    <div class="nscal-hd-row">
+      ${['월','화','수','목','금','토','일'].map(d=>`<div class="nscal-hd-cell">${d}</div>`).join('')}
+    </div>
+    <div class="nscal-grid" id="rNscalGrid"></div>
+    <div class="nscal-footer">
+      <span class="nscal-count" id="rNscalCount">0일</span>
+      <span class="nscal-sub" id="rNscalSub">무지출</span>
+    </div>
+  </div>`;
+}
+function widgetAlertHTML() {
+  return `<div class="widget-card wfull" id="rAlertCard">
+    <button class="widget-menu-btn" onclick="openWidgetAction(event, this.closest('.widget-card').id)">···</button>
+    <div class="wgt-title">⚠️ 지출 경고</div>
+    <div class="alert-list" id="rAlertList"><div class="alert-none">분석 중...</div></div>
+  </div>`;
+}
+function widgetDailyAvgHTML() {
+  return `<div class="widget-card wfull" id="rDailyAvgCard">
+    <button class="widget-menu-btn" onclick="openWidgetAction(event, this.closest('.widget-card').id)">···</button>
+    <div class="wgt-title">📉 일평균 지출</div>
+    <div class="davg-body">
+      <div class="davg-label">하루 평균</div>
+      <div class="davg-num" id="rDavgNum">₩0</div>
+      <div class="davg-vs" id="rDavgVs"></div>
+      <div class="davg-trend" id="rDavgTrend"></div>
+    </div>
+  </div>`;
+}
 function editPanelHTML() {
   const hidden = WIDGET_DEFS.filter(w => !reportWidgets.includes(w.id));
   if (!hidden.length) return '';
@@ -3267,7 +3338,7 @@ function closeReportOnboarding() {
 // ── 결산 렌더 ──────────────────────────────────────────────
 function renderReport() {
   const wrap = document.getElementById('reportWrap');
-  const widgetMap = { insight: widgetInsightHTML, champion: widgetChampHTML, dayofweek: widgetDowHTML, survival: widgetSurvivalHTML, mbti: widgetMbtiHTML, top3cats: widgetTop3HTML };
+  const widgetMap = { insight: widgetInsightHTML, champion: widgetChampHTML, dayofweek: widgetDowHTML, survival: widgetSurvivalHTML, mbti: widgetMbtiHTML, top3cats: widgetTop3HTML, nospend: widgetNospendHTML, alert: widgetAlertHTML, dailyavg: widgetDailyAvgHTML };
 
   let html = '';
   if (reportWidgets.length === 0) {
@@ -3519,6 +3590,101 @@ function renderReport() {
       `<span class="mbti-badge"><i class="${_icMeta(cat).fa}" style="color:${_icMeta(cat).c}"></i> ${dn(cat, CAT_NAME_MAP)}</span>`
     ).join('');
     document.getElementById('rMbtiTop3').innerHTML = top3badges;
+  }
+
+  // ── 무지출 달력 ─────────────────────────────────────────────
+  if (reportWidgets.includes('nospend')) {
+    const [ny, nm] = curMonth.split('-').map(Number);
+    const daysInMon = new Date(ny, nm, 0).getDate();
+    const todayD = new Date();
+    const todayStr = todayD.toISOString().slice(0,10);
+    const isThisMon = curMonth === todayStr.slice(0,7);
+    const expDates = new Set(thisExps.map(t => t.date));
+    const firstSlot = (new Date(ny, nm-1, 1).getDay() + 6) % 7; // 월요일 기준
+    let cells = '';
+    for (let i = 0; i < firstSlot; i++) cells += '<div class="nscal-cell"></div>';
+    let zeroCnt = 0;
+    for (let d = 1; d <= daysInMon; d++) {
+      const ds = `${curMonth}-${String(d).padStart(2,'0')}`;
+      const isFuture = ds > todayStr;
+      const isToday  = ds === todayStr;
+      const isZero   = !isFuture && !expDates.has(ds);
+      if (isZero) zeroCnt++;
+      let cls = 'nscal-cell';
+      if (isZero) cls += ' zero';
+      if (isToday) cls += ' today';
+      if (isFuture) cls += ' future';
+      cells += `<div class="${cls}">${d}</div>`;
+    }
+    const gridEl = document.getElementById('rNscalGrid');
+    if (gridEl) gridEl.innerHTML = cells;
+    const elapsed = isThisMon ? todayD.getDate() : daysInMon;
+    const cntEl = document.getElementById('rNscalCount');
+    const subEl = document.getElementById('rNscalSub');
+    if (cntEl) cntEl.textContent = `${zeroCnt}일`;
+    if (subEl) subEl.textContent = `/ ${elapsed}일 무지출`;
+  }
+
+  // ── 지출 경고 ────────────────────────────────────────────────
+  if (reportWidgets.includes('alert')) {
+    const prevCatMap = {};
+    prevExps.forEach(t => { prevCatMap[t.category] = (prevCatMap[t.category]||0) + t.amount; });
+    const thisCatMap = {};
+    thisExps.forEach(t => { thisCatMap[t.category] = (thisCatMap[t.category]||0) + t.amount; });
+    const alerts = [];
+    Object.entries(thisCatMap).forEach(([cat, amt]) => {
+      const p = prevCatMap[cat] || 0;
+      if (p > 0) {
+        const pct = Math.round((amt - p) / p * 100);
+        if (pct >= 50 && (amt - p) >= 10000) alerts.push({cat, amt, pct, diff: amt-p, isNew: false});
+      } else if (amt >= 50000) {
+        alerts.push({cat, amt, pct: null, diff: amt, isNew: true});
+      }
+    });
+    alerts.sort((a,b) => b.diff - a.diff);
+    const alertEl = document.getElementById('rAlertList');
+    if (alertEl) {
+      if (!alerts.length) {
+        alertEl.innerHTML = `<div class="alert-none">✅ 이번 달 소비 패턴이 안정적이에요!</div>`;
+      } else {
+        alertEl.innerHTML = alerts.slice(0,4).map(a => {
+          const meta = _icMeta(a.cat);
+          const pctTxt = a.isNew ? `이번 달 새로 생긴 지출 ${fmt(a.amt)}` : `지난달 대비 +${a.pct}% (${fmt(a.diff)} 증가)`;
+          return `<div class="alert-item">
+            <span class="alert-ico">⚠️</span>
+            <div>
+              <div class="alert-cat"><i class="${meta.fa}" style="color:${meta.c};margin-right:4px"></i>${dn(a.cat, CAT_NAME_MAP)}</div>
+              <div class="alert-diff">${pctTxt}</div>
+            </div>
+          </div>`;
+        }).join('');
+      }
+    }
+  }
+
+  // ── 일평균 지출 ──────────────────────────────────────────────
+  if (reportWidgets.includes('dailyavg')) {
+    const [dy, dm] = curMonth.split('-').map(Number);
+    const todayD2 = new Date();
+    const isThisMon2 = curMonth === todayD2.toISOString().slice(0,7);
+    const daysInMon2 = new Date(dy, dm, 0).getDate();
+    const elapsed2 = isThisMon2 ? todayD2.getDate() : daysInMon2;
+    const thisAvg = elapsed2 > 0 ? Math.round(thisExp / elapsed2) : 0;
+    const [py2, pm2] = prev.split('-').map(Number);
+    const prevDays2 = new Date(py2, pm2, 0).getDate();
+    const prevAvg = prevDays2 > 0 ? Math.round(prevExp / prevDays2) : 0;
+    const numEl = document.getElementById('rDavgNum');
+    const vsEl  = document.getElementById('rDavgVs');
+    const trEl  = document.getElementById('rDavgTrend');
+    if (numEl) numEl.innerHTML = fmt(thisAvg);
+    if (vsEl && prevAvg > 0) vsEl.textContent = `지난달 일평균 ${fmt(prevAvg)}`;
+    else if (vsEl) vsEl.textContent = `${elapsed2}일 기준`;
+    if (trEl && prevAvg > 0) {
+      const diff2 = thisAvg - prevAvg;
+      const pct2 = Math.round(Math.abs(diff2) / prevAvg * 100);
+      trEl.textContent = diff2 > 0 ? `▲ 지난달보다 ${pct2}% 많아요` : diff2 < 0 ? `▼ 지난달보다 ${pct2}% 적어요` : `지난달과 동일해요`;
+      trEl.className = `davg-trend${diff2 > 0 ?' up': diff2 < 0 ?' down':''}`;
+    } else if (trEl) { trEl.textContent = ''; }
   }
 
   // ── 카테고리 TOP 3 ──────────────────────────────────────────
@@ -3829,7 +3995,7 @@ function fillSurvival() {
 let activeWidgetId = null;
 function openWidgetAction(e, cardId) {
   e.stopPropagation();
-  const idMap = { rInsightCard:'insight', rChampCard:'champion', rDowCard:'dayofweek', rSurvivalCard:'survival', rMbtiCard:'mbti', rTop3Card:'top3cats' };
+  const idMap = { rInsightCard:'insight', rChampCard:'champion', rDowCard:'dayofweek', rSurvivalCard:'survival', rMbtiCard:'mbti', rTop3Card:'top3cats', rNospendCard:'nospend', rAlertCard:'alert', rDailyAvgCard:'dailyavg' };
   activeWidgetId = idMap[cardId];
   const idx = reportWidgets.indexOf(activeWidgetId);
   const pop = document.getElementById('widgetPopover');
@@ -5644,6 +5810,7 @@ const TRANSLATIONS = {
     'report.addWidget':'항목 추가',
     'wdef.insight':'이번 달 요약','wdef.champion':'최고 지출 항목','wdef.dayofweek':'요일별 소비 패턴',
     'wdef.survival':'목표 예산','wdef.mbti':'나의 소비 MBTI','wdef.top3cats':'카테고리 TOP 3',
+    'wdef.nospend':'무지출 달력','wdef.alert':'지출 경고','wdef.dailyavg':'일평균 지출',
     'me.streak':'🔥 연속 기록 {n}일','me.streakZero':'아직 기록을 시작해봐요!',
     'me.monthRecord':'이번 달 기록','me.streakDays':'연속 기록일',
     'me.notLoggedIn':'비로그인','me.syncInfo':'로그인하면 서버에 동기화됩니다','me.loginBtn':'로그인 / 회원가입',
@@ -5848,6 +6015,7 @@ const TRANSLATIONS = {
     'report.addWidget':'Add Widget',
     'wdef.insight':'Monthly Summary','wdef.champion':'Top Expense','wdef.dayofweek':'Spending by Day',
     'wdef.survival':'Budget Goal','wdef.mbti':'Spending MBTI','wdef.top3cats':'Category TOP 3',
+    'wdef.nospend':'Zero-Spend Calendar','wdef.alert':'Spending Alert','wdef.dailyavg':'Daily Avg Spend',
     'me.streak':'🔥 {n}-day streak','me.streakZero':'Start recording today!',
     'me.monthRecord':'This month','me.streakDays':'Streak days',
     'me.notLoggedIn':'Not logged in','me.syncInfo':'Log in to sync to server','me.loginBtn':'Login / Sign up',
@@ -6052,6 +6220,7 @@ const TRANSLATIONS = {
     'report.addWidget':'項目追加',
     'wdef.insight':'月間サマリー','wdef.champion':'最高支出','wdef.dayofweek':'曜日別消費',
     'wdef.survival':'予算目標','wdef.mbti':'消費MBTI','wdef.top3cats':'カテゴリ TOP 3',
+    'wdef.nospend':'無支出カレンダー','wdef.alert':'支出警告','wdef.dailyavg':'1日平均支出',
     'me.streak':'🔥 {n}日連続記録','me.streakZero':'今日から記録を始めましょう！',
     'me.monthRecord':'今月の記録','me.streakDays':'連続記録日',
     'me.notLoggedIn':'未ログイン','me.syncInfo':'ログインするとサーバーに同期されます','me.loginBtn':'ログイン / 会員登録',
@@ -6256,6 +6425,7 @@ const TRANSLATIONS = {
     'report.addWidget':'添加项目',
     'wdef.insight':'月度摘要','wdef.champion':'最高支出','wdef.dayofweek':'按星期消费',
     'wdef.survival':'预算目标','wdef.mbti':'消费MBTI','wdef.top3cats':'分类 TOP 3',
+    'wdef.nospend':'零消费日历','wdef.alert':'支出警告','wdef.dailyavg':'日均支出',
     'me.streak':'🔥 连续记录 {n} 天','me.streakZero':'快来开始记录吧！',
     'me.monthRecord':'本月记录','me.streakDays':'连续记录天数',
     'me.notLoggedIn':'未登录','me.syncInfo':'登录后同步到服务器','me.loginBtn':'登录 / 注册',
@@ -6460,6 +6630,7 @@ const TRANSLATIONS = {
     'report.addWidget':'Añadir elemento',
     'wdef.insight':'Resumen mensual','wdef.champion':'Mayor gasto','wdef.dayofweek':'Gastos por día',
     'wdef.survival':'Presupuesto','wdef.mbti':'MBTI de consumo','wdef.top3cats':'Categoría TOP 3',
+    'wdef.nospend':'Días sin gasto','wdef.alert':'Alerta de gasto','wdef.dailyavg':'Gasto diario',
     'me.streak':'🔥 {n} días seguidos','me.streakZero':'¡Empieza a registrar hoy!',
     'me.monthRecord':'Este mes','me.streakDays':'Días seguidos',
     'me.notLoggedIn':'No conectado','me.syncInfo':'Inicia sesión para sincronizar','me.loginBtn':'Iniciar sesión / Registrarse',
