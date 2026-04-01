@@ -22,6 +22,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['user_id']    = $user['id'];
                 $_SESSION['user_name']  = $user['name'];
                 $_SESSION['user_email'] = $user['email'];
+                // remember-me 토큰 발급
+                try {
+                    $pdo->exec("CREATE TABLE IF NOT EXISTS remember_tokens (id INT AUTO_INCREMENT PRIMARY KEY, user_id INT NOT NULL, token VARCHAR(64) NOT NULL, expires_at DATETIME NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+                    $rm_token = sha1(uniqid(mt_rand(), true) . $user['id']);
+                    $pdo->prepare("DELETE FROM remember_tokens WHERE user_id=:uid")->execute([':uid'=>$user['id']]);
+                    $pdo->prepare("INSERT INTO remember_tokens (user_id,token,expires_at) VALUES (:uid,:t,DATE_ADD(NOW(),INTERVAL 30 DAY))")->execute([':uid'=>$user['id'],':t'=>$rm_token]);
+                    setcookie('ddgb_rm', $rm_token, time()+30*86400, '/');
+                } catch (Exception $e) {}
                 header('Location: index.php');
                 exit;
             } else {

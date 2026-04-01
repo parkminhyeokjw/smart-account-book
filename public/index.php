@@ -1,6 +1,25 @@
 <?php
 if (session_status() === PHP_SESSION_NONE) session_start();
-if (isset($_GET['logout'])) { session_unset(); session_destroy(); header('Location: login.php'); exit; }
+if (isset($_GET['logout'])) {
+    if (!empty($_COOKIE['ddgb_rm'])) {
+        try {
+            require_once __DIR__ . '/../config/db.php';
+            getConnection()->prepare("DELETE FROM remember_tokens WHERE token=:t")->execute([':t'=>$_COOKIE['ddgb_rm']]);
+        } catch (Exception $e) {}
+        setcookie('ddgb_rm', '', time()-3600, '/');
+    }
+    session_unset(); session_destroy(); header('Location: login.php'); exit;
+}
+// remember-me 자동 로그인
+if (empty($_SESSION['user_id']) && !empty($_COOKIE['ddgb_rm'])) {
+    try {
+        require_once __DIR__ . '/../config/db.php';
+        $__s = getConnection()->prepare("SELECT rt.user_id, u.name, u.email FROM remember_tokens rt JOIN users u ON u.id=rt.user_id WHERE rt.token=:t AND rt.expires_at>NOW() LIMIT 1");
+        $__s->execute([':t'=>$_COOKIE['ddgb_rm']]);
+        $__r = $__s->fetch();
+        if ($__r) { $_SESSION['user_id']=(int)$__r['user_id']; $_SESSION['user_name']=$__r['name']; $_SESSION['user_email']=$__r['email']; }
+    } catch (Exception $e) {}
+}
 $isLoggedIn = !empty($_SESSION['user_id']);
 $userName   = htmlspecialchars($_SESSION['user_name']  ?? '');
 $userEmail  = htmlspecialchars($_SESSION['user_email'] ?? '');
@@ -1148,31 +1167,35 @@ body.dark .upg-plan-period { color:#9e9e9e; }
 .nscal-hd-cell { font-size:9px; text-align:center; color:#9e9e9e; font-weight:700; padding:2px 0; }
 .nscal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:2px; margin-top:2px; }
 .nscal-cell { aspect-ratio:1; display:flex; align-items:center; justify-content:center; font-size:10px; border-radius:50%; color:#6B7280; }
-.nscal-cell.zero { background:#DCFCE7; color:#16a34a; font-weight:800; }
-.nscal-cell.today { outline:2px solid var(--p); outline-offset:-1px; }
+.nscal-cell.zero { background:none; font-size:14px; }
+.nscal-cell.today { outline:2px solid var(--p); outline-offset:-1px; border-radius:50%; }
 .nscal-cell.future { color:#d1d5db; }
-.nscal-footer { display:flex; align-items:baseline; gap:4px; margin-top:8px; }
-.nscal-count { font-size:20px; font-weight:900; color:#16a34a; }
-.nscal-sub { font-size:11px; color:#9e9e9e; }
+.nscal-footer { display:flex; align-items:center; justify-content:center; gap:6px; margin-top:10px; padding-top:8px; border-top:1px solid #f3f4f6; }
+.nscal-count { font-size:18px; font-weight:900; color:#16a34a; }
+.nscal-sub { font-size:12px; color:#6B7280; font-weight:600; }
 body.dark .nscal-cell { color:#64748b; }
-body.dark .nscal-cell.zero { background:#14532d; color:#4ade80; }
+body.dark .nscal-cell.zero { background:none; }
 body.dark .nscal-cell.future { color:#334155; }
+body.dark .nscal-footer { border-top-color:#1e293b; }
 /* ── 지출 경고 ── */
-.alert-list { display:flex; flex-direction:column; gap:8px; margin-top:10px; }
-.alert-item { display:flex; align-items:flex-start; gap:10px; background:#FFF7ED; border-radius:10px; padding:10px 12px; }
-.alert-ico { font-size:18px; flex-shrink:0; margin-top:1px; }
-.alert-cat { font-size:13px; font-weight:700; color:#212121; }
-.alert-diff { font-size:11px; color:#ef4444; margin-top:2px; }
-.alert-none { text-align:center; padding:16px 0; font-size:13px; color:#6B7280; }
-body.dark .alert-item { background:#2d1a0e; }
-body.dark .alert-cat { color:#e0e0e0; }
+.widget-card.alert-card { background:#FFFBEB; border-left:4px solid #F59E0B; }
+body.dark .widget-card.alert-card { background:#1f1a0a; border-left-color:#b45309; }
+.alert-list { display:flex; flex-direction:column; gap:10px; margin-top:10px; }
+.alert-item { display:flex; align-items:center; gap:12px; background:#fff; border-radius:12px; padding:12px 14px; box-shadow:0 1px 4px rgba(0,0,0,.06); }
+.alert-ico { font-size:22px; flex-shrink:0; }
+.alert-cat { font-size:15px; font-weight:800; color:#DC2626; }
+.alert-diff { font-size:13px; font-weight:700; color:#DC2626; margin-top:3px; }
+.alert-none { text-align:center; padding:20px 0; font-size:13px; color:#6B7280; }
+body.dark .alert-item { background:#1e293b; }
+body.dark .alert-cat { color:#f87171; }
+body.dark .alert-diff { color:#f87171; }
 /* ── 일평균 지출 ── */
 .davg-body { display:flex; flex-direction:column; justify-content:center; min-height:80px; }
 .davg-num { font-size:20px; font-weight:900; color:var(--p); margin:6px 0 3px; line-height:1.1; }
 .davg-label { font-size:11px; color:#9e9e9e; }
 .davg-vs { font-size:11px; color:#9e9e9e; margin-top:4px; }
-.davg-trend { font-size:12px; font-weight:700; margin-top:3px; }
-.davg-trend.up { color:#ef4444; }
+.davg-trend { font-size:14px; font-weight:800; margin-top:6px; display:flex; align-items:center; gap:4px; line-height:1.3; }
+.davg-trend.up { color:#DC2626; }
 .davg-trend.down { color:#16a34a; }
 /* ── 도움말 ── */
 .help-section { margin-bottom:20px; }
@@ -1203,7 +1226,7 @@ body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C;
 #currencyGrid::-webkit-scrollbar { display:none; }
 
 /* ── 분석 대시보드 리디자인 ── */
-.report-wrap { padding:8px 12px 100px !important; display:grid !important; grid-template-columns:1fr 1fr; gap:10px; align-items:start; }
+.report-wrap { padding:8px 12px 80px !important; display:grid !important; grid-template-columns:1fr 1fr; gap:14px; align-items:start; }
 .widget-card.wfull { grid-column:1 / -1; }
 .wgt-title { display:flex; align-items:center; gap:5px; padding:10px 13px 8px; font-size:11px; font-weight:700; color:#9e9e9e; letter-spacing:.5px; border-bottom:1px solid #f5f5f5; }
 body.dark .wgt-title { border-bottom-color:#1e293b; }
@@ -1265,6 +1288,9 @@ body.dark .widget-card.surv-danger { background:#2d1515; }
     <div id="haDefault" style="display:flex;align-items:center;gap:2px">
       <button class="search-btn" onclick="openSearch()" title="검색"><i data-lucide="search" style="width:20px;height:20px;stroke-width:1.75"></i></button>
       <button class="cal-btn" onclick="toggleCalendar()" title="달력"><i data-lucide="calendar" style="width:20px;height:20px;stroke-width:1.75"></i></button>
+    </div>
+    <div id="haReport" style="display:none;align-items:center;gap:2px">
+      <button class="cal-btn" onclick="openAddWidgetModal()" title="위젯 추가"><i data-lucide="plus-circle" style="width:22px;height:22px;stroke-width:1.75"></i></button>
     </div>
     <div id="haStats" style="display:none;align-items:center;gap:6px">
       <button class="stats-cal-btn" id="statsCalBtn" onclick="openStatsDatePicker()" title="기간 직접 선택"><i data-lucide="calendar-range" style="width:18px;height:18px;stroke-width:1.75"></i></button>
@@ -1961,6 +1987,17 @@ body.dark .widget-card.surv-danger { background:#2d1515; }
   </div>
 </div>
 
+<!-- ── 위젯 추가 모달 ── -->
+<div class="center-overlay" id="addWidgetModal" onclick="if(event.target===this)closeAddWidgetModal()">
+  <div class="center-modal" style="max-width:380px">
+    <div class="center-modal-hd">
+      <span class="center-modal-hd-title">➕ 위젯 추가</span>
+      <button class="center-modal-x" onclick="closeAddWidgetModal()">×</button>
+    </div>
+    <div class="center-modal-body" id="addWidgetList" style="padding:8px 12px 12px"></div>
+  </div>
+</div>
+
 <!-- ── 분석 탭 온보딩 ── -->
 <div class="center-overlay" id="reportOnboarding">
   <div class="center-modal" style="max-width:360px">
@@ -2582,7 +2619,8 @@ function goTab(name) {
   document.getElementById('headerActions').style.display = isMe ? 'none' : 'flex';
   if (!isMe) {
     document.getElementById('haDefault').style.display = (isStats || isReport) ? 'none' : 'flex';
-    document.getElementById('haStats').style.display   = isStats ? 'flex' : 'none';
+    document.getElementById('haStats').style.display   = isStats  ? 'flex' : 'none';
+    document.getElementById('haReport').style.display  = isReport ? 'flex' : 'none';
   }
   document.getElementById('monthLabel').classList.toggle('picker-mode', isStats);
   setMonthLabel();
@@ -2591,9 +2629,9 @@ function goTab(name) {
   if (name==='stats')    renderStats();
   if (name==='report')   renderReport();
   if (name==='me')       renderMeStreak();
-  // 결산 외 탭에서는 편집 버튼 숨김
+  // 하단 편집바 완전 숨김
   const editBar = document.getElementById('reportEditBar');
-  if (editBar) editBar.style.display = name === 'report' ? 'block' : 'none';
+  if (editBar) editBar.style.display = 'none';
 }
 
 // ── 달력 토글 ────────────────────────────────────────────────
@@ -3292,7 +3330,7 @@ function widgetNospendHTML() {
   </div>`;
 }
 function widgetAlertHTML() {
-  return `<div class="widget-card wfull" id="rAlertCard">
+  return `<div class="widget-card wfull alert-card" id="rAlertCard">
     <button class="widget-menu-btn" onclick="openWidgetAction(event, this.closest('.widget-card').id)">···</button>
     <div class="wgt-title">⚠️ 지출 경고</div>
     <div class="alert-list" id="rAlertList"><div class="alert-none">분석 중...</div></div>
@@ -3349,7 +3387,7 @@ function renderReport() {
   } else {
     reportWidgets.forEach(id => { if (widgetMap[id]) html += widgetMap[id](); });
   }
-  if (reportEditMode) html += editPanelHTML();
+  // editPanel은 모달로 이동 (하단 버튼 제거)
 
   wrap.innerHTML = html;
   renderReportEditBar();
@@ -3614,7 +3652,7 @@ function renderReport() {
       if (isZero) cls += ' zero';
       if (isToday) cls += ' today';
       if (isFuture) cls += ' future';
-      cells += `<div class="${cls}">${d}</div>`;
+      cells += `<div class="${cls}">${isZero ? '⭐' : d}</div>`;
     }
     const gridEl = document.getElementById('rNscalGrid');
     if (gridEl) gridEl.innerHTML = cells;
@@ -3721,22 +3759,31 @@ function renderReport() {
 }
 
 function renderReportEditBar() {
-  let bar = document.getElementById('reportEditBar');
-  if (!bar) {
-    bar = document.createElement('div');
-    bar.id = 'reportEditBar';
-    bar.className = 'report-edit-bar';
-    document.body.appendChild(bar);
-  }
-  bar.innerHTML = `<button class="report-edit-btn${reportEditMode ? ' on' : ''}" onclick="toggleReportEdit()">
-    ${reportEditMode ? tr('report.editDone') : tr('report.editStart')}
-  </button>`;
-  bar.style.display = 'block';
+  const bar = document.getElementById('reportEditBar');
+  if (bar) bar.style.display = 'none';
 }
 
 function toggleReportEdit() {
   reportEditMode = !reportEditMode;
   renderReport();
+}
+function openAddWidgetModal() {
+  const hidden = WIDGET_DEFS.filter(w => !reportWidgets.includes(w.id));
+  const list = document.getElementById('addWidgetList');
+  if (!hidden.length) {
+    list.innerHTML = '<div style="text-align:center;padding:24px;color:#9e9e9e;font-size:14px">모든 위젯이 추가되었어요 ✅</div>';
+  } else {
+    list.innerHTML = hidden.map(w => `
+      <div class="edit-row" onclick="addWidgetById('${w.id}');openAddWidgetModal()" style="cursor:pointer">
+        <span class="edit-row-icon">${w.icon}</span>
+        <span class="edit-row-label">${tr('wdef.'+w.id)}</span>
+        <span class="edit-row-plus">＋</span>
+      </div>`).join('');
+  }
+  document.getElementById('addWidgetModal').classList.add('show');
+}
+function closeAddWidgetModal() {
+  document.getElementById('addWidgetModal').classList.remove('show');
 }
 
 // ── 나 탭 ────────────────────────────────────────────────────
@@ -4871,6 +4918,41 @@ function fmtFixedAmt(el) {
   el.value = raw ? Number(raw).toLocaleString() : '';
 }
 // 수입/지출 변경 시 카테고리 목록 갱신
+// ── 서버 동기화 ──────────────────────────────────────────────
+const SYNC_TS_SK = 'ddgb_sync_ts_v1';
+async function syncFromServer() {
+  if (!IS_LOGGED_IN) return;
+  const lastSync = parseInt(localStorage.getItem(SYNC_TS_SK) || '0');
+  const now = Date.now();
+  // 데이터가 있고 1시간 이내면 스킵
+  if (txs.length > 0 && now - lastSync < 60 * 60 * 1000) return;
+  try {
+    const res  = await fetch('../api/?action=sync_pull', {credentials:'same-origin'});
+    const data = await res.json();
+    if (data.status !== 'ok' || !Array.isArray(data.transactions)) return;
+    // 서버 데이터를 localStorage 형식으로 변환
+    const serverTxs = data.transactions.map(t => ({
+      id:          'db_' + t.db_id,
+      db_id:       t.db_id,
+      type:        t.type,
+      amount:      t.amount,
+      category:    t.category,
+      description: t.description || t.category,
+      date:        t.date,
+      payment:     t.payment || '',
+      photos:      []
+    }));
+    // 로컬에만 있는 항목(db_id 없는 것) 보존 후 병합
+    const serverDbIds = new Set(data.transactions.map(t => t.db_id));
+    const localOnly   = txs.filter(t => !t.db_id);
+    txs = [...serverTxs, ...localOnly];
+    persist();
+    localStorage.setItem(SYNC_TS_SK, String(now));
+    renderLedger();
+    if (data.transactions.length > 0) showToast('☁️ 데이터 동기화 완료');
+  } catch(e) {}
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   const fxType = document.getElementById('fxType');
   if (fxType) fxType.addEventListener('change', () => { if(document.getElementById('fixedModal').classList.contains('show')) openFixedModal(); });
@@ -4882,6 +4964,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const rowVal = document.getElementById('profileRowValue');
   if (rowVal) rowVal.textContent = localStorage.getItem('profile_nickname') || USER_NAME || '';
   updateMeHomeAvatar();
+  // 서버에서 데이터 동기화
+  syncFromServer();
 });
 
 // 소급 확인 팝업용 임시 저장

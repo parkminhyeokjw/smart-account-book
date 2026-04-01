@@ -155,6 +155,27 @@ try {
             ]);
             break;
 
+        // ── 거래 수정 ────────────────────────────────────────────────
+        case 'update':
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') { http_response_code(405); echo json_encode(['status'=>'error']); break; }
+            $txId  = (int) ($_POST['id'] ?? 0);
+            $amt   = (int) ($_POST['amount'] ?? 0);
+            $desc  = trim($_POST['description'] ?? '');
+            $date  = trim($_POST['date'] ?? '');
+            $pay   = trim($_POST['payment'] ?? '');
+            $type  = in_array($_POST['type'] ?? '', ['expense','income']) ? $_POST['type'] : 'expense';
+            $catName = trim($_POST['category'] ?? '');
+            if ($txId <= 0 || $amt <= 0 || !$date) { http_response_code(400); echo json_encode(['status'=>'error','message'=>'필수값 누락']); break; }
+            $pdo = getConnection();
+            // category_id 조회 (없으면 null)
+            $cs = $pdo->prepare("SELECT id FROM categories WHERE user_id=:uid AND name=:n LIMIT 1");
+            $cs->execute([':uid'=>$userId, ':n'=>$catName]);
+            $catId = $cs->fetchColumn() ?: null;
+            $pdo->prepare("UPDATE transactions SET amount=:a, description=:d, tx_date=:dt, payment_method=:p, tx_type=:t, category_id=:c WHERE id=:id AND user_id=:uid")
+                ->execute([':a'=>$amt,':d'=>$desc,':dt'=>$date,':p'=>$pay,':t'=>$type,':c'=>$catId,':id'=>$txId,':uid'=>$userId]);
+            echo json_encode(['status' => 'ok']);
+            break;
+
         // ── 카테고리 수정 ────────────────────────────────────────────
         case 'categories_update':
             if ($_SERVER['REQUEST_METHOD'] !== 'POST') { http_response_code(405); echo json_encode(['status'=>'error']); break; }
@@ -430,6 +451,36 @@ try {
             $stmt->execute([':uid'=>$userId]);
             $deleted = $stmt->rowCount();
             echo json_encode(['status'=>'ok','deleted'=>$deleted]);
+            break;
+
+        // ── 전체 내역 동기화 (새 기기 로그인 시) ──────────────────
+        case 'sync_pull':
+            $pdo  = getConnection();
+            $stmt = $pdo->prepare(
+                "SELECT t.id, t.amount, t.description, t.tx_date,
+                        COALESCE(c.type, t.tx_type, 'expense') AS tx_type,
+                        COALESCE(t.payment_method, '')          AS payment_method,
+                        COALESCE(c.name, '기타')                AS category_name
+                 FROM transactions t
+                 LEFT JOIN categories c ON c.id = t.category_id
+                 WHERE t.user_id = :uid
+                 ORDER BY t.tx_date DESC, t.id DESC"
+            );
+            $stmt->execute([':uid' => $userId]);
+            $rows   = $stmt->fetchAll();
+            $result = [];
+            foreach ($rows as $r) {
+                $result[] = [
+                    'db_id'       => (int)$r['id'],
+                    'amount'      => (int)$r['amount'],
+                    'description' => $r['description'],
+                    'date'        => $r['tx_date'],
+                    'type'        => $r['tx_type'],
+                    'category'    => $r['category_name'],
+                    'payment'     => $r['payment_method'],
+                ];
+            }
+            echo json_encode(['status'=>'ok','transactions'=>$result]);
             break;
 
         default:
