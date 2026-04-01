@@ -163,6 +163,17 @@ body {
 /* 통계 탭 — 헤더에 월 크게 */
 .app-header.stats-mode .header-title { display: flex; }
 .app-header.stats-mode .header-actions { margin-left: auto; }
+.app-header.report-mode .header-actions { margin-left: auto; }
+/* 모바일: 헤더 요소 크기 축소로 겹침 방지 (숨기지 않음) */
+@media (max-width: 520px) {
+  .app-header.stats-mode .header-logo-text,
+  .app-header.report-mode .header-logo-text { font-size: 13px !important; display: block !important; }
+  .app-header.stats-mode .header-period-filter { display: flex !important; }
+  .app-header.stats-mode .hpf-btn { font-size: 10px !important; padding: 3px 5px !important; }
+  .app-header.stats-mode #statsHdrNav span { font-size: 12px; min-width: 72px; }
+  .app-header.stats-mode #haStats { gap: 3px !important; }
+  .app-header.stats-mode #statsCalBtn { width: 16px !important; height: 16px !important; }
+}
 .stats-header-month {
   font-size: 22px; font-weight: 800; color: #fff; display: none; letter-spacing: -.3px;
 }
@@ -2450,14 +2461,13 @@ const WIDGET_DEFS = [
   { id: 'champion',  label: '최고 지출 항목',  icon: '🏆' },
   { id: 'dayofweek', label: '요일별 소비 패턴', icon: '📅' },
   { id: 'survival',  label: '목표 예산',        icon: '💰' },
-  { id: 'mbti',      label: '나의 소비 MBTI',   icon: '🧬' },
   { id: 'top3cats',  label: '카테고리 TOP 3',   icon: '🥇' },
-  { id: 'nospend',   label: '무지출 달력',      icon: '📆' },
   { id: 'alert',     label: '지출 경고',        icon: '⚠️' },
   { id: 'dailyavg',  label: '일평균 지출',      icon: '📉' },
 ];
 const WIDGETS_SK = 'ddgb_widgets_v1';
-let reportWidgets  = JSON.parse(localStorage.getItem(WIDGETS_SK) || '["insight","survival","champion","dayofweek","top3cats","mbti"]');
+const _REMOVED_WIDGETS = ['mbti', 'nospend'];
+let reportWidgets = JSON.parse(localStorage.getItem(WIDGETS_SK) || '["insight","survival","champion","dayofweek","top3cats"]').filter(id => !_REMOVED_WIDGETS.includes(id));
 let reportEditMode = false;
 const SURV_SK  = 'ddgb_surv_v1';
 let survGoal = (() => {
@@ -2640,6 +2650,7 @@ function goTab(name) {
   // 헤더 모드
   const appHeader = document.getElementById('appHeader');
   appHeader.classList.toggle('stats-mode', isStats);
+  appHeader.classList.toggle('report-mode', isReport);
   appHeader.classList.toggle('me-mode', isMe);
   appHeader.classList.toggle('ledger-mode', isLedger);
   appHeader.style.position = isMe ? 'relative' : '';
@@ -3967,10 +3978,6 @@ function onSurvBudgetInput(el) {
 }
 function saveSurvBudget() {
   localStorage.setItem(SURV_SK, JSON.stringify(survGoal));
-  if (IS_LOGGED_IN) {
-    const fd = new FormData(); fd.append('key','surv_budget'); fd.append('value', JSON.stringify(survGoal));
-    fetch('../api/?action=settings_save', { method:'POST', body:fd, credentials:'same-origin' }).catch(()=>{});
-  }
   fillSurvival();
 }
 
@@ -5020,11 +5027,31 @@ function fmtFixedAmt(el) {
 // 수입/지출 변경 시 카테고리 목록 갱신
 // ── 서버 동기화 ──────────────────────────────────────────────
 const SYNC_TS_SK = 'ddgb_sync_ts_v1';
+async function syncSettings() {
+  if (!IS_LOGGED_IN) return;
+  try {
+    const sr = await fetch('../api/?action=settings_get', {credentials:'same-origin'});
+    const ss = await sr.json();
+    if (ss.nickname) {
+      localStorage.setItem('profile_nickname', ss.nickname);
+      const rowVal = document.getElementById('profileRowValue');
+      if (rowVal) rowVal.textContent = ss.nickname;
+    }
+    if (ss.avatar_img) {
+      localStorage.setItem('profile_avatar_img', ss.avatar_img);
+    }
+    // 예산은 기기별 로컬 저장만 사용 (동기화 안 함)
+    updateMeHomeAvatar();
+  } catch(e) {}
+}
 async function syncFromServer(force = false) {
   if (!IS_LOGGED_IN) return;
   const lastSync = parseInt(localStorage.getItem(SYNC_TS_SK) || '0');
   const now = Date.now();
   if (!force && now - lastSync < 5 * 60 * 1000) return;
+  localStorage.setItem(SYNC_TS_SK, String(now));
+  // 설정/예산은 거래내역과 독립적으로 항상 동기화
+  syncSettings();
   try {
     // 1. db_id 없는 로컬 항목을 서버에 먼저 업로드
     const localOnly = txs.filter(t => !t.db_id);
@@ -5055,30 +5082,7 @@ async function syncFromServer(force = false) {
       photos:      []
     }));
     persist();
-    localStorage.setItem(SYNC_TS_SK, String(now));
     renderLedger();
-    // 프로필 동기화
-    try {
-      const sr = await fetch('../api/?action=settings_get', {credentials:'same-origin'});
-      const ss = await sr.json();
-      if (ss.nickname) {
-        localStorage.setItem('profile_nickname', ss.nickname);
-        const rowVal = document.getElementById('profileRowValue');
-        if (rowVal) rowVal.textContent = ss.nickname;
-      }
-      if (ss.avatar_img) {
-        localStorage.setItem('profile_avatar_img', ss.avatar_img);
-      }
-      if (ss.surv_budget) {
-        try {
-          const sv = JSON.parse(ss.surv_budget);
-          survGoal = sv;
-          localStorage.setItem(SURV_SK, ss.surv_budget);
-          if (reportWidgets.includes('survival')) fillSurvival();
-        } catch(e) {}
-      }
-      updateMeHomeAvatar();
-    } catch(e) {}
     if (data.transactions.length > 0) showToast('☁️ 데이터 동기화 완료');
   } catch(e) {}
 }
@@ -5113,11 +5117,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const fd2 = new FormData(); fd2.append('key','avatar_img'); fd2.append('value', localImg);
       fetch('../api/?action=settings_save', { method:'POST', body:fd2, credentials:'same-origin' }).catch(()=>{});
     }
-    const localSurv = localStorage.getItem(SURV_SK);
-    if (localSurv) {
-      const fd3 = new FormData(); fd3.append('key','surv_budget'); fd3.append('value', localSurv);
-      fetch('../api/?action=settings_save', { method:'POST', body:fd3, credentials:'same-origin' }).catch(()=>{});
-    }
+    // surv_budget은 서버가 우선 (syncFromServer에서 덮어씀) — 여기서 push 안 함
   }
   // 서버에서 데이터 동기화
   syncFromServer();
