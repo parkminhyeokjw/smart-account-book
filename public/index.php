@@ -755,7 +755,7 @@ body.dark .avatar-sheet-sep { background:#334155; }
 .detail-photo-wrap img { width: 100%; max-height: 200px; object-fit: cover; border-radius: 10px; cursor: zoom-in; }
 
 /* ── 검색 오버레이 ── */
-.search-overlay { display: none; position: fixed; inset: 0; background: #fff; z-index: 600; flex-direction: column; }
+.search-overlay { display: none; position: fixed; top: 0; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: #fff; z-index: 600; flex-direction: column; }
 .search-overlay.show { display: flex; }
 .search-bar { display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: var(--p); }
 .search-input { flex: 1; border: none; border-radius: 8px; padding: 10px 14px; font-size: 15px; outline: none; font-family: inherit; }
@@ -1256,9 +1256,118 @@ body.dark .fx-dow-btn { background:#37474F; color:#CFD8DC; border-color:#546E7A;
 body.dark .fx-dow-btn.on { background:#78909C; color:#fff; border-color:#78909C; }
 #currencyGrid::-webkit-scrollbar { display:none; }
 
-/* ── 분석 대시보드 리디자인 ── */
-.report-wrap { padding:8px 12px 80px !important; display:grid !important; grid-template-columns:1fr 1fr; gap:14px; align-items:start; }
-.widget-card.wfull { grid-column:1 / -1; }
+/* ── 분석 리포트 (스토리텔링) ── */
+.report-wrap { padding: 16px 16px 100px; }
+.rs-wrap { display: flex; flex-direction: column; gap: 16px; }
+.rs-widget-wrap { position: relative; }
+.rs-dots-btn { position: absolute; top: 12px; right: 12px; background: none; border: none; border-radius: 7px; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 3; color: rgba(255,255,255,.7); font-size: 18px; line-height: 1; padding: 0; }
+.rs-widget-wrap:not(.rs-hdr-wrap) .rs-dots-btn { color: #94a3b8; }
+body.dark .rs-widget-wrap:not(.rs-hdr-wrap) .rs-dots-btn { color: #64748b; }
+.rs-dots-menu { position: absolute; top: 44px; right: 12px; background: #fff; border-radius: 12px; box-shadow: 0 6px 24px rgba(0,0,0,.14); z-index: 200; overflow: hidden; display: none; min-width: 130px; }
+.rs-dots-menu.open { display: block; }
+body.dark .rs-dots-menu { background: #1e293b; border: 1px solid #334155; }
+.rs-dots-menu button { display: block; width: 100%; padding: 11px 16px; text-align: left; border: none; background: none; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--text); white-space: nowrap; }
+.rs-dots-menu button:hover { background: rgba(0,0,0,.05); }
+body.dark .rs-dots-menu button:hover { background: rgba(255,255,255,.06); }
+.rs-dots-menu .rs-del-btn { color: #ef4444; }
+.rs-add-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 9000; display: flex; align-items: center; justify-content: center; }
+.rs-add-modal { background: #fff; border-radius: 20px; padding: 24px; width: calc(100% - 40px); max-width: 440px; max-height: 70vh; overflow-y: auto; }
+body.dark .rs-add-modal { background: #1e293b; }
+.rs-add-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f1f5f9; }
+body.dark .rs-add-item { border-color: #334155; }
+.rs-add-item:last-child { border-bottom: none; }
+.rs-add-item-label { font-size: 14px; font-weight: 600; color: var(--text); }
+.rs-add-item-btn { background: var(--accent); color: #fff; border: none; border-radius: 20px; padding: 6px 16px; font-size: 12px; font-weight: 700; cursor: pointer; }
+.rs-header { background: linear-gradient(135deg, #364B6D 0%, #1E293B 100%); border-radius: 20px; padding: 22px 20px 20px; color: #fff; }
+.rs-header-eyebrow { font-size: 13px; font-weight: 700; opacity: .85; margin-bottom: 6px; }
+.rs-header-title { font-size: 18px; font-weight: 800; line-height: 1.35; margin-bottom: 16px; }
+.rs-header-divider { height: 1px; background: rgba(255,255,255,.15); margin-bottom: 14px; }
+.rs-header-total-label { font-size: 11px; opacity: .7; letter-spacing: .4px; margin-bottom: 4px; }
+.rs-header-amount { font-size: 34px; font-weight: 900; letter-spacing: -1px; margin-bottom: 10px; }
+.rs-header-compare { font-size: 13px; background: rgba(255,255,255,.15); border-radius: 20px; padding: 6px 14px; display: block; line-height: 1.4; text-align: center; }
+.rs-trend-label { font-size: 15px; font-weight: 800; color: #fff; letter-spacing: 0; margin-bottom: 8px; }
+.rs-trend-svg { width: 100%; overflow: visible; display: block; margin-bottom: 10px; }
+.td-dot .td-tip { opacity: 0; transition: opacity .15s; }
+.td-dot:hover .td-tip { opacity: 1; }
+.td-dot:hover circle { r: 5; }
+.rs-card { background: #fff; border-radius: 16px; padding: 18px; box-shadow: 0 2px 10px rgba(0,0,0,.06); }
+.rs-card-label { font-size: 15px; font-weight: 800; color: var(--text); letter-spacing: 0; margin-bottom: 14px; }
+.rs-top3-layout { display: flex; gap: 12px; align-items: center; }
+.rs-donut-wrap { position: relative; width: 130px; height: 130px; flex-shrink: 0; }
+.rs-donut-wrap svg { width: 100%; height: 100%; display: block; }
+.rs-donut-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; line-height: 1.3; pointer-events: none; width: 60%; }
+.rs-top3-list { flex: 1; min-width: 0; }
+.rs-top3-row { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--border); }
+.rs-top3-row:last-child { border-bottom: none; }
+.rs-dow-bars { display: flex; align-items: flex-end; gap: 5px; height: 74px; margin-bottom: 10px; }
+.rs-dow-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.rs-dow-bar-wrap { position: relative; width: 100%; height: 58px; display: flex; align-items: flex-end; justify-content: center; }
+.rs-dow-bar { width: 100%; border-radius: 4px 4px 0 0; min-height: 3px; background: #E8EAF0; }
+.rs-dow-peak { background: #1E293B !important; }
+.rs-dow-lbl { font-size: 10px; font-weight: 600; color: #9e9e9e; }
+.rs-dow-peak-lbl { color: #1E293B; font-weight: 800; }
+.rs-dow-crown { position: absolute; top: -18px; left: 50%; transform: translateX(-50%); font-size: 13px; }
+.rs-dow-insight { font-size: 13px; color: #555; line-height: 1.5; }
+.rs-week-row { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+.rs-week-row:last-child { margin-bottom:0; }
+.rs-week-label { font-size:12px; font-weight:700; color:#64748b; width:34px; flex-shrink:0; }
+.rs-week-bar-wrap { flex:1; background:#f1f5f9; border-radius:20px; height:16px; overflow:hidden; }
+.rs-week-bar { height:100%; border-radius:20px; transition:width .4s ease; }
+.rs-week-amt { font-size:11px; font-weight:700; color:#1e293b; white-space:nowrap; min-width:60px; text-align:right; }
+.rs-vs-bar { display:flex; height:28px; border-radius:20px; overflow:hidden; margin-bottom:12px; gap:2px; }
+.rs-vs-labels { display:flex; justify-content:space-between; }
+.rs-vs-lbl { font-size:11px; color:#9e9e9e; margin-bottom:3px; }
+.rs-vs-amt { font-size:16px; font-weight:800; }
+.rs-dow-tip { position:absolute; bottom:calc(100% + 4px); left:50%; transform:translateX(-50%); background:#1e293b; color:#fff; font-size:10px; font-weight:700; padding:3px 6px; border-radius:6px; white-space:nowrap; opacity:0; pointer-events:none; transition:opacity .15s; }
+.rs-dow-bar-wrap:hover .rs-dow-tip { opacity:1; }
+.rs-nospend-stat { display: flex; align-items: baseline; gap: 5px; margin-bottom: 12px; flex-wrap: wrap; }
+.rs-nospend-num { font-size: 30px; font-weight: 900; color: #16a34a; }
+.rs-nospend-label { font-size: 14px; color: #374151; font-weight: 600; }
+.rs-nospend-rate { font-size: 12px; color: #9e9e9e; margin-left: 2px; }
+.rs-nospend-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 3px; }
+.rs-ns-cell { aspect-ratio: 1; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; }
+.rs-ns-zero { background: #F0FDF4; color: #16a34a; }
+.rs-ns-spend { background: #fef2f2; color: #fca5a5; }
+.rs-ns-today { background: #1E293B; color: #fff; }
+.rs-ns-future { background: #f9fafb; color: #e5e7eb; }
+.rs-champ-layout { display: flex; gap: 14px; align-items: center; margin-bottom: 6px; }
+.rs-champ-info { flex: 1; min-width: 0; }
+.rs-champ-name { font-size: 15px; font-weight: 700; color: #212121; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rs-champ-cat { font-size: 12px; color: #9e9e9e; margin-bottom: 6px; }
+.rs-champ-amt { font-size: 22px; font-weight: 900; color: #1E293B; }
+.rs-champ-pct { font-size: 12px; color: #9e9e9e; margin-top: 8px; border-top: 1px solid #f5f5f5; padding-top: 8px; }
+.rs-champ-feel { display: flex; gap: 8px; margin-top: 10px; }
+.rs-feel-btn { flex: 1; padding: 9px 6px; border: 1px solid #e0e0e0; border-radius: 10px; background: #fff; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; color: #555; transition: background .15s, color .15s; }
+.rs-feel-btn.rs-feel-active { background: #1E293B; color: #fff; border-color: #1E293B; }
+.rs-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.rs-davg-num { font-size: 22px; font-weight: 900; color: #1E293B; margin-bottom: 4px; }
+.rs-davg-sub { font-size: 11px; color: #9e9e9e; margin-bottom: 4px; }
+.rs-davg-trend { font-size: 11px; font-weight: 700; }
+.rs-davg-trend.rs-up { color: #ef5350; }
+.rs-davg-trend.rs-down { color: #16a34a; }
+.rs-alert-row { display: flex; align-items: flex-start; gap: 8px; padding: 6px 0; border-bottom: 1px solid #f5f5f5; }
+.rs-alert-row:last-child { border-bottom: none; }
+body.dark .rs-card { background: #131c27; box-shadow: 0 2px 10px rgba(0,0,0,.25); }
+body.dark .rs-champ-name { color: #e0e0e0; }
+body.dark .rs-champ-cat { color: #4a5568; }
+body.dark .rs-champ-amt { color: #e0e0e0; }
+body.dark .rs-champ-pct { color: #4a5568; border-top-color: #1e293b; }
+body.dark .rs-dow-bar { background: #1e293b; }
+body.dark .rs-dow-peak { background: #64748B !important; }
+body.dark .rs-dow-peak-lbl { color: #94A3B8; }
+body.dark .rs-dow-lbl { color: #4a5568; }
+body.dark .rs-dow-insight { color: #9e9e9e; }
+body.dark .rs-ns-spend { background: #1a1f2e; color: #374151; }
+body.dark .rs-ns-future { background: #0d1117; color: #1e293b; }
+body.dark .rs-feel-btn { background: #1a2638; border-color: #2d3748; color: #9e9e9e; }
+body.dark .rs-feel-btn.rs-feel-active { background: #334155; color: #fff; border-color: #334155; }
+body.dark .rs-alert-row { border-bottom-color: #1e293b; }
+body.dark .rs-top3-row { color: #e0e0e0; }
+@media (max-width: 380px) {
+  .rs-header-amount { font-size: 28px; }
+  .rs-header-title { font-size: 16px; }
+  .rs-row2 { grid-template-columns: 1fr; }
+}
 .wgt-title { display:flex; align-items:center; gap:5px; padding:10px 13px 8px; font-size:11px; font-weight:700; color:#9e9e9e; letter-spacing:.5px; border-bottom:1px solid #f5f5f5; }
 body.dark .wgt-title { border-bottom-color:#1e293b; }
 .champ-header, .top3-header, .mbti-header { display:none; }
@@ -1287,6 +1396,14 @@ body.dark .widget-card.surv-danger { background:#2d1515; }
 .mbti-desc { font-size:10px !important; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
 .mbti-top3 { font-size:10px !important; }
 @keyframes widgetIn { from { opacity:0; transform:scale(.97); } to { opacity:1; transform:none; } }
+/* ── 목표 예산 바텀시트 ── */
+.hdr-search-input { flex:1; min-width:0; border:none; border-radius:20px; padding:7px 14px; font-size:14px; background:rgba(255,255,255,.2); color:#fff; outline:none; font-family:inherit; animation:slideInLeft .18s ease; }
+.hdr-search-input::placeholder { color:rgba(255,255,255,.6); }
+@keyframes slideInLeft { from { opacity:0; transform:translateX(-12px); } to { opacity:1; transform:translateX(0); } }
+#survPane .widget-card { box-shadow:none !important; border-radius:0 !important; }
+#survPane .wgt-title { display:none !important; }
+#survPane .widget-menu-btn { display:none !important; }
+#survPane .surv-body { padding:12px 20px 16px !important; }
 </style>
 </head>
 <body class="<?= $darkMode ? 'dark' : '' ?>">
@@ -1304,6 +1421,10 @@ body.dark .widget-card.surv-danger { background:#2d1515; }
     </div>
     <span class="header-logo-text">마이가계부</span>
   </div>
+  <input id="hdrSearchInput" class="hdr-search-input" type="text" placeholder="검색..." autocomplete="off"
+         oninput="doInlineSearch(this.value)"
+         onkeydown="if(event.key==='Escape')closeInlineSearch()"
+         style="display:none">
   <span class="stats-header-month" id="statsHeaderMonth"></span>
   <!-- 통계 탭 정중앙 날짜 네비 -->
   <div id="statsHdrNav" style="display:none;position:absolute;left:50%;transform:translateX(-50%);align-items:center;gap:2px;">
@@ -1330,14 +1451,12 @@ body.dark .widget-card.surv-danger { background:#2d1515; }
   </div>
   <div class="header-actions" id="headerActions">
     <div id="haDefault" style="display:flex;align-items:center;gap:2px">
-      <?php if ($isLoggedIn): ?>
-      <button class="cal-btn" id="syncBtn" onclick="manualSync()" title="동기화"><i data-lucide="refresh-cw" style="width:20px;height:20px;stroke-width:1.75"></i></button>
-      <?php endif; ?>
-      <button class="search-btn" onclick="openSearch()" title="검색"><i data-lucide="search" style="width:20px;height:20px;stroke-width:1.75"></i></button>
+      <button class="search-btn" id="searchToggleBtn" onclick="toggleInlineSearch()" title="검색"><i data-lucide="search" style="width:20px;height:20px;stroke-width:1.75"></i></button>
+      <button class="cal-btn" id="survHdrBtn" onclick="document.getElementById('survPane').style.display==='none'?openSurvModal():closeSurvModal()" title="목표 예산"><i data-lucide="target" style="width:20px;height:20px;stroke-width:1.75"></i></button>
       <button class="cal-btn" onclick="toggleCalendar()" title="달력"><i data-lucide="calendar" style="width:20px;height:20px;stroke-width:1.75"></i></button>
     </div>
-    <div id="haReport" style="display:none;align-items:center;gap:2px">
-      <button class="cal-btn" onclick="openAddWidgetModal()" title="위젯 추가"><i data-lucide="plus-circle" style="width:22px;height:22px;stroke-width:1.75"></i></button>
+    <div id="haReport" style="display:none;align-items:center;gap:4px">
+      <button onclick="openRsAddModal()" style="background:rgba(255,255,255,.18);border:none;border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-size:20px;font-weight:300;line-height:1" title="위젯 추가">+</button>
     </div>
     <div id="haStats" style="display:none;align-items:center;gap:6px">
       <button class="stats-cal-btn" id="statsCalBtn" onclick="openStatsDatePicker()" title="기간 직접 선택"><i data-lucide="calendar-range" style="width:18px;height:18px;stroke-width:1.75"></i></button>
@@ -1376,6 +1495,38 @@ body.dark .widget-card.surv-danger { background:#2d1515; }
 <!-- ① 가계부 탭 -->
 <div class="tab-pane active" id="pane-ledger">
   <div id="txList"></div>
+  <div id="survPane" style="display:none">
+    <div class="widget-card wfull" id="rSurvivalCard">
+      <div class="surv-header" id="rSurvHeader" style="display:none"></div>
+      <div class="surv-body">
+        <div class="surv-tabs">
+          <button class="surv-tab" id="survTab-week"  onclick="setSurvMode('week')"  data-i18n="period.week">주</button>
+          <button class="surv-tab" id="survTab-month" onclick="setSurvMode('month')" data-i18n="period.month">월</button>
+          <button class="surv-tab" id="survTab-year"  onclick="setSurvMode('year')"  data-i18n="period.year">년</button>
+        </div>
+        <div class="surv-period-nav">
+          <button class="surv-period-btn" onclick="survNav(-1)">‹</button>
+          <span class="surv-period-label" id="rSurvNavLabel"></span>
+          <button class="surv-period-btn" id="rSurvNavNext" onclick="survNav(1)">›</button>
+        </div>
+        <div class="surv-input-row">
+          <span class="surv-input-label" data-i18n="widget.survival">목표 예산</span>
+          <input class="surv-input" id="rSurvInput" type="text" inputmode="numeric" placeholder="미설정"
+                 oninput="onSurvBudgetInput(this)" onblur="saveSurvBudget()" onkeydown="if(event.key==='Enter')this.blur()">
+          <span class="surv-input-unit" data-i18n="widget.survUnit">원</span>
+        </div>
+        <div class="surv-progress-wrap"><div class="surv-progress-bar" id="rSurvBar" style="width:0%"></div></div>
+        <div class="surv-progress-labels">
+          <span id="rSurvUsedPct" data-i18n="surv.noGoal">목표 미설정</span>
+          <span id="rSurvPeriodLabel"></span>
+        </div>
+        <div class="surv-remaining" id="rSurvRemLabel" data-i18n="surv.totalVar">변동 지출 합계</div>
+        <div class="surv-remaining-amt" id="rSurvAmt">₩0</div>
+        <div class="surv-divider"></div>
+        <div class="surv-msg" id="rSurvMsg" data-i18n="widget.calculating">계산 중...</div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- ② 달력 뷰 (📅 토글) -->
@@ -1539,6 +1690,11 @@ body.dark .widget-card.surv-danger { background:#2d1515; }
       </div>
       <div class="me-section">
         <div class="me-section-title" data-i18n="section.dataManagement">데이터 관리</div>
+        <?php if ($isLoggedIn): ?>
+        <div class="me-row" id="syncRowBtn" onclick="manualSync()">
+          <span class="me-row-ico"><i data-lucide="refresh-cw" id="syncRowIcon"></i></span><span class="me-row-label">서버 동기화</span><span class="me-row-arrow">›</span>
+        </div>
+        <?php endif; ?>
         <div class="me-row" onclick="openBackupModal()">
           <span class="me-row-ico"><i data-lucide="cloud"></i></span><span class="me-row-label" data-i18n="row.backup">백업 및 복구</span><span class="me-row-arrow">›</span>
         </div>
@@ -1636,6 +1792,7 @@ body.dark .widget-card.surv-danger { background:#2d1515; }
 </div>
 
 <div class="widget-popover" id="widgetPopover"></div>
+
 
 <!-- ── 고정 지출 설정 모달 ── -->
 <div class="overlay" id="fixedModal" onclick="if(event.target===this)closeFixedModal()">
@@ -2682,6 +2839,7 @@ function toggleCalendar() {
   if (calVisible) {
     goTab('ledger');
   } else {
+    closeSurvModal();
     goTab('calendar');
   }
 }
@@ -3426,428 +3584,331 @@ function closeReportOnboarding() {
 // ── 결산 렌더 ──────────────────────────────────────────────
 function renderReport() {
   const wrap = document.getElementById('reportWrap');
-  const widgetMap = { insight: widgetInsightHTML, champion: widgetChampHTML, dayofweek: widgetDowHTML, survival: widgetSurvivalHTML, mbti: widgetMbtiHTML, top3cats: widgetTop3HTML, nospend: widgetNospendHTML, alert: widgetAlertHTML, dailyavg: widgetDailyAvgHTML };
+  if (!wrap) return;
 
-  let html = '';
-  if (reportWidgets.length === 0) {
-    html = `<div class="report-empty">
-      <div class="report-empty-ico">📭</div>
-      <div class="report-empty-msg">${tr('report.empty')}</div>
-    </div>`;
-  } else {
-    reportWidgets.forEach(id => { if (widgetMap[id]) html += widgetMap[id](); });
-  }
-  // editPanel은 모달로 이동 (하단 버튼 제거)
-
-  wrap.innerHTML = html;
-  renderReportEditBar();
-  applyLang();
-  showReportOnboardingIfNeeded();
-
-  // 데이터 채우기
-  const prev     = prevMonth(curMonth);
-  const [,tm]    = curMonth.split('-');
-  const [,pm]    = prev.split('-');
+  const nick = localStorage.getItem('profile_nickname') || USER_NAME || '사용자';
+  const [curY, curM] = curMonth.split('-').map(Number);
+  const monthLabel   = `${curY}년 ${curM}월`;
+  const prev = prevMonth(curMonth);
   const thisExps = monthOf(curMonth).filter(t => t.type === 'expense');
   const prevExps = monthOf(prev).filter(t => t.type === 'expense');
   const thisExp  = thisExps.reduce((s,t) => s + t.amount, 0);
   const prevExp  = prevExps.reduce((s,t) => s + t.amount, 0);
-  const name     = USER_NAME || tr('lbl.user');
 
-  if (reportWidgets.includes('insight')) {
-    const diff = thisExp - prevExp;
-    const pct  = prevExp > 0 ? Math.round(Math.abs(diff) / prevExp * 100) : null;
+  const RS_WIDGET_HTML = {
+    trend: `<div class="rs-header"><div class="rs-trend-label">6개월 지출 트렌드</div><div id="rsTrendChart"></div><div class="rs-header-compare" id="rsCompare"></div></div>`,
+    top3:  `<div class="rs-card"><div class="rs-card-label">카테고리 TOP 3</div><div class="rs-top3-layout"><div class="rs-donut-wrap"><svg id="rsDonutSvg" viewBox="0 0 36 36"></svg><div class="rs-donut-center" id="rsDonutCenter"></div></div><div class="rs-top3-list" id="rsTop3List"></div></div></div>`,
+    dow:   `<div class="rs-card"><div class="rs-card-label">요일별 소비 패턴</div><div class="rs-dow-bars" id="rsDowBars"></div><div class="rs-dow-insight" id="rsDowInsight"></div></div>`,
+    week:  `<div class="rs-card"><div class="rs-card-label">주별 지출</div><div id="rsWeekBars"></div></div>`,
+    vs:    `<div class="rs-card"><div class="rs-card-label">수입 VS 지출</div><div id="rsVsBar"></div></div>`,
+    davg:  `<div class="rs-card"><div class="rs-card-label">일평균 지출</div><div id="rsDavgCard"></div></div>`,
+  };
+  const rsOrder  = _getRsOrder();
+  const rsHidden = _getRsHidden();
+  const visible  = rsOrder.filter(id => !rsHidden.includes(id));
+  const widgetBlocks = visible.map((id, idx) => {
+    const inner = RS_WIDGET_HTML[id] || '';
+    const menu = `
+      <div class="rs-dots-menu" id="rsDots_${id}">
+        <button onclick="rsMoveWidget('${id}',-1)">↑ 위로</button>
+        <button onclick="rsMoveWidget('${id}',1)">↓ 아래로</button>
+        <button class="rs-del-btn" onclick="rsDeleteWidget('${id}')">🗑 삭제</button>
+      </div>`;
+    return `<div class="rs-widget-wrap${id==='trend'?' rs-hdr-wrap':''}" data-wid="${id}">${inner}<button class="rs-dots-btn" onclick="rsToggleDots(event,'${id}')">···</button>${menu}</div>`;
+  }).join('');
+  wrap.innerHTML = `<div class="rs-wrap">${widgetBlocks}</div>`;
 
-    let emoji, insight, sub, tag, tagClass;
+  renderReportEditBar();
 
-    if (prevExp === 0 && thisExp === 0) {
-      emoji = '🌱'; tagClass = 'neutral'; tag = tr('insight.tagStart');
-      insight = tr('insight.noData').replace('{name}', name);
-      sub = tr('insight.noDataSub');
-
-    } else if (prevExp === 0) {
-      emoji = '🎉'; tagClass = 'neutral'; tag = tr('insight.tagFirst');
-      insight = tr('insight.firstRecord').replace('{name}', name).replace('{amt}', fmt(thisExp));
-      sub = tr('insight.firstRecordSub');
-
-    } else if (diff === 0) {
-      emoji = '😐'; tagClass = 'neutral'; tag = tr('insight.tagEqual');
-      insight = tr('insight.equal').replace('{name}', name);
-      sub = tr('insight.equalSub');
-
-    } else if (diff < 0) {
-      if (pct >= 30) {
-        emoji = '💚'; tagClass = 'good'; tag = tr('insight.tagThrifty');
-        insight = tr('insight.down30').replace('{name}', name).replace('{pct}', pct);
-        sub = tr('insight.down30Sub').replace('{amt}', fmt(-diff));
-      } else if (pct >= 10) {
-        emoji = '🎉'; tagClass = 'good'; tag = tr('insight.tagSaved');
-        insight = tr('insight.down10').replace('{name}', name).replace('{pct}', pct);
-        sub = tr('insight.downSub').replace('{amt}', fmt(-diff));
-      } else {
-        emoji = '🙂'; tagClass = 'good'; tag = tr('insight.tagSaving');
-        insight = tr('insight.downSmall').replace('{name}', name).replace('{pct}', pct);
-        sub = tr('insight.downSub').replace('{amt}', fmt(-diff));
-      }
-
-    } else {
-      if (pct >= 50) {
-        emoji = '🔴'; tagClass = 'danger'; tag = tr('insight.tagOverspend');
-        insight = tr('insight.up50').replace('{name}', name).replace('{pct}', pct);
-        sub = tr('insight.upSub').replace('{amt}', fmt(diff));
-      } else if (pct >= 30) {
-        emoji = '📈'; tagClass = 'danger'; tag = tr('insight.tagUpBig');
-        insight = tr('insight.up30').replace('{name}', name).replace('{pct}', pct);
-        sub = tr('insight.upSub').replace('{amt}', fmt(diff));
-      } else if (pct >= 10) {
-        emoji = '⚠️'; tagClass = 'warn'; tag = tr('insight.tagUpWarn');
-        insight = tr('insight.up10').replace('{name}', name).replace('{pct}', pct);
-        sub = tr('insight.upSub').replace('{amt}', fmt(diff));
-      } else {
-        emoji = '📊'; tagClass = 'warn'; tag = tr('insight.tagUpSmall');
-        insight = tr('insight.upSmall').replace('{name}', name).replace('{pct}', pct);
-        sub = tr('insight.upSub').replace('{amt}', fmt(diff));
-      }
-    }
-
-    const tagEl = document.getElementById('rInsightTag');
-    tagEl.textContent = tag;
-    tagEl.className   = `rc-tag ${tagClass}`;
-    document.getElementById('rLabelPrev').textContent = tr('report.monthExpense').replace('{m}', parseInt(pm));
-    document.getElementById('rLabelThis').textContent = tr('report.monthExpense').replace('{m}', parseInt(tm));
-    document.getElementById('rValPrev').textContent   = fmt(prevExp);
-    const valEl = document.getElementById('rValThis');
-    valEl.textContent = fmt(thisExp);
-    valEl.className = 'rc-cmp-val this-month' + (thisExp > prevExp ? ' up' : thisExp < prevExp ? ' down' : '');
-    document.getElementById('rEmoji').textContent     = emoji;
-    document.getElementById('rInsight').textContent  = insight;
-    document.getElementById('rInsightSub').textContent = sub;
+  // ── 1. Header ──────────────────────────────────────────────
+  const diff = thisExp - prevExp;
+  const pct  = prevExp > 0 ? Math.round(Math.abs(diff) / prevExp * 100) : null;
+  let eyebrow, compareText;
+  if (prevExp === 0 && thisExp === 0) {
+    eyebrow = '🌱 소비 기록 없음'; compareText = '이번 달 지출이 없어요';
+  } else if (prevExp === 0) {
+    eyebrow = '🎉 첫 기록'; compareText = '지난달 데이터가 없어요';
+  } else if (diff < 0) {
+    eyebrow = pct >= 30 ? '💚 절약 고수!' : '🎉 잘 아끼고 있어요';
+    compareText = `지난달보다 ${pct}% 아꼈어요! ${fmt(-diff)} 절약`;
+  } else if (diff === 0) {
+    eyebrow = '😐 지난달과 동일'; compareText = '지난달과 지출이 같아요';
+  } else {
+    eyebrow = pct >= 50 ? '🔴 지출 주의' : pct >= 20 ? '📈 지출 증가' : '📊 소폭 증가';
+    compareText = `지난달보다 ${pct}% 더 썼어요 (${fmt(diff)})`;
   }
+  document.getElementById('rsCompare').textContent = compareText;
 
-  if (reportWidgets.includes('champion')) {
-    // 월 네비 라벨 채우기 (renderReport 후 DOM 새로 생성되므로 여기서 직접 설정)
-    const [cy,cm] = curMonth.split('-');
-    const cLabel = document.getElementById('rChampMLabel');
-    if (cLabel) cLabel.textContent = fmtYearMonth(cy, cm);
-    const cNext = document.getElementById('rChampMNext');
-    const nowYM2 = new Date().getFullYear()+'-'+String(new Date().getMonth()+1).padStart(2,'0');
-    if (cNext) cNext.disabled = curMonth >= nowYM2;
-
-    const champ = thisExps.length ? thisExps.reduce((a,b) => a.amount >= b.amount ? a : b) : null;
-    const _ce = document.getElementById('rChampEmoji');
-    if (champ) {
-      const _cm = _icMeta(champ.category);
-      _ce.innerHTML = `<span style="width:56px;height:56px;border-radius:50%;background:${_cm.bg};display:flex;align-items:center;justify-content:center"><i data-lucide="${_cm.lu}" style="width:26px;height:26px;color:${_cm.c};stroke-width:1.75"></i></span>`;
-      lucide.createIcons();
-    } else { _ce.innerHTML = '<span style="font-size:32px">💸</span>'; }
-    document.getElementById('rChampName').textContent  = champ ? ((champ.description && champ.description !== champ.category) ? champ.description : dn(champ.category, CAT_NAME_MAP)) : tr('report.noExpense');
-    document.getElementById('rChampCat').textContent   = champ ? dn(champ.category, CAT_NAME_MAP) + (champ.payment ? ' · ' + dn(champ.payment, PAY_NAME_MAP) : '') : '';
-    document.getElementById('rChampAmt').innerHTML   = champ ? fmtH(champ.amount) : fmtH(0);
-    document.getElementById('rChampDate').textContent  = champ ? champ.date.replace(/-/g,'.') + ' ' + tr('lbl.expense') : '';
-    const pctEl = document.getElementById('rChampPct');
-    const feelBtns = document.getElementById('rChampFeelBtns');
-    if (champ && thisExp > 0) {
-      const pct = Math.round(champ.amount / thisExp * 100);
-      pctEl.innerHTML = tr('report.champPct').replace('{pct}', `<span>${pct}%</span>`);
-      feelBtns.style.display = 'flex';
-      const feelKey = 'ddgb_champ_feel_' + curMonth;
-      const saved = localStorage.getItem(feelKey) || '';
-      _applyChampFeel(saved);
-    } else {
-      pctEl.textContent = '';
-      feelBtns.style.display = 'none';
-      _applyChampFeel('');
+  // ── 6개월 트렌드 차트 ─────────────────────────────────────
+  (function() {
+    const months = [];
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(curY, curM - 1 - i, 1);
+      const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+      const mData = monthOf(key);
+      const exp = mData.filter(t => t.type==='expense').reduce((s,t) => s+t.amount, 0);
+      const inc = mData.filter(t => t.type==='income').reduce((s,t) => s+t.amount, 0);
+      months.push({ label: `${d.getMonth()+1}월`, exp, inc });
     }
-  }
+    const maxVal = Math.max(...months.map(m => Math.max(m.exp, m.inc)), 1);
+    const W = 280, H = 64, PAD = 10;
+    const xs = months.map((_, i) => PAD + i * ((W - PAD*2) / 5));
+    const expYs = months.map(m => H - PAD - (m.exp / maxVal) * (H - PAD*2));
+    const incYs = months.map(m => H - PAD - (m.inc / maxVal) * (H - PAD*2));
+    const expPts = xs.map((x, i) => `${x-4},${expYs[i]}`).join(' ');
+    const incPts = xs.map((x, i) => `${x+4},${incYs[i]}`).join(' ');
+    const expFill = `${xs[0]-4},${H} ` + expPts + ` ${xs[xs.length-1]-4},${H}`;
+    const curIdx = 5;
+    const labels = months.map((m, i) =>
+      `<text x="${xs[i]}" y="${H+13}" text-anchor="middle" font-size="9" fill="rgba(255,255,255,.6)">${m.label}</text>`
+    ).join('');
+    const expDots = months.map((m, i) => {
+      const isCur = i === curIdx;
+      const cx = xs[i] - 4, ty = expYs[i] - 9;
+      return `<g class="td-dot" style="cursor:default">
+        <circle cx="${cx}" cy="${expYs[i]}" r="${isCur?5:3.5}" fill="${isCur?'#ff0044':'rgba(255,0,68,.85)'}"/>
+        <text class="td-tip" x="${cx}" y="${ty}" text-anchor="middle" font-size="8.5" fill="#ff0044" font-weight="700" paint-order="stroke" stroke="#1e293b" stroke-width="3" stroke-linejoin="round">${fmt(m.exp)}</text>
+      </g>`;
+    }).join('');
+    const incDots = months.map((m, i) => {
+      const isCur = i === curIdx;
+      const cx = xs[i] + 4, ty = incYs[i] - 9;
+      return `<g class="td-dot" style="cursor:default">
+        <circle cx="${cx}" cy="${incYs[i]}" r="${isCur?5:3.5}" fill="${isCur?'#00ff6a':'rgba(0,255,106,.8)'}"/>
+        <text class="td-tip" x="${cx}" y="${ty}" text-anchor="middle" font-size="8.5" fill="#00ff6a" font-weight="700" paint-order="stroke" stroke="#1e293b" stroke-width="3" stroke-linejoin="round">${fmt(m.inc)}</text>
+      </g>`;
+    }).join('');
+    document.getElementById('rsTrendChart').innerHTML =
+      `<div style="display:flex;justify-content:flex-end;gap:12px;margin-bottom:6px">
+        <span style="font-size:11px;font-weight:700;color:#ff0044">● 지출</span>
+        <span style="font-size:11px;font-weight:700;color:#00ff6a">● 수입</span>
+      </div>
+      <svg class="rs-trend-svg" viewBox="0 0 ${W} ${H+18}" height="85">
+        <defs>
+          <linearGradient id="tg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="rgba(255,0,68,.3)"/><stop offset="100%" stop-color="rgba(255,0,68,0)"/></linearGradient>
+          <filter id="rg"><feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="gg"><feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+        <polygon points="${expFill}" fill="url(#tg)"/>
+        <polyline points="${incPts}" fill="none" stroke="#00ff6a" stroke-width="1.8" filter="url(#gg)" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="4 2"/>
+        <polyline points="${expPts}" fill="none" stroke="#ff0044" stroke-width="2" filter="url(#rg)" stroke-linejoin="round" stroke-linecap="round"/>
+        ${incDots}${expDots}${labels}
+      </svg>`;
+  })();
 
-  if (reportWidgets.includes('dayofweek')) {
-    // 표시 순서: 월화수목금토일
-    // JS getDay(): 0=일,1=월,2=화,3=수,4=목,5=금,6=토
-    // SLOTS[i].js = 해당 슬롯의 JS 요일 번호 (명시적 테이블, 변환 배열 없음)
-    const SLOTS = [
-      {label:tr('day.mon'), js:1, msgKey:'dow.msg.mon'},
-      {label:tr('day.tue'), js:2, msgKey:'dow.msg.tue'},
-      {label:tr('day.wed'), js:3, msgKey:'dow.msg.wed'},
-      {label:tr('day.thu'), js:4, msgKey:'dow.msg.thu'},
-      {label:tr('day.fri'), js:5, msgKey:'dow.msg.fri'},
-      {label:tr('day.sat'), js:6, msgKey:'dow.msg.sat'},
-      {label:tr('day.sun'), js:0, msgKey:'dow.msg.sun'},
-    ];
-
-    // JS 요일 → 슬롯 인덱스 역방향 맵
-    const jsToSlot = {};
-    SLOTS.forEach((s,i) => { jsToSlot[s.js] = i; });
-
-    const dowSum = [0,0,0,0,0,0,0];
-    const dowCnt = [0,0,0,0,0,0,0];
-    thisExps.forEach(t => {
-      const [y,m,d] = t.date.split('-').map(Number);
-      const jsDay   = new Date(y, m-1, d).getDay();  // 로컬 요일
-      const slot    = jsToSlot[jsDay];
-      dowSum[slot] += t.amount;
-      dowCnt[slot]++;
+  // ── 2. TOP 3 + Donut ────────────────────────────────────────
+  const catMap = {};
+  thisExps.forEach(t => { catMap[t.category] = (catMap[t.category]||0) + t.amount; });
+  const sorted = Object.entries(catMap).sort((a,b) => b[1]-a[1]).slice(0,3);
+  const DONUT_COLORS = ['#1E293B','#64748B','#94A3B8'];
+  const donutSvg    = document.getElementById('rsDonutSvg');
+  const donutCenter = document.getElementById('rsDonutCenter');
+  const top3List    = document.getElementById('rsTop3List');
+  if (!sorted.length || thisExp === 0) {
+    donutSvg.innerHTML = `<circle cx="18" cy="18" r="15.9" fill="none" stroke="#f0f0f0" stroke-width="3.8"/>`;
+    donutCenter.innerHTML = `<div style="font-size:11px;color:#ccc;">없음</div>`;
+    top3List.innerHTML = `<div style="font-size:13px;color:#9e9e9e;">이번 달 지출 없음</div>`;
+  } else {
+    let svgStr = `<circle cx="18" cy="18" r="15.9" fill="none" stroke="#F1F5F9" stroke-width="3.8" pathLength="100"/>`;
+    let cumulative = 0;
+    window._rsDonutData = sorted.map(([cat,amt]) => ({ cat, amt, pct: Math.round(amt/thisExp*100) }));
+    sorted.forEach(([cat, amt], i) => {
+      const segPct = amt / thisExp * 100;
+      const off = (25 - cumulative).toFixed(1);
+      const da = `${segPct.toFixed(1)} ${(100-segPct).toFixed(1)}`;
+      svgStr += `<circle cx="18" cy="18" r="15.9" fill="none" stroke="${DONUT_COLORS[i]}" stroke-width="3.8" pathLength="100" stroke-dasharray="${da}" stroke-dashoffset="${off}"/>`;
+      svgStr += `<circle cx="18" cy="18" r="15.9" fill="none" stroke="transparent" stroke-width="9" pathLength="100" stroke-dasharray="${da}" stroke-dashoffset="${off}" style="cursor:pointer" onmouseenter="_rsDHover(${i})" onmouseleave="_rsDRestore()"/>`;
+      cumulative += segPct;
     });
-    const maxSum  = Math.max(...dowSum, 1);
-    const peakIdx = dowSum.indexOf(Math.max(...dowSum));
-
-    // BAR_MAX: 컨테이너80px - 라벨14px - gap4px = 62px → 왕관은 absolute이므로 높이에 영향 없음
-    const BAR_MAX = 62;
-    const barsEl = document.getElementById('rDowBars');
-    barsEl.innerHTML = SLOTS.map((s,i) => {
-      const h      = dowSum[i] > 0 ? Math.max(4, Math.round((dowSum[i] / maxSum) * BAR_MAX)) : 4;
-      const isPeak = i === peakIdx && dowSum[i] > 0;
-      const cls    = isPeak ? ' peak' : '';
-      const crown  = isPeak ? `<div class="dow-crown">👑</div>` : '';
-      const tipText = dowSum[i] > 0 ? `${s.label} ${fmt(dowSum[i])}` : `${s.label} ${tr('dow.noExpense')}`;
-      return `<div class="dow-bar-wrap" data-tip="${tipText}"
-        onmouseenter="showDowTip(event,this)" onmouseleave="hideDowTip()"
-        ontouchstart="showDowTip(event,this)" ontouchend="hideDowTipDelay()">
-        ${crown}
-        <div class="dow-bar${cls}" style="height:${h}px"></div>
-        <div class="dow-bar-label${cls}">${s.label}</div>
+    donutSvg.innerHTML = svgStr;
+    const topPct = Math.round(sorted[0][1] / thisExp * 100);
+    window._rsDonutDefault = `<div style="font-size:14px;font-weight:900;color:#1E293B;">${topPct}%</div><div style="font-size:9px;color:#9e9e9e;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${dn(sorted[0][0],CAT_NAME_MAP)}</div>`;
+    donutCenter.innerHTML = window._rsDonutDefault;
+    top3List.innerHTML = sorted.map(([cat,amt],i) => {
+      const p2 = Math.round(amt/thisExp*100);
+      return `<div class="rs-top3-row">
+        <div style="width:8px;height:8px;border-radius:50%;background:${DONUT_COLORS[i]};flex-shrink:0;"></div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:12px;font-weight:700;color:#212121;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${dn(cat,CAT_NAME_MAP)}</div>
+          <div style="font-size:10px;color:#9e9e9e;">${p2}%</div>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:#1E293B;white-space:nowrap;">${fmt(amt)}</div>
       </div>`;
     }).join('');
-
-    let dowInsight;
-    if (!thisExps.length) {
-      dowInsight = tr('dow.noData');
-    } else if (dowSum[peakIdx] === 0) {
-      dowInsight = tr('dow.balanced');
-    } else {
-      dowInsight = tr('dow.peak').replace('{day}', SLOTS[peakIdx].label)
-        + `<br><span class="hi-amt">${fmt(dowSum[peakIdx])}</span>`
-        + ` <span class="lo-cnt">(${tr('dow.txCount').replace('{n}', dowCnt[peakIdx])})</span>`
-        + `<br>${tr(SLOTS[peakIdx].msgKey)}`;
-    }
-    document.getElementById('rDowInsight').innerHTML = dowInsight;
   }
 
-  // ── 목표 예산 ─────────────────────────────────────────
-  if (reportWidgets.includes('survival')) fillSurvival();
+  // ── 3. Day of Week ───────────────────────────────────────────
+  const SLOTS = [{l:'월',js:1},{l:'화',js:2},{l:'수',js:3},{l:'목',js:4},{l:'금',js:5},{l:'토',js:6},{l:'일',js:0}];
+  const jsToSlot = {}; SLOTS.forEach((s,i) => { jsToSlot[s.js]=i; });
+  const dowSum = [0,0,0,0,0,0,0], dowCnt = [0,0,0,0,0,0,0];
+  thisExps.forEach(t => {
+    const [y,m,d] = t.date.split('-').map(Number);
+    const slot = jsToSlot[new Date(y,m-1,d).getDay()];
+    dowSum[slot] += t.amount; dowCnt[slot]++;
+  });
+  const maxDow = Math.max(...dowSum,1);
+  const peakIdx = dowSum.indexOf(Math.max(...dowSum));
+  const cbrtMaxDow = Math.cbrt(maxDow);
+  const dowRanked = [...dowSum].map((v,i)=>({v,i})).sort((a,b)=>b.v-a.v);
+  const dowRankMap = {}; dowRanked.forEach((d,r) => { if(d.v>0) dowRankMap[d.i]=r; });
+  const DOW_RANK_COLORS = ['#1E293B','#4A6FA5','#7BA7CC'];
+  document.getElementById('rsDowBars').innerHTML = SLOTS.map((s,i) => {
+    const h = dowSum[i] > 0 ? Math.max(8, Math.round(Math.cbrt(dowSum[i])/cbrtMaxDow*50)) : 3;
+    const isPeak = i===peakIdx && dowSum[i]>0;
+    const rank = dowRankMap[i];
+    const barColor = (rank===0||rank===1||rank===2) ? DOW_RANK_COLORS[rank] : null;
+    const colorStyle = barColor ? `background:${barColor}` : '';
+    const tip = `<div class="rs-dow-tip">${fmt(dowSum[i])}</div>`;
+    return `<div class="rs-dow-col"><div class="rs-dow-bar-wrap" style="cursor:${dowSum[i]>0?'default':'auto'}">${isPeak?'<div class="rs-dow-crown">👑</div>':''}${tip}<div class="rs-dow-bar${isPeak?' rs-dow-peak':''}" style="height:${h}px;${colorStyle}"></div></div><div class="rs-dow-lbl${isPeak?' rs-dow-peak-lbl':''}">${s.l}</div></div>`;
+  }).join('');
+  const dowInsEl = document.getElementById('rsDowInsight');
+  if (!thisExps.length) { dowInsEl.textContent = '이번 달 지출 데이터가 없어요.'; }
+  else { dowInsEl.innerHTML = `${SLOTS[peakIdx].l}요일에 가장 많이 지출했어요 — <strong>${fmt(dowSum[peakIdx])}</strong>`; }
 
-  // ── 소비 MBTI ────────────────────────────────────────────────
-  if (reportWidgets.includes('mbti')) {
-    const MBTI_TYPES = [
-      { keys:['식비','음식','밥','카페','커피','간식','분식'],     code:'EATJ', tkey:'mbti.title.eatj', emoji:'🍜', dkey:'mbti.desc.eatj' },
-      { keys:['쇼핑','패션','의류','잡화','마트','백화점'],        code:'SHOP', tkey:'mbti.title.shop', emoji:'🛍️', dkey:'mbti.desc.shop' },
-      { keys:['문화','여가','영화','취미','레저','공연','게임'],    code:'YOLO', tkey:'mbti.title.yolo', emoji:'🎭', dkey:'mbti.desc.yolo' },
-      { keys:['교통','이동','주유','택시','지하철','버스','항공'], code:'MOVE', tkey:'mbti.title.move', emoji:'🚗', dkey:'mbti.desc.move' },
-      { keys:['의료','건강','병원','약','헬스','피부'],            code:'HLTH', tkey:'mbti.title.hlth', emoji:'💊', dkey:'mbti.desc.hlth' },
-      { keys:['통신','인터넷','구독','스트리밍','디지털'],         code:'DIGI', tkey:'mbti.title.digi', emoji:'📱', dkey:'mbti.desc.digi' },
-      { keys:['주거','생활','관리비','인테리어','가구'],           code:'HOME', tkey:'mbti.title.home', emoji:'🏠', dkey:'mbti.desc.home' },
-    ];
-    const catMap = {};
-    thisExps.forEach(t => { catMap[t.category] = (catMap[t.category] || 0) + t.amount; });
-    const sorted = Object.entries(catMap).sort((a, b) => b[1] - a[1]);
-    const topCat = sorted[0] ? sorted[0][0] : null;
-    let mbtiType = null;
-    if (topCat) {
-      for (const t of MBTI_TYPES) {
-        if (t.keys.some(k => topCat.includes(k))) { mbtiType = t; break; }
-      }
-    }
-    if (!mbtiType) {
-      if (!thisExps.length) {
-        mbtiType = { code:'????', tkey:'mbti.title.none', emoji:'🔍', dkey:'mbti.desc.none' };
-      } else {
-        mbtiType = { code:'FREE', tkey:'mbti.title.free', emoji:'🌈', dkey:'mbti.desc.free' };
-      }
-    }
-
-    // 예산 수식어
-    const thisInc2 = monthOf(curMonth).filter(t => t.type === 'income').reduce((s,t) => s + t.amount, 0);
-    let budgetLine = '';
-    if (thisInc2 > 0) {
-      const ur = thisExp / thisInc2;
-      if (ur < 0.6)       budgetLine = tr('mbti.budget.great');
-      else if (ur < 0.8)  budgetLine = tr('mbti.budget.ok');
-      else if (ur <= 1.0) budgetLine = tr('mbti.budget.warn');
-      else                budgetLine = tr('mbti.budget.over');
-    }
-
-    document.getElementById('rMbtiEmoji').textContent = mbtiType.emoji;
-    document.getElementById('rMbtiCode').textContent  = mbtiType.code;
-    document.getElementById('rMbtiTitle').textContent = tr(mbtiType.tkey);
-    document.getElementById('rMbtiDesc').textContent  = tr(mbtiType.dkey);
-    const budgetEl = document.getElementById('rMbtiBudget');
-    if (budgetLine) { budgetEl.textContent = budgetLine; budgetEl.style.display = ''; }
-    else            { budgetEl.style.display = 'none'; }
-
-    // TOP 3 미니 배지
-    const top3badges = sorted.slice(0, 3).map(([cat]) =>
-      `<span class="mbti-badge"><i class="${_icMeta(cat).fa}" style="color:${_icMeta(cat).c}"></i> ${dn(cat, CAT_NAME_MAP)}</span>`
-    ).join('');
-    document.getElementById('rMbtiTop3').innerHTML = top3badges;
-  }
-
-  // ── 무지출 달력 ─────────────────────────────────────────────
-  if (reportWidgets.includes('nospend')) {
-    const [ny, nm] = curMonth.split('-').map(Number);
-    const daysInMon = new Date(ny, nm, 0).getDate();
-    const todayD = new Date();
-    const todayStr = todayD.toISOString().slice(0,10);
-    const isThisMon = curMonth === todayStr.slice(0,7);
-    // 고정지출 카테고리 제외: '고정지출' 카테고리는 무시
-    const FIXED_CATS = new Set(['고정지출','월세','관리비','보험','통신비','구독']);
-    const expDates = new Set(
-      thisExps.filter(t => !FIXED_CATS.has(t.category)).map(t => t.date)
-    );
-    const firstSlot = new Date(ny, nm-1, 1).getDay(); // 일요일 시작
-    let cells = '';
-    for (let i = 0; i < firstSlot; i++) cells += '<div class="nscal-cell other-month"></div>';
-    let zeroCnt = 0;
-    for (let d = 1; d <= daysInMon; d++) {
-      const ds = `${curMonth}-${String(d).padStart(2,'0')}`;
-      const dow = new Date(ds).getDay();
-      const isFuture = ds > todayStr;
-      const isToday  = ds === todayStr;
-      const isZero   = !isFuture && !isToday && !expDates.has(ds);
-      if (isZero) zeroCnt++;
-      const dowClass = dow===0 ? 'sun' : dow===6 ? 'sat' : '';
-      let cls = 'nscal-cell';
-      if (isToday) cls += ' today';
-      if (isFuture) cls += ' future';
-      if (isZero) cls += ' zero-day';
-      cells += `<div class="${cls}">
-        <span class="nscal-day ${dowClass}">${d}</span>
-        ${isZero ? NSCAL_CHECK_SVG : ''}
+  // ── 4. 주별 지출 ────────────────────────────────────────────
+  const WEEK_RANK_COLORS = ['#1E293B','#4A6FA5','#7BA7CC','#B8CDE0'];
+  const [wY, wM] = curMonth.split('-').map(Number);
+  const weekSums = [0,0,0,0];
+  thisExps.forEach(t => {
+    const day = parseInt(t.date.split('-')[2]);
+    const w = Math.min(3, Math.floor((day-1)/7));
+    weekSums[w] += t.amount;
+  });
+  const cbrtMaxWeek = Math.cbrt(Math.max(...weekSums, 1));
+  const weekRanked = [...weekSums].map((v,i)=>({v,i})).sort((a,b)=>b.v-a.v);
+  const weekRankMap = {}; weekRanked.forEach((d,r) => { weekRankMap[d.i]=r; });
+  const weekEl = document.getElementById('rsWeekBars');
+  if (weekEl) {
+    const lastDay = new Date(wY, wM, 0).getDate();
+    const weekLabels = ['1주차','2주차','3주차','4주차'];
+    weekEl.innerHTML = weekSums.map((sum, i) => {
+      if (i*7+1 > lastDay) return '';
+      const pct = sum > 0 ? Math.max(4, Math.round(Math.cbrt(sum)/cbrtMaxWeek*100)) : 0;
+      const color = WEEK_RANK_COLORS[weekRankMap[i]];
+      return `<div class="rs-week-row">
+        <div class="rs-week-label">${weekLabels[i]}</div>
+        <div class="rs-week-bar-wrap"><div class="rs-week-bar" style="width:${pct}%;background:${color}"></div></div>
+        <div class="rs-week-amt">${fmt(sum)}</div>
       </div>`;
-    }
-    const gridEl = document.getElementById('rNscalGrid');
-    if (gridEl) gridEl.innerHTML = cells;
-    // 연속 무지출 계산 (오늘 기준 역방향)
-    let streak = 0;
-    if (isThisMon) {
-      const startD = todayD.getDate() - 1; // 오늘 제외, 어제부터 역산
-      for (let d = startD; d >= 1; d--) {
-        const ds = `${curMonth}-${String(d).padStart(2,'0')}`;
-        if (!expDates.has(ds)) streak++;
-        else break;
-      }
-    }
-    const streakEl = document.getElementById('rNscalStreak');
-    if (streakEl) {
-      if (streak >= 2) { streakEl.textContent = `🔥 ${streak}일 연속`; streakEl.style.display = ''; }
-      else streakEl.style.display = 'none';
-    }
-    // 월간 요약
-    const elapsed = isThisMon ? Math.max(todayD.getDate() - 1, 0) : daysInMon;
-    // 작년 같은 달 비교
-    const lastYearMonth = `${ny-1}-${String(nm).padStart(2,'0')}`;
-    const lastYearExps = txs.filter(t => t.type==='expense' && t.date.startsWith(lastYearMonth) && !FIXED_CATS.has(t.category));
-    const lastYearExpDates = new Set(lastYearExps.map(t => t.date));
-    const lastYearDays = new Date(ny-1, nm, 0).getDate();
-    let lastYearZero = 0;
-    for (let d = 1; d <= lastYearDays; d++) {
-      const ds = `${lastYearMonth}-${String(d).padStart(2,'0')}`;
-      if (!lastYearExpDates.has(ds)) lastYearZero++;
-    }
-    const summaryEl = document.getElementById('rNscalSummary');
-    const insightEl = document.getElementById('rNscalInsight');
-    const rate = elapsed > 0 ? Math.round(zeroCnt / elapsed * 100) : 0;
-    if (summaryEl) summaryEl.innerHTML = `이번 달은 <strong>${daysInMon}일 중 ${zeroCnt}일</strong> 성공!<span class="nscal-rate">성공률 ${rate}%</span>`;
-    if (insightEl) {
-      const diff = zeroCnt - lastYearZero;
-      if (lastYearZero > 0 && diff > 0) insightEl.textContent = `작년 같은 달보다 ${diff}일 더 절약했어요 🎉`;
-      else if (lastYearZero > 0 && diff < 0) insightEl.textContent = ``;
-      else if (lastYearZero > 0) insightEl.textContent = `작년 같은 달과 동일해요!`;
-      else insightEl.textContent = `고정지출 카테고리는 무지출로 판정해요 ✓`;
-    }
+    }).join('');
   }
 
-  // ── 지출 경고 ────────────────────────────────────────────────
-  if (reportWidgets.includes('alert')) {
-    const prevCatMap = {};
-    prevExps.forEach(t => { prevCatMap[t.category] = (prevCatMap[t.category]||0) + t.amount; });
-    const thisCatMap = {};
-    thisExps.forEach(t => { thisCatMap[t.category] = (thisCatMap[t.category]||0) + t.amount; });
-    const alerts = [];
-    Object.entries(thisCatMap).forEach(([cat, amt]) => {
-      const p = prevCatMap[cat] || 0;
-      if (p > 0) {
-        const pct = Math.round((amt - p) / p * 100);
-        if (pct >= 50 && (amt - p) >= 10000) alerts.push({cat, amt, pct, diff: amt-p, isNew: false});
-      } else if (amt >= 50000) {
-        alerts.push({cat, amt, pct: null, diff: amt, isNew: true});
-      }
-    });
-    alerts.sort((a,b) => b.diff - a.diff);
-    const alertEl = document.getElementById('rAlertList');
-    if (alertEl) {
-      if (!alerts.length) {
-        alertEl.innerHTML = `<div class="alert-none">✅ 이번 달 소비 패턴이 안정적이에요!</div>`;
-      } else {
-        alertEl.innerHTML = alerts.slice(0,4).map(a => {
-          const meta = _icMeta(a.cat);
-          const pctTxt = a.isNew ? `이번 달 새로 생긴 지출 ${fmt(a.amt)}` : `지난달 대비 +${a.pct}% (${fmt(a.diff)} 증가)`;
-          return `<div class="alert-item">
-            <span class="alert-ico">⚠️</span>
-            <div>
-              <div class="alert-cat"><i class="${meta.fa}" style="color:${meta.c};margin-right:4px"></i>${dn(a.cat, CAT_NAME_MAP)}</div>
-              <div class="alert-diff">${pctTxt}</div>
-            </div>
-          </div>`;
-        }).join('');
-      }
-    }
+  // ── 5. 수입 VS 지출 ──────────────────────────────────────────
+  const vsEl = document.getElementById('rsVsBar');
+  if (vsEl) {
+    const thisInc = monthOf(curMonth).filter(t=>t.type==='income').reduce((s,t)=>s+t.amount,0);
+    const total = thisInc + thisExp;
+    const incPct = total > 0 ? Math.round(thisInc/total*100) : 50;
+    const expPct = 100 - incPct;
+    const incWins = thisInc >= thisExp;
+    vsEl.innerHTML = `
+      <div class="rs-vs-bar">
+        <div style="width:${incPct}%;background:#22c55e;border-radius:${incPct>98?'20px':'20px 0 0 20px'};height:100%;display:${thisInc===0?'none':'flex'}"></div>
+        <div style="width:${expPct}%;background:#ef4444;border-radius:${expPct>98?'20px':'0 20px 20px 0'};height:100%;display:${thisExp===0?'none':'flex'}"></div>
+      </div>
+      <div class="rs-vs-labels">
+        <div><div class="rs-vs-lbl">수입</div><div class="rs-vs-amt" style="color:#16a34a">${fmt(thisInc)}</div></div>
+        <div style="text-align:right"><div class="rs-vs-lbl">지출</div><div class="rs-vs-amt" style="color:#dc2626">${fmt(thisExp)}</div></div>
+      </div>`;
   }
 
-  // ── 일평균 지출 ──────────────────────────────────────────────
-  if (reportWidgets.includes('dailyavg')) {
-    const [dy, dm] = curMonth.split('-').map(Number);
-    const todayD2 = new Date();
-    const isThisMon2 = curMonth === todayD2.toISOString().slice(0,7);
-    const daysInMon2 = new Date(dy, dm, 0).getDate();
-    const elapsed2 = isThisMon2 ? todayD2.getDate() : daysInMon2;
-    const thisAvg = elapsed2 > 0 ? Math.round(thisExp / elapsed2) : 0;
-    const [py2, pm2] = prev.split('-').map(Number);
-    const prevDays2 = new Date(py2, pm2, 0).getDate();
-    const prevAvg = prevDays2 > 0 ? Math.round(prevExp / prevDays2) : 0;
-    const numEl = document.getElementById('rDavgNum');
-    const vsEl  = document.getElementById('rDavgVs');
-    const trEl  = document.getElementById('rDavgTrend');
-    if (numEl) numEl.innerHTML = fmt(thisAvg);
-    if (vsEl && prevAvg > 0) vsEl.textContent = `지난달 일평균 ${fmt(prevAvg)}`;
-    else if (vsEl) vsEl.textContent = `${elapsed2}일 기준`;
-    if (trEl && prevAvg > 0) {
-      const diff2 = thisAvg - prevAvg;
-      const pct2 = Math.round(Math.abs(diff2) / prevAvg * 100);
-      trEl.textContent = diff2 > 0 ? `▲ 지난달보다 ${pct2}% 많아요` : diff2 < 0 ? `▼ 지난달보다 ${pct2}% 적어요` : `지난달과 동일해요`;
-      trEl.className = `davg-trend${diff2 > 0 ?' up': diff2 < 0 ?' down':''}`;
-    } else if (trEl) { trEl.textContent = ''; }
+  // ── 6. 일평균 지출 ───────────────────────────────────────────
+  const davgEl = document.getElementById('rsDavgCard');
+  if (davgEl) {
+    const now = new Date();
+    const [cy, cm] = curMonth.split('-').map(Number);
+    const isCurrentMonth = (cy === now.getFullYear() && cm === (now.getMonth()+1));
+    const elapsedDays = isCurrentMonth ? now.getDate() : new Date(cy, cm, 0).getDate();
+    const dailyAvg = elapsedDays > 0 ? Math.round(thisExp / elapsedDays) : 0;
+
+    const prevYm = prevMonth(curMonth);
+    const prevExpTotal = monthOf(prevYm).filter(t=>t.type==='expense').reduce((s,t)=>s+t.amount,0);
+    const prevDaysInMonth = new Date(cy, cm-1, 0).getDate();
+    const prevDailyAvg = prevDaysInMonth > 0 ? Math.round(prevExpTotal / prevDaysInMonth) : 0;
+
+    let diffHtml = '';
+    if (prevDailyAvg > 0) {
+      const diffPct = Math.round((dailyAvg - prevDailyAvg) / prevDailyAvg * 100);
+      const diffColor = diffPct <= 0 ? '#16a34a' : '#dc2626';
+      const diffSign = diffPct > 0 ? '+' : '';
+      diffHtml = `<span style="font-size:12px;font-weight:700;color:${diffColor}">${diffSign}${diffPct}% 지난달 대비</span>`;
+    }
+
+    const davgBarPct = prevDailyAvg > 0 ? Math.min(Math.round(dailyAvg / prevDailyAvg * 100), 200) : 100;
+    const davgBarW = Math.min(davgBarPct, 100);
+    const davgBarColor = prevDailyAvg > 0 && dailyAvg > prevDailyAvg ? '#ef4444' : '#22c55e';
+    davgEl.innerHTML = `
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:8px;margin-bottom:12px">
+        <div style="font-size:28px;font-weight:900;color:var(--text);letter-spacing:-1px">${fmt(dailyAvg)}</div>
+        ${diffHtml ? `<div style="padding:4px 10px;border-radius:20px;background:${prevDailyAvg>0&&dailyAvg>prevDailyAvg?'#fef2f2':'#f0fdf4'};font-size:12px;font-weight:700;color:${prevDailyAvg>0&&dailyAvg>prevDailyAvg?'#dc2626':'#16a34a'};white-space:nowrap;margin-bottom:4px">${diffHtml.replace(/<[^>]+>/g,'')}</div>` : ''}
+      </div>
+      <div style="background:#f1f5f9;border-radius:20px;height:8px;overflow:hidden;margin-bottom:10px">
+        <div style="width:${davgBarW}%;height:100%;background:${davgBarColor};border-radius:20px;transition:width .4s ease"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="font-size:11px;color:#9e9e9e">총 ${fmt(thisExp)} / ${elapsedDays}일 기준</div>
+        ${prevDailyAvg > 0 ? `<div style="font-size:11px;color:#9e9e9e">지난달 ${fmt(prevDailyAvg)}/일</div>` : ''}
+      </div>`;
   }
 
-  // ── 카테고리 TOP 3 ──────────────────────────────────────────
-  if (reportWidgets.includes('top3cats')) {
-    const catMap = {};
-    thisExps.forEach(t => { catMap[t.category] = (catMap[t.category] || 0) + t.amount; });
-    const sorted = Object.entries(catMap).sort((a,b) => b[1]-a[1]).slice(0,3);
-    const MEDALS = ['🥇','🥈','🥉'];
-    const body = document.getElementById('rTop3Body');
-    if (!sorted.length) {
-      body.innerHTML = `<div class="top3-empty">${tr('report.noExpense')}</div>`;
-    } else {
-      const maxAmt = sorted[0][1];
-      body.innerHTML = sorted.map(([cat, amt], i) => {
-        const pct = thisExp > 0 ? Math.round(amt / thisExp * 100) : 0;
-        const barW = Math.round(amt / maxAmt * 100);
-        // 해당 카테고리 거래 건수
-        const cnt = thisExps.filter(t => t.category === cat).length;
-        return `<div class="top3-row">
-          <div class="top3-rank">${MEDALS[i]}</div>
-          <div class="top3-info">
-            <div class="top3-cat"><i class="${_icMeta(cat).fa}" style="color:${_icMeta(cat).c};margin-right:6px"></i>${dn(cat, CAT_NAME_MAP)}</div>
-            <div class="top3-sub">${tr('lbl.cntFmt').replace('{n}', cnt)}</div>
-            <div class="top3-bar-wrap"><div class="top3-bar" style="width:${barW}%"></div></div>
-          </div>
-          <div class="top3-right">
-            <div class="top3-amt">${fmt(amt)}</div>
-            <div class="top3-pct">${pct}%</div>
-          </div>
-        </div>`;
-      }).join('');
-    }
-  }
+}
+
+
+// ── 위젯 관리 ─────────────────────────────────────────────────
+const _RS_ALL = ['trend','top3','dow','week','vs','davg'];
+const _RS_LABELS = {trend:'6개월 지출 트렌드', top3:'카테고리 TOP 3', dow:'요일별 소비 패턴', week:'주별 지출', vs:'수입 VS 지출', davg:'일평균 지출'};
+function _getRsOrder()  { try { const o=JSON.parse(localStorage.getItem('rsOrder')); return Array.isArray(o)?o:[..._RS_ALL]; } catch{ return [..._RS_ALL]; } }
+function _getRsHidden() { try { const h=JSON.parse(localStorage.getItem('rsHidden')); return Array.isArray(h)?h:[]; } catch{ return []; } }
+function _saveRsOrder(o)  { localStorage.setItem('rsOrder', JSON.stringify(o)); }
+function _saveRsHidden(h) { localStorage.setItem('rsHidden', JSON.stringify(h)); }
+
+function rsToggleDots(e, id) {
+  e.stopPropagation();
+  document.querySelectorAll('.rs-dots-menu.open').forEach(m => { if (m.id !== 'rsDots_'+id) m.classList.remove('open'); });
+  document.getElementById('rsDots_'+id)?.classList.toggle('open');
+}
+document.addEventListener('click', () => { document.querySelectorAll('.rs-dots-menu.open').forEach(m => m.classList.remove('open')); });
+
+function rsMoveWidget(id, dir) {
+  const order  = _getRsOrder();
+  const hidden = _getRsHidden();
+  const visible = order.filter(i => !hidden.includes(i));
+  const vi = visible.indexOf(id);
+  if (vi < 0) return;
+  const ni = vi + dir;
+  if (ni < 0 || ni >= visible.length) return;
+  [visible[vi], visible[ni]] = [visible[ni], visible[vi]];
+  const newOrder = [...visible, ...order.filter(i => hidden.includes(i))];
+  _saveRsOrder(newOrder);
+  renderReport();
+}
+function rsDeleteWidget(id) {
+  const hidden = _getRsHidden();
+  if (!hidden.includes(id)) hidden.push(id);
+  _saveRsHidden(hidden);
+  renderReport();
+}
+function rsAddWidget(id) {
+  const hidden = _getRsHidden().filter(h => h !== id);
+  _saveRsHidden(hidden);
+  document.getElementById('rsAddModal')?.remove();
+  renderReport();
+}
+function openRsAddModal() {
+  document.getElementById('rsAddModal')?.remove();
+  const hidden = _getRsHidden();
+  if (!hidden.length) { alert('숨겨진 위젯이 없어요'); return; }
+  const items = hidden.map(id => `
+    <div class="rs-add-item">
+      <span class="rs-add-item-label">${_RS_LABELS[id]||id}</span>
+      <button class="rs-add-item-btn" onclick="rsAddWidget('${id}')">추가</button>
+    </div>`).join('');
+  const modal = document.createElement('div');
+  modal.id = 'rsAddModal';
+  modal.className = 'rs-add-modal-overlay';
+  modal.innerHTML = `<div class="rs-add-modal"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px"><span style="font-size:16px;font-weight:800;color:var(--text)">위젯 추가</span><button onclick="document.getElementById('rsAddModal').remove()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#9e9e9e;line-height:1">×</button></div>${items}</div>`;
+  modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
+  document.body.appendChild(modal);
 }
 
 function renderReportEditBar() {
@@ -4740,28 +4801,47 @@ function closePhotoViewer() { document.getElementById('photoViewer').classList.r
 function pvBgClose(e) { if (e.target === document.getElementById('photoViewer')) closePhotoViewer(); }
 
 // ── 검색 ──────────────────────────────────────────────────────
-function openSearch() {
-  document.getElementById('searchInput').value = '';
-  document.getElementById('searchResults').innerHTML = '<div class="search-empty">검색어를 입력하세요</div>';
-  document.getElementById('searchOverlay').classList.add('show');
-  setTimeout(() => document.getElementById('searchInput').focus(), 150);
+function toggleInlineSearch() {
+  const inp = document.getElementById('hdrSearchInput');
+  if (inp.style.display === 'none') openInlineSearch(); else closeInlineSearch();
 }
-function closeSearch() {
-  document.getElementById('searchOverlay').classList.remove('show');
+function openInlineSearch() {
+  document.querySelector('.header-title').style.display = 'none';
+  const inp = document.getElementById('hdrSearchInput');
+  inp.style.display = 'block';
+  inp.value = '';
+  inp.focus();
+  const btn = document.getElementById('searchToggleBtn');
+  btn.innerHTML = '<i data-lucide="x" style="width:20px;height:20px;stroke-width:1.75"></i>';
+  lucide.createIcons();
 }
-function doSearch(q) {
+function closeInlineSearch() {
+  document.querySelector('.header-title').style.display = '';
+  const inp = document.getElementById('hdrSearchInput');
+  inp.style.display = 'none';
+  inp.value = '';
+  const btn = document.getElementById('searchToggleBtn');
+  btn.innerHTML = '<i data-lucide="search" style="width:20px;height:20px;stroke-width:1.75"></i>';
+  lucide.createIcons();
+  renderLedger();
+}
+function doInlineSearch(q) {
   q = q.trim().toLowerCase();
-  const el = document.getElementById('searchResults');
-  if (!q) { el.innerHTML = '<div class="search-empty">검색어를 입력하세요</div>'; return; }
+  const list = document.getElementById('txList');
+  if (!q) { renderLedger(); return; }
   const results = txs.filter(t =>
     (t.description||'').toLowerCase().includes(q) ||
     (t.category||'').toLowerCase().includes(q) ||
     String(t.amount).includes(q) ||
     (t.payment||'').toLowerCase().includes(q)
   ).sort((a,b) => b.date.localeCompare(a.date));
-  if (!results.length) { el.innerHTML = '<div class="search-empty">검색 결과가 없어요</div>'; return; }
-  el.innerHTML = results.map(t => txRowHtml(t)).join('');
+  if (!results.length) { list.innerHTML = '<div class="empty-msg">검색 결과가 없어요</div>'; return; }
+  list.innerHTML = results.map(t => txRowHtml(t)).join('');
+  lucide.createIcons();
 }
+function openSearch() {}
+function closeSearch() {}
+function doSearch(q) {}
 
 // ── 금액 입력 콤마 포맷 ───────────────────────────────────────
 function formatAmtInput(el) {
@@ -4963,6 +5043,26 @@ function fxCycleLabel(f) {
   return '';
 }
 
+function openSurvModal() {
+  if (!document.getElementById('pane-ledger').classList.contains('active')) goTab('ledger');
+  document.getElementById('txList').style.display = 'none';
+  document.getElementById('survPane').style.display = 'block';
+  fillSurvival();
+}
+function _rsDHover(i) {
+  const d = window._rsDonutData;
+  if (!d || !d[i]) return;
+  const el = document.getElementById('rsDonutCenter');
+  if (el) el.innerHTML = `<div style="font-size:14px;font-weight:900;color:#1E293B;">${d[i].pct}%</div><div style="font-size:9px;color:#9e9e9e;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${dn(d[i].cat,CAT_NAME_MAP)}</div><div style="font-size:9px;font-weight:700;color:#1E293B;margin-top:1px;">${fmt(d[i].amt)}</div>`;
+}
+function _rsDRestore() {
+  const el = document.getElementById('rsDonutCenter');
+  if (el && window._rsDonutDefault) el.innerHTML = window._rsDonutDefault;
+}
+function closeSurvModal() {
+  document.getElementById('survPane').style.display = 'none';
+  document.getElementById('txList').style.display = '';
+}
 function openFixedModal() {
   document.getElementById('fixedModal').classList.add('show');
   // 카테고리 셀렉트 채우기
@@ -5087,11 +5187,11 @@ async function syncFromServer(force = false) {
   } catch(e) {}
 }
 async function manualSync() {
-  const btn = document.getElementById('syncBtn');
-  if (btn) btn.style.opacity = '0.4';
+  const ico = document.getElementById('syncRowIcon');
+  if (ico) ico.style.opacity = '0.4';
   localStorage.removeItem(SYNC_TS_SK);
   await syncFromServer(true);
-  if (btn) btn.style.opacity = '1';
+  if (ico) ico.style.opacity = '1';
 }
 
 document.addEventListener('DOMContentLoaded', () => {
