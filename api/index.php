@@ -341,7 +341,7 @@ try {
             $todayD = (int)date('j');
             $todayW = (int)date('w'); // 0=일,1=월...6=토
             $today  = date('Y-m-d');
-            $maxDay = cal_days_in_month(CAL_GREGORIAN, $mon, $year);
+            $maxDay = (int)date('t', mktime(0, 0, 0, $mon, 1, $year)); // cal 확장 없이
 
             $stmt = $pdo->prepare("SELECT * FROM fixed_expenses WHERE user_id=:uid");
             $stmt->execute([':uid'=>$userId]);
@@ -366,7 +366,7 @@ try {
                     if ($dom <= $todayD) $targetDt = sprintf('%04d-%02d-%02d', $year, $mon, $dom);
                 } elseif ($cycle === 'yearly') {
                     $moy = (int)$f['month_of_year'];
-                    $maxD2 = cal_days_in_month(CAL_GREGORIAN, $moy, $year);
+                    $maxD2 = (int)date('t', mktime(0, 0, 0, $moy, 1, $year)); // cal 확장 없이
                     $dom = min((int)$f['day_of_month'], $maxD2);
                     if ($moy === $mon && $dom <= $todayD)
                         $targetDt = sprintf('%04d-%02d-%02d', $year, $mon, $dom);
@@ -474,6 +474,49 @@ try {
             $catId = $cs->fetchColumn() ?: null;
             $newId = insertTransaction($userId, $catId, $amt, $desc ?: $catName, $date, 'manual', $pay, $type);
             echo json_encode(['status'=>'ok','db_id'=>$newId]);
+            break;
+
+        // ── 푸시 구독 저장 ────────────────────────────────────────
+        case 'push_subscribe':
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') { http_response_code(405); echo json_encode(['status'=>'error']); break; }
+            $raw = file_get_contents('php://input');
+            $sub = json_decode($raw, true);
+            if (!isset($sub['endpoint'], $sub['keys']['p256dh'], $sub['keys']['auth'])) {
+                http_response_code(400); echo json_encode(['status'=>'error','message'=>'Invalid subscription']); break;
+            }
+            $notifTime = preg_match('/^\d{2}:\d{2}$/', $sub['time'] ?? '') ? $sub['time'] : '21:00';
+            $pdo = getConnection();
+            try {
+                $pdo->exec("CREATE TABLE IF NOT EXISTS push_subscriptions (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    user_id INT NOT NULL,
+                    endpoint TEXT NOT NULL,
+                    p256dh VARCHAR(255) NOT NULL,
+                    auth VARCHAR(100) NOT NULL,
+                    notif_time VARCHAR(5) NOT NULL DEFAULT '21:00',
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    UNIQUE KEY uq_endpoint (endpoint(191))
+                )");
+            } catch (PDOException $e2) {}
+            // 기기별 구독 저장 (endpoint 기준 — 다기기 지원)
+            // 같은 유저의 기존 구독 시간도 함께 업데이트
+            $pdo->prepare(
+                "INSERT INTO push_subscriptions (user_id, endpoint, p256dh, auth, notif_time)
+                 VALUES (:uid, :ep, :p, :a, :t)
+                 ON DUPLICATE KEY UPDATE user_id=VALUES(user_id), p256dh=VALUES(p256dh), auth=VALUES(auth), notif_time=VALUES(notif_time)"
+            )->execute([':uid'=>$userId, ':ep'=>$sub['endpoint'], ':p'=>$sub['keys']['p256dh'], ':a'=>$sub['keys']['auth'], ':t'=>$notifTime]);
+            // 같은 유저의 다른 기기 알림 시간도 동기화
+            $pdo->prepare("UPDATE push_subscriptions SET notif_time=:t WHERE user_id=:uid")
+                ->execute([':t'=>$notifTime, ':uid'=>$userId]);
+            echo json_encode(['status'=>'ok']);
+            break;
+
+        // ── 푸시 구독 삭제 ────────────────────────────────────────
+        case 'push_unsubscribe':
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') { http_response_code(405); echo json_encode(['status'=>'error']); break; }
+            $pdo = getConnection();
+            try { $pdo->prepare("DELETE FROM push_subscriptions WHERE user_id=:uid")->execute([':uid'=>$userId]); } catch (PDOException $e2) {}
+            echo json_encode(['status'=>'ok']);
             break;
 
         // ── 전체 내역 동기화 (새 기기 로그인 시) ──────────────────

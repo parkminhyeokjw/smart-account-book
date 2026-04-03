@@ -108,6 +108,7 @@ if ($isLoggedIn) {
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="design_apply.js?v=3"></script>
 <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
@@ -1404,6 +1405,7 @@ body.dark .widget-card.surv-danger { background:#2d1515; }
 #survPane .wgt-title { display:none !important; }
 #survPane .widget-menu-btn { display:none !important; }
 #survPane .surv-body { padding:12px 20px 16px !important; }
+
 </style>
 </head>
 <body class="<?= $darkMode ? 'dark' : '' ?>">
@@ -1421,7 +1423,7 @@ body.dark .widget-card.surv-danger { background:#2d1515; }
     </div>
     <span class="header-logo-text">마이가계부</span>
   </div>
-  <input id="hdrSearchInput" class="hdr-search-input" type="text" placeholder="검색..." autocomplete="off"
+  <input id="hdrSearchInput" class="hdr-search-input" type="text" data-i18n-ph="search.ph" placeholder="검색..." autocomplete="off"
          oninput="doInlineSearch(this.value)"
          onkeydown="if(event.key==='Escape')closeInlineSearch()"
          style="display:none">
@@ -1511,7 +1513,7 @@ body.dark .widget-card.surv-danger { background:#2d1515; }
         </div>
         <div class="surv-input-row">
           <span class="surv-input-label" data-i18n="widget.survival">목표 예산</span>
-          <input class="surv-input" id="rSurvInput" type="text" inputmode="numeric" placeholder="미설정"
+          <input class="surv-input" id="rSurvInput" type="text" inputmode="numeric" data-i18n-ph="surv.notSet" placeholder="미설정"
                  oninput="onSurvBudgetInput(this)" onblur="saveSurvBudget()" onkeydown="if(event.key==='Enter')this.blur()">
           <span class="surv-input-unit" data-i18n="widget.survUnit">원</span>
         </div>
@@ -1664,7 +1666,7 @@ body.dark .widget-card.surv-danger { background:#2d1515; }
           <span class="me-row-ico"><i data-lucide="coins"></i></span><span class="me-row-label" data-i18n="row.currency">기본 통화</span><span class="me-row-value" id="currencyRowValue">₩ KRW</span><span class="me-row-arrow">›</span>
         </div>
         <div class="me-row" onclick="openNotifModal()">
-          <span class="me-row-ico"><i data-lucide="bell"></i></span><span class="me-row-label" data-i18n="row.notifications">푸시 알림</span><span class="me-row-value" id="notifRowValue">꺼짐</span><span class="me-row-arrow">›</span>
+          <span class="me-row-ico"><i data-lucide="bell"></i></span><span class="me-row-label" data-i18n="row.notifications">푸시 알림</span><span class="me-row-value" id="notifRowValue" data-i18n="notif.off">꺼짐</span><span class="me-row-arrow">›</span>
         </div>
         <div class="me-row" onclick="toggleDarkMode()">
           <span class="me-row-ico"><i data-lucide="moon"></i></span><span class="me-row-label" data-i18n="row.theme">다크 모드</span>
@@ -1673,9 +1675,7 @@ body.dark .widget-card.surv-danger { background:#2d1515; }
             <span class="toggle-slider"></span>
           </label>
         </div>
-        <div class="me-row" onclick="openFontSizeModal ? openFontSizeModal() : null">
-          <span class="me-row-ico"><i data-lucide="type"></i></span><span class="me-row-label" data-i18n="row.fontSize">글꼴 크기</span><span class="me-row-value" id="fontSizeRowValue">보통</span><span class="me-row-arrow">›</span>
-        </div>
+
         <div class="me-row" onclick="openLangModal()">
           <span class="me-row-ico"><i data-lucide="globe"></i></span><span class="me-row-label" data-i18n="row.language">언어</span><span class="me-row-value" id="langRowValue">한국어</span><span class="me-row-arrow">›</span>
         </div>
@@ -1692,7 +1692,7 @@ body.dark .widget-card.surv-danger { background:#2d1515; }
         <div class="me-section-title" data-i18n="section.dataManagement">데이터 관리</div>
         <?php if ($isLoggedIn): ?>
         <div class="me-row" id="syncRowBtn" onclick="manualSync()">
-          <span class="me-row-ico"><i data-lucide="refresh-cw" id="syncRowIcon"></i></span><span class="me-row-label">서버 동기화</span><span class="me-row-arrow">›</span>
+          <span class="me-row-ico"><i data-lucide="refresh-cw" id="syncRowIcon"></i></span><span class="me-row-label" data-i18n="row.sync">서버 동기화</span><span class="me-row-arrow">›</span>
         </div>
         <?php endif; ?>
         <div class="me-row" onclick="openBackupModal()">
@@ -1824,9 +1824,14 @@ body.dark .widget-card.surv-danger { background:#2d1515; }
           <option value="expense" data-i18n="fx.typeExp">💸 지출</option>
           <option value="income" data-i18n="fx.typeInc">💰 수입</option>
         </select>
-        <select id="fxCat" style="flex:1;border:1px solid #e0e0e0;border-radius:8px;padding:10px 10px;font-size:14px;outline:none;background:#fff">
-          <option value="" data-i18n="fx.catPh">카테고리 선택</option>
-        </select>
+        <div class="cat-custom-select" id="fxCatCustomSelect">
+          <button class="cat-cs-trigger" id="fxCatCsTrigger" type="button" onclick="toggleFxCatDropdown()">
+            <span id="fxCatCsLabel" data-i18n="fx.catPh">카테고리 선택</span>
+            <span class="cat-cs-arrow"><i data-lucide="chevron-down" style="width:16px;height:16px;stroke-width:2"></i></span>
+          </button>
+          <div class="cat-cs-dropdown" id="fxCatCsDropdown"></div>
+        </div>
+        <input type="hidden" id="fxCat">
       </div>
 
       <!-- 주기 선택 -->
@@ -1912,8 +1917,10 @@ body.dark .widget-card.surv-danger { background:#2d1515; }
     <div style="padding:10px 16px 16px;border-top:1px solid #f0f0f0;margin-top:4px">
       <div style="font-size:12px;color:#9e9e9e;margin-bottom:8px" data-i18n="cat.addNew">새 카테고리 추가</div>
       <div style="display:flex;gap:8px;align-items:center">
-        <input id="ceEmoji" type="text" maxlength="2" placeholder="😀"
-          style="width:48px;text-align:center;border:1px solid #e0e0e0;border-radius:8px;padding:10px 4px;font-size:18px;outline:none">
+        <div id="ceIconPreview" onclick="openIconPicker('cat-edit')"
+          style="width:42px;height:42px;border-radius:50%;background:#607D8B;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer">
+          <i data-lucide="package" style="width:18px;height:18px;color:#fff;stroke-width:1.75"></i>
+        </div>
         <input id="ceName" type="text" placeholder="카테고리 이름" data-i18n-ph="cat.namePh"
           style="flex:1;border:1px solid #e0e0e0;border-radius:8px;padding:10px 12px;font-size:14px;outline:none"
           onkeydown="if(event.key==='Enter')addCatEdit()">
@@ -1961,12 +1968,16 @@ body.dark .widget-card.surv-danger { background:#2d1515; }
         <div class="notif-status-dot" id="notifDot"></div>
         <div class="notif-status-text" id="notifStatusText" data-i18n="notif.checking">알림 권한 확인 중...</div>
       </div>
+      <div id="notifInstallGuide" style="display:none;background:#FFF8E1;border-radius:8px;padding:10px 12px;margin-bottom:10px;font-size:13px;color:#5D4037;line-height:1.7;">
+        📲 <b>홈 화면에 추가</b>하면 알림을 받을 수 있어요.<br>
+        Chrome 메뉴(⋮) → <b>홈 화면에 추가</b> → 추가된 앱에서 다시 설정해주세요.
+      </div>
       <div class="notif-time-row">
         <span class="notif-time-label" data-i18n="notif.timeLabel">알림 시간</span>
         <input class="notif-time-input" id="notifTimeInput" type="time" value="21:00">
       </div>
       <div style="font-size:12px;color:#9e9e9e;line-height:1.7" data-i18n="notif.desc">
-        설정한 시간에 가계부 작성 리마인드를 보내드립니다. 앱이 열려 있을 때 작동합니다.
+        설정한 시간에 가계부 작성 리마인드를 보내드립니다. 앱을 닫아도 알림이 와요.
       </div>
     </div>
     <div class="center-modal-footer">
@@ -2057,7 +2068,7 @@ body.dark .widget-card.surv-danger { background:#2d1515; }
     <div style="padding:12px 16px 0">
       <div style="display:flex;align-items:center;gap:8px;border:1.5px solid #e0e0e0;border-radius:10px;padding:8px 12px;background:#f9f9f9">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9e9e9e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input id="currencySearch" type="text" placeholder="통화 검색..." oninput="renderCurrencyGrid(this.value)"
+        <input id="currencySearch" type="text" data-i18n-ph="currency.searchPh" placeholder="통화 검색..." oninput="renderCurrencyGrid(this.value)"
           style="border:none;outline:none;background:transparent;font-size:14px;width:100%;color:#374151">
       </div>
     </div>
@@ -2082,6 +2093,7 @@ body.dark .widget-card.surv-danger { background:#2d1515; }
   </div>
 </div>
 
+
 <!-- ── 업그레이드 모달 ── -->
 <div class="center-overlay" id="upgradeModal" onclick="if(event.target===this)closeUpgradeModal()">
   <div class="center-modal upg-modal" style="max-width:400px">
@@ -2089,66 +2101,66 @@ body.dark .widget-card.surv-danger { background:#2d1515; }
     <div class="upg-hero">
       <button class="upg-hero-close" onclick="closeUpgradeModal()">×</button>
       <span class="upg-hero-icon">🚀</span>
-      <div class="upg-hero-title">똑똑가계부 프리미엄</div>
-      <div class="upg-hero-sub">더 스마트한 가계부 관리를 경험하세요</div>
+      <div class="upg-hero-title" data-i18n="upg.title">마이가계부 프리미엄</div>
+      <div class="upg-hero-sub" data-i18n="upg.sub">더 스마트한 가계부 관리를 경험하세요</div>
     </div>
     <!-- 바디 섹션 -->
     <div class="upg-body">
-      <div class="upg-section-label">프리미엄으로 이동</div>
-      <div class="upg-headline">지출을 완전히 통제하는<br>스마트한 방법</div>
+      <div class="upg-section-label" data-i18n="upg.label">프리미엄으로 이동</div>
+      <div class="upg-headline" data-i18n="upg.headline">지출을 완전히 통제하는<br>스마트한 방법</div>
       <!-- 혜택 목록 -->
       <div class="upg-benefits">
         <div class="upg-benefit-row">
           <div class="upg-benefit-check"></div>
           <div class="upg-benefit-text">
-            <strong>PDF 리포트 내보내기</strong>
-            <span>월간 소비 리포트를 PDF로 저장·공유</span>
+            <strong data-i18n="upg.b1t">PDF 리포트 내보내기</strong>
+            <span data-i18n="upg.b1s">월간 소비 리포트를 PDF로 저장·공유</span>
           </div>
         </div>
         <div class="upg-benefit-row">
           <div class="upg-benefit-check"></div>
           <div class="upg-benefit-text">
-            <strong>멀티 디바이스 실시간 동기화</strong>
-            <span>폰, 태블릿, PC 어디서든 데이터 공유</span>
+            <strong data-i18n="upg.b2t">멀티 디바이스 실시간 동기화</strong>
+            <span data-i18n="upg.b2s">폰, 태블릿, PC 어디서든 데이터 공유</span>
           </div>
         </div>
         <div class="upg-benefit-row">
           <div class="upg-benefit-check"></div>
           <div class="upg-benefit-text">
-            <strong>AI 소비 분석 & 절약 코칭</strong>
-            <span>지출 패턴 기반 맞춤 절약 팁 제공</span>
+            <strong data-i18n="upg.b3t">AI 소비 분석 & 절약 코칭</strong>
+            <span data-i18n="upg.b3s">지출 패턴 기반 맞춤 절약 팁 제공</span>
           </div>
         </div>
         <div class="upg-benefit-row">
           <div class="upg-benefit-check"></div>
           <div class="upg-benefit-text">
-            <strong>다중 계좌 & 프리미엄 테마</strong>
-            <span>계좌별 분리 관리 + 독점 디자인 테마</span>
+            <strong data-i18n="upg.b4t">다중 계좌 & 프리미엄 테마</strong>
+            <span data-i18n="upg.b4s">계좌별 분리 관리 + 독점 디자인 테마</span>
           </div>
         </div>
       </div>
       <!-- 플랜 선택 -->
       <div class="upg-plans" id="upgPlans">
         <div class="upg-plan-card" onclick="upgSelectPlan(this,'month')">
-          <div class="upg-plan-period">1개월</div>
+          <div class="upg-plan-period" data-i18n="upg.plan1mo">1개월</div>
           <div class="upg-plan-price">₩3,900</div>
-          <div class="upg-plan-unit">/ 월</div>
+          <div class="upg-plan-unit" data-i18n="upg.planUnit">/ 월</div>
         </div>
         <div class="upg-plan-card sel" onclick="upgSelectPlan(this,'year')">
-          <div class="upg-plan-badge">57% 절약</div>
-          <div class="upg-plan-period">1년</div>
+          <div class="upg-plan-badge" data-i18n="upg.save57">57% 절약</div>
+          <div class="upg-plan-period" data-i18n="upg.plan1y">1년</div>
           <div class="upg-plan-price">₩19,900</div>
           <div class="upg-plan-unit">₩1,658 / 월</div>
         </div>
         <div class="upg-plan-card" onclick="upgSelectPlan(this,'forever')">
-          <div class="upg-plan-period">평생</div>
+          <div class="upg-plan-period" data-i18n="upg.planLife">평생</div>
           <div class="upg-plan-price">₩49,900</div>
-          <div class="upg-plan-unit">1회 결제</div>
+          <div class="upg-plan-unit" data-i18n="upg.planUnit2">1회 결제</div>
         </div>
       </div>
       <!-- CTA 버튼 -->
-      <button class="upg-cta" onclick="closeUpgradeModal();showToast('🔔 곧 오픈 예정이에요!')">지금 시작하기 →</button>
-      <span class="upg-restore-link" onclick="closeUpgradeModal();showToast('복원 기능은 준비 중이에요.')">구매 복원</span>
+      <button class="upg-cta" data-i18n="upg.cta" onclick="closeUpgradeModal();showToast(tr('upg.comingSoon'))">지금 시작하기 →</button>
+      <span class="upg-restore-link" data-i18n="upg.restore" onclick="closeUpgradeModal();showToast(tr('upg.restoreWip'))">구매 복원</span>
     </div>
   </div>
 </div>
@@ -2519,71 +2531,193 @@ function refreshIcons() {
 // ── 통화 ──────────────────────────────────────────────────────
 const CURRENCY_SK = 'app_currency';
 const CURRENCY_LIST = [
-  {code:'KRW',symbol:'₩',name:'대한민국 원'},{code:'USD',symbol:'$',name:'미국 달러'},
-  {code:'EUR',symbol:'€',name:'유럽 유로'},{code:'JPY',symbol:'¥',name:'일본 엔'},
-  {code:'GBP',symbol:'£',name:'영국 파운드'},{code:'CNY',symbol:'¥',name:'중국 위안'},
-  {code:'HKD',symbol:'HK$',name:'홍콩 달러'},{code:'TWD',symbol:'NT$',name:'대만 달러'},
-  {code:'SGD',symbol:'S$',name:'싱가포르 달러'},{code:'AUD',symbol:'A$',name:'호주 달러'},
-  {code:'CAD',symbol:'CA$',name:'캐나다 달러'},{code:'CHF',symbol:'Fr',name:'스위스 프랑'},
-  {code:'SEK',symbol:'kr',name:'스웨덴 크로나'},{code:'NOK',symbol:'kr',name:'노르웨이 크로네'},
-  {code:'DKK',symbol:'kr',name:'덴마크 크로네'},{code:'NZD',symbol:'NZ$',name:'뉴질랜드 달러'},
-  {code:'THB',symbol:'฿',name:'태국 바트'},{code:'MYR',symbol:'RM',name:'말레이시아 링깃'},
-  {code:'IDR',symbol:'Rp',name:'인도네시아 루피아'},{code:'PHP',symbol:'₱',name:'필리핀 페소'},
-  {code:'VND',symbol:'₫',name:'베트남 동'},{code:'INR',symbol:'₹',name:'인도 루피'},
-  {code:'PKR',symbol:'₨',name:'파키스탄 루피'},{code:'BDT',symbol:'৳',name:'방글라데시 타카'},
-  {code:'LKR',symbol:'₨',name:'스리랑카 루피'},{code:'NPR',symbol:'₨',name:'네팔 루피'},
-  {code:'MMK',symbol:'K',name:'미얀마 짯'},{code:'KHR',symbol:'៛',name:'캄보디아 리엘'},
-  {code:'LAK',symbol:'₭',name:'라오스 킵'},{code:'MNT',symbol:'₮',name:'몽골 투그릭'},
-  {code:'BND',symbol:'B$',name:'브루나이 달러'},{code:'MOP',symbol:'P',name:'마카오 파타카'},
-  {code:'MVR',symbol:'Rf',name:'몰디브 루피아'},
-  {code:'MXN',symbol:'MX$',name:'멕시코 페소'},{code:'BRL',symbol:'R$',name:'브라질 헤알'},
-  {code:'ARS',symbol:'$',name:'아르헨티나 페소'},{code:'CLP',symbol:'$',name:'칠레 페소'},
-  {code:'COP',symbol:'$',name:'콜롬비아 페소'},{code:'PEN',symbol:'S/',name:'페루 솔'},
-  {code:'UYU',symbol:'$U',name:'우루과이 페소'},{code:'BOB',symbol:'Bs',name:'볼리비아 볼리비아노'},
-  {code:'PYG',symbol:'₲',name:'파라과이 과라니'},{code:'VES',symbol:'Bs.S',name:'베네수엘라 볼리바르'},
-  {code:'GYD',symbol:'G$',name:'가이아나 달러'},{code:'TTD',symbol:'TT$',name:'트리니다드 달러'},
-  {code:'JMD',symbol:'J$',name:'자메이카 달러'},{code:'DOP',symbol:'RD$',name:'도미니카 페소'},
-  {code:'HTG',symbol:'G',name:'아이티 구르드'},{code:'GTQ',symbol:'Q',name:'과테말라 케트살'},
-  {code:'HNL',symbol:'L',name:'온두라스 렘피라'},{code:'NIO',symbol:'C$',name:'니카라과 코르도바'},
-  {code:'CRC',symbol:'₡',name:'코스타리카 콜론'},{code:'PAB',symbol:'B/.',name:'파나마 발보아'},
-  {code:'BSD',symbol:'B$',name:'바하마 달러'},{code:'BBD',symbol:'Bds$',name:'바베이도스 달러'},
-  {code:'XCD',symbol:'EC$',name:'동카리브 달러'},{code:'CUP',symbol:'$',name:'쿠바 페소'},
-  {code:'RUB',symbol:'₽',name:'러시아 루블'},{code:'UAH',symbol:'₴',name:'우크라이나 흐리브냐'},
-  {code:'PLN',symbol:'zł',name:'폴란드 즐로티'},{code:'CZK',symbol:'Kč',name:'체코 코루나'},
-  {code:'HUF',symbol:'Ft',name:'헝가리 포린트'},{code:'RON',symbol:'lei',name:'루마니아 레우'},
-  {code:'BGN',symbol:'лв',name:'불가리아 레프'},{code:'ISK',symbol:'kr',name:'아이슬란드 크로나'},
-  {code:'HRK',symbol:'kn',name:'크로아티아 쿠나'},{code:'RSD',symbol:'din',name:'세르비아 디나르'},
-  {code:'ALL',symbol:'L',name:'알바니아 렉'},{code:'MKD',symbol:'ден',name:'북마케도니아 데나르'},
-  {code:'BAM',symbol:'KM',name:'보스니아 마르크'},{code:'MDL',symbol:'L',name:'몰도바 레이'},
-  {code:'BYN',symbol:'Br',name:'벨라루스 루블'},{code:'KZT',symbol:'₸',name:'카자흐스탄 텡게'},
-  {code:'UZS',symbol:'сум',name:'우즈베키스탄 솜'},{code:'AZN',symbol:'₼',name:'아제르바이잔 마나트'},
-  {code:'GEL',symbol:'₾',name:'조지아 라리'},{code:'AMD',symbol:'֏',name:'아르메니아 드람'},
-  {code:'TJS',symbol:'SM',name:'타지키스탄 소모니'},{code:'TMT',symbol:'T',name:'투르크메니스탄 마나트'},
-  {code:'KGS',symbol:'с',name:'키르기스스탄 솜'},{code:'TRY',symbol:'₺',name:'튀르키예 리라'},
-  {code:'SAR',symbol:'SR',name:'사우디 리얄'},{code:'AED',symbol:'AED',name:'아랍에미리트 디르함'},
-  {code:'KWD',symbol:'KD',name:'쿠웨이트 디나르'},{code:'BHD',symbol:'BD',name:'바레인 디나르'},
-  {code:'OMR',symbol:'OMR',name:'오만 리얄'},{code:'QAR',symbol:'QR',name:'카타르 리얄'},
-  {code:'JOD',symbol:'JD',name:'요르단 디나르'},{code:'ILS',symbol:'₪',name:'이스라엘 세켈'},
-  {code:'LBP',symbol:'L£',name:'레바논 파운드'},{code:'IRR',symbol:'﷼',name:'이란 리얄'},
-  {code:'IQD',symbol:'IQD',name:'이라크 디나르'},{code:'AFN',symbol:'؋',name:'아프가니스탄 아프가니'},
-  {code:'ZAR',symbol:'R',name:'남아프리카 랜드'},{code:'NGN',symbol:'₦',name:'나이지리아 나이라'},
-  {code:'KES',symbol:'KSh',name:'케냐 실링'},{code:'GHS',symbol:'GH₵',name:'가나 세디'},
-  {code:'ETB',symbol:'Br',name:'에티오피아 비르'},{code:'TZS',symbol:'TSh',name:'탄자니아 실링'},
-  {code:'UGX',symbol:'USh',name:'우간다 실링'},{code:'RWF',symbol:'FRw',name:'르완다 프랑'},
-  {code:'MAD',symbol:'MAD',name:'모로코 디르함'},{code:'DZD',symbol:'DZD',name:'알제리 디나르'},
-  {code:'TND',symbol:'TND',name:'튀니지 디나르'},{code:'EGP',symbol:'E£',name:'이집트 파운드'},
-  {code:'SDG',symbol:'SDG',name:'수단 파운드'},{code:'GNF',symbol:'FG',name:'기니 프랑'},
-  {code:'GMD',symbol:'D',name:'감비아 달라시'},{code:'SLL',symbol:'Le',name:'시에라리온 레온'},
-  {code:'LRD',symbol:'L$',name:'라이베리아 달러'},{code:'NAD',symbol:'N$',name:'나미비아 달러'},
-  {code:'BWP',symbol:'P',name:'보츠와나 풀라'},{code:'ZMW',symbol:'ZK',name:'잠비아 콰차'},
-  {code:'MZN',symbol:'MT',name:'모잠비크 메티칼'},{code:'AOA',symbol:'Kz',name:'앙골라 콴자'},
-  {code:'CDF',symbol:'FC',name:'콩고 프랑'},{code:'MGA',symbol:'Ar',name:'마다가스카르 아리아리'},
-  {code:'MUR',symbol:'₨',name:'모리셔스 루피'},{code:'XOF',symbol:'CFA',name:'서아프리카 CFA 프랑'},
-  {code:'XAF',symbol:'CFA',name:'중앙아프리카 CFA 프랑'},{code:'FJD',symbol:'FJ$',name:'피지 달러'},
-  {code:'PGK',symbol:'K',name:'파푸아뉴기니 키나'},{code:'SBD',symbol:'SI$',name:'솔로몬 달러'},
-  {code:'TOP',symbol:'T$',name:'통가 파앙아'},{code:'WST',symbol:'WS$',name:'사모아 탈라'},
-  {code:'VUV',symbol:'VT',name:'바누아투 바투'},{code:'XPF',symbol:'CFP',name:'태평양 프랑'},
+  {code:'KRW',symbol:'₩',name:'South Korean Won'},{code:'USD',symbol:'$',name:'US Dollar'},
+  {code:'EUR',symbol:'€',name:'Euro'},{code:'JPY',symbol:'¥',name:'Japanese Yen'},
+  {code:'GBP',symbol:'£',name:'British Pound'},{code:'CNY',symbol:'¥',name:'Chinese Yuan'},
+  {code:'HKD',symbol:'HK$',name:'Hong Kong Dollar'},{code:'TWD',symbol:'NT$',name:'Taiwan Dollar'},
+  {code:'SGD',symbol:'S$',name:'Singapore Dollar'},{code:'AUD',symbol:'A$',name:'Australian Dollar'},
+  {code:'CAD',symbol:'CA$',name:'Canadian Dollar'},{code:'CHF',symbol:'Fr',name:'Swiss Franc'},
+  {code:'SEK',symbol:'kr',name:'Swedish Krona'},{code:'NOK',symbol:'kr',name:'Norwegian Krone'},
+  {code:'DKK',symbol:'kr',name:'Danish Krone'},{code:'NZD',symbol:'NZ$',name:'New Zealand Dollar'},
+  {code:'THB',symbol:'฿',name:'Thai Baht'},{code:'MYR',symbol:'RM',name:'Malaysian Ringgit'},
+  {code:'IDR',symbol:'Rp',name:'Indonesian Rupiah'},{code:'PHP',symbol:'₱',name:'Philippine Peso'},
+  {code:'VND',symbol:'₫',name:'Vietnamese Dong'},{code:'INR',symbol:'₹',name:'Indian Rupee'},
+  {code:'PKR',symbol:'₨',name:'Pakistani Rupee'},{code:'BDT',symbol:'৳',name:'Bangladeshi Taka'},
+  {code:'LKR',symbol:'₨',name:'Sri Lankan Rupee'},{code:'NPR',symbol:'₨',name:'Nepalese Rupee'},
+  {code:'MMK',symbol:'K',name:'Myanmar Kyat'},{code:'KHR',symbol:'៛',name:'Cambodian Riel'},
+  {code:'LAK',symbol:'₭',name:'Lao Kip'},{code:'MNT',symbol:'₮',name:'Mongolian Tögrög'},
+  {code:'BND',symbol:'B$',name:'Brunei Dollar'},{code:'MOP',symbol:'P',name:'Macanese Pataca'},
+  {code:'MVR',symbol:'Rf',name:'Maldivian Rufiyaa'},
+  {code:'MXN',symbol:'MX$',name:'Mexican Peso'},{code:'BRL',symbol:'R$',name:'Brazilian Real'},
+  {code:'ARS',symbol:'$',name:'Argentine Peso'},{code:'CLP',symbol:'$',name:'Chilean Peso'},
+  {code:'COP',symbol:'$',name:'Colombian Peso'},{code:'PEN',symbol:'S/',name:'Peruvian Sol'},
+  {code:'UYU',symbol:'$U',name:'Uruguayan Peso'},{code:'BOB',symbol:'Bs',name:'Bolivian Boliviano'},
+  {code:'PYG',symbol:'₲',name:'Paraguayan Guaraní'},{code:'VES',symbol:'Bs.S',name:'Venezuelan Bolívar'},
+  {code:'GYD',symbol:'G$',name:'Guyanese Dollar'},{code:'TTD',symbol:'TT$',name:'Trinidad Dollar'},
+  {code:'JMD',symbol:'J$',name:'Jamaican Dollar'},{code:'DOP',symbol:'RD$',name:'Dominican Peso'},
+  {code:'HTG',symbol:'G',name:'Haitian Gourde'},{code:'GTQ',symbol:'Q',name:'Guatemalan Quetzal'},
+  {code:'HNL',symbol:'L',name:'Honduran Lempira'},{code:'NIO',symbol:'C$',name:'Nicaraguan Córdoba'},
+  {code:'CRC',symbol:'₡',name:'Costa Rican Colón'},{code:'PAB',symbol:'B/.',name:'Panamanian Balboa'},
+  {code:'BSD',symbol:'B$',name:'Bahamian Dollar'},{code:'BBD',symbol:'Bds$',name:'Barbadian Dollar'},
+  {code:'XCD',symbol:'EC$',name:'East Caribbean Dollar'},{code:'CUP',symbol:'$',name:'Cuban Peso'},
+  {code:'RUB',symbol:'₽',name:'Russian Ruble'},{code:'UAH',symbol:'₴',name:'Ukrainian Hryvnia'},
+  {code:'PLN',symbol:'zł',name:'Polish Złoty'},{code:'CZK',symbol:'Kč',name:'Czech Koruna'},
+  {code:'HUF',symbol:'Ft',name:'Hungarian Forint'},{code:'RON',symbol:'lei',name:'Romanian Leu'},
+  {code:'BGN',symbol:'лв',name:'Bulgarian Lev'},{code:'ISK',symbol:'kr',name:'Icelandic Króna'},
+  {code:'HRK',symbol:'kn',name:'Croatian Kuna'},{code:'RSD',symbol:'din',name:'Serbian Dinar'},
+  {code:'ALL',symbol:'L',name:'Albanian Lek'},{code:'MKD',symbol:'ден',name:'Macedonian Denar'},
+  {code:'BAM',symbol:'KM',name:'Bosnia Mark'},{code:'MDL',symbol:'L',name:'Moldovan Leu'},
+  {code:'BYN',symbol:'Br',name:'Belarusian Ruble'},{code:'KZT',symbol:'₸',name:'Kazakhstani Tenge'},
+  {code:'UZS',symbol:'сум',name:'Uzbekistani Som'},{code:'AZN',symbol:'₼',name:'Azerbaijani Manat'},
+  {code:'GEL',symbol:'₾',name:'Georgian Lari'},{code:'AMD',symbol:'֏',name:'Armenian Dram'},
+  {code:'TJS',symbol:'SM',name:'Tajikistani Somoni'},{code:'TMT',symbol:'T',name:'Turkmenistan Manat'},
+  {code:'KGS',symbol:'с',name:'Kyrgyzstani Som'},{code:'TRY',symbol:'₺',name:'Turkish Lira'},
+  {code:'SAR',symbol:'SR',name:'Saudi Riyal'},{code:'AED',symbol:'AED',name:'UAE Dirham'},
+  {code:'KWD',symbol:'KD',name:'Kuwaiti Dinar'},{code:'BHD',symbol:'BD',name:'Bahraini Dinar'},
+  {code:'OMR',symbol:'OMR',name:'Omani Rial'},{code:'QAR',symbol:'QR',name:'Qatari Riyal'},
+  {code:'JOD',symbol:'JD',name:'Jordanian Dinar'},{code:'ILS',symbol:'₪',name:'Israeli Shekel'},
+  {code:'LBP',symbol:'L£',name:'Lebanese Pound'},{code:'IRR',symbol:'﷼',name:'Iranian Rial'},
+  {code:'IQD',symbol:'IQD',name:'Iraqi Dinar'},{code:'AFN',symbol:'؋',name:'Afghan Afghani'},
+  {code:'ZAR',symbol:'R',name:'South African Rand'},{code:'NGN',symbol:'₦',name:'Nigerian Naira'},
+  {code:'KES',symbol:'KSh',name:'Kenyan Shilling'},{code:'GHS',symbol:'GH₵',name:'Ghanaian Cedi'},
+  {code:'ETB',symbol:'Br',name:'Ethiopian Birr'},{code:'TZS',symbol:'TSh',name:'Tanzanian Shilling'},
+  {code:'UGX',symbol:'USh',name:'Ugandan Shilling'},{code:'RWF',symbol:'FRw',name:'Rwandan Franc'},
+  {code:'MAD',symbol:'MAD',name:'Moroccan Dirham'},{code:'DZD',symbol:'DZD',name:'Algerian Dinar'},
+  {code:'TND',symbol:'TND',name:'Tunisian Dinar'},{code:'EGP',symbol:'E£',name:'Egyptian Pound'},
+  {code:'SDG',symbol:'SDG',name:'Sudanese Pound'},{code:'GNF',symbol:'FG',name:'Guinean Franc'},
+  {code:'GMD',symbol:'D',name:'Gambian Dalasi'},{code:'SLL',symbol:'Le',name:'Sierra Leonean Leone'},
+  {code:'LRD',symbol:'L$',name:'Liberian Dollar'},{code:'NAD',symbol:'N$',name:'Namibian Dollar'},
+  {code:'BWP',symbol:'P',name:'Botswana Pula'},{code:'ZMW',symbol:'ZK',name:'Zambian Kwacha'},
+  {code:'MZN',symbol:'MT',name:'Mozambican Metical'},{code:'AOA',symbol:'Kz',name:'Angolan Kwanza'},
+  {code:'CDF',symbol:'FC',name:'Congolese Franc'},{code:'MGA',symbol:'Ar',name:'Malagasy Ariary'},
+  {code:'MUR',symbol:'₨',name:'Mauritian Rupee'},{code:'XOF',symbol:'CFA',name:'West African CFA Franc'},
+  {code:'XAF',symbol:'CFA',name:'Central African CFA Franc'},{code:'FJD',symbol:'FJ$',name:'Fijian Dollar'},
+  {code:'PGK',symbol:'K',name:'Papua New Guinean Kina'},{code:'SBD',symbol:'SI$',name:'Solomon Islands Dollar'},
+  {code:'TOP',symbol:'T$',name:'Tongan Paʻanga'},{code:'WST',symbol:'WS$',name:'Samoan Tālā'},
+  {code:'VUV',symbol:'VT',name:'Vanuatu Vatu'},{code:'XPF',symbol:'CFP',name:'CFP Franc'},
 ];
+// 언어별 통화명 (현재 선택 언어에 맞게 표시)
+const CURRENCY_NAMES_KO = {
+  KRW:'대한민국 원',USD:'미국 달러',EUR:'유로',JPY:'일본 엔',GBP:'영국 파운드',CNY:'중국 위안',
+  HKD:'홍콩 달러',TWD:'대만 달러',SGD:'싱가포르 달러',AUD:'호주 달러',CAD:'캐나다 달러',CHF:'스위스 프랑',
+  SEK:'스웨덴 크로나',NOK:'노르웨이 크로네',DKK:'덴마크 크로네',NZD:'뉴질랜드 달러',
+  THB:'태국 바트',MYR:'말레이시아 링깃',IDR:'인도네시아 루피아',PHP:'필리핀 페소',VND:'베트남 동',INR:'인도 루피',
+  PKR:'파키스탄 루피',BDT:'방글라데시 타카',LKR:'스리랑카 루피',NPR:'네팔 루피',MMK:'미얀마 짯',
+  KHR:'캄보디아 리엘',LAK:'라오스 킵',MNT:'몽골 투그릭',BND:'브루나이 달러',MOP:'마카오 파타카',MVR:'몰디브 루피야',
+  MXN:'멕시코 페소',BRL:'브라질 헤알',ARS:'아르헨티나 페소',CLP:'칠레 페소',COP:'콜롬비아 페소',PEN:'페루 솔',
+  UYU:'우루과이 페소',BOB:'볼리비아 볼리비아노',PYG:'파라과이 과라니',VES:'베네수엘라 볼리바르',
+  GYD:'가이아나 달러',TTD:'트리니다드 달러',JMD:'자메이카 달러',DOP:'도미니카 페소',HTG:'아이티 구르드',
+  GTQ:'과테말라 케찰',HNL:'온두라스 렘피라',NIO:'니카라과 코르도바',CRC:'코스타리카 콜론',PAB:'파나마 발보아',
+  BSD:'바하마 달러',BBD:'바베이도스 달러',XCD:'동카리브 달러',CUP:'쿠바 페소',
+  RUB:'러시아 루블',UAH:'우크라이나 흐리우냐',PLN:'폴란드 즐로티',CZK:'체코 코루나',HUF:'헝가리 포린트',
+  RON:'루마니아 레우',BGN:'불가리아 레프',ISK:'아이슬란드 크로나',HRK:'크로아티아 쿠나',RSD:'세르비아 디나르',
+  ALL:'알바니아 레크',MKD:'북마케도니아 데나르',BAM:'보스니아 마르크',MDL:'몰도바 레우',BYN:'벨라루스 루블',
+  KZT:'카자흐스탄 텡게',UZS:'우즈베키스탄 숨',AZN:'아제르바이잔 마나트',GEL:'조지아 라리',AMD:'아르메니아 드람',
+  TJS:'타지키스탄 소모니',TMT:'투르크메니스탄 마나트',KGS:'키르기스스탄 솜',TRY:'터키 리라',
+  SAR:'사우디아라비아 리얄',AED:'아랍에미리트 디르함',KWD:'쿠웨이트 디나르',BHD:'바레인 디나르',
+  OMR:'오만 리알',QAR:'카타르 리얄',JOD:'요르단 디나르',ILS:'이스라엘 세켈',LBP:'레바논 파운드',
+  IRR:'이란 리알',IQD:'이라크 디나르',AFN:'아프가니스탄 아프가니',
+  ZAR:'남아프리카공화국 랜드',NGN:'나이지리아 나이라',KES:'케냐 실링',GHS:'가나 세디',ETB:'에티오피아 비르',
+  TZS:'탄자니아 실링',UGX:'우간다 실링',RWF:'르완다 프랑',MAD:'모로코 디르함',DZD:'알제리 디나르',
+  TND:'튀니지 디나르',EGP:'이집트 파운드',SDG:'수단 파운드',GNF:'기니 프랑',GMD:'감비아 달라시',
+  SLL:'시에라리온 리온',LRD:'라이베리아 달러',NAD:'나미비아 달러',BWP:'보츠와나 풀라',ZMW:'잠비아 콰차',
+  MZN:'모잠비크 메티칼',AOA:'앙골라 콴자',CDF:'콩고 프랑',MGA:'마다가스카르 아리아리',MUR:'모리셔스 루피',
+  XOF:'서아프리카 CFA 프랑',XAF:'중앙아프리카 CFA 프랑',
+  FJD:'피지 달러',PGK:'파푸아뉴기니 키나',SBD:'솔로몬 제도 달러',TOP:'통가 파앙가',WST:'사모아 탈라',VUV:'바누아투 바투',XPF:'CFP 프랑',
+};
+const CURRENCY_NAMES_JA = {
+  KRW:'韓国ウォン',USD:'米ドル',EUR:'ユーロ',JPY:'日本円',GBP:'英国ポンド',CNY:'中国人民元',
+  HKD:'香港ドル',TWD:'台湾ドル',SGD:'シンガポールドル',AUD:'オーストラリアドル',CAD:'カナダドル',CHF:'スイスフラン',
+  SEK:'スウェーデンクローナ',NOK:'ノルウェークローネ',DKK:'デンマーククローネ',NZD:'ニュージーランドドル',
+  THB:'タイバーツ',MYR:'マレーシアリンギット',IDR:'インドネシアルピア',PHP:'フィリピンペソ',VND:'ベトナムドン',INR:'インドルピー',
+  PKR:'パキスタンルピー',BDT:'バングラデシュタカ',LKR:'スリランカルピー',NPR:'ネパールルピー',MMK:'ミャンマーチャット',
+  KHR:'カンボジアリエル',LAK:'ラオスキープ',MNT:'モンゴルトゥグルク',BND:'ブルネイドル',MOP:'マカオパタカ',MVR:'モルディブルフィヤ',
+  MXN:'メキシコペソ',BRL:'ブラジルレアル',ARS:'アルゼンチンペソ',CLP:'チリペソ',COP:'コロンビアペソ',PEN:'ペルーソル',
+  UYU:'ウルグアイペソ',BOB:'ボリビアボリビアーノ',PYG:'パラグアイグアラニ',VES:'ベネズエラボリバル',
+  GYD:'ガイアナドル',TTD:'トリニダードドル',JMD:'ジャマイカドル',DOP:'ドミニカペソ',HTG:'ハイチグルド',
+  GTQ:'グアテマラケツァル',HNL:'ホンジュラスレンピラ',NIO:'ニカラグアコルドバ',CRC:'コスタリカコロン',PAB:'パナマバルボア',
+  BSD:'バハマドル',BBD:'バルバドスドル',XCD:'東カリブドル',CUP:'キューバペソ',
+  RUB:'ロシアルーブル',UAH:'ウクライナフリヴニャ',PLN:'ポーランドズウォティ',CZK:'チェココルナ',HUF:'ハンガリーフォリント',
+  RON:'ルーマニアレウ',BGN:'ブルガリアレフ',ISK:'アイスランドクローナ',HRK:'クロアチアクーナ',RSD:'セルビアディナール',
+  ALL:'アルバニアレク',MKD:'北マケドニアデナール',BAM:'ボスニアマルク',MDL:'モルドバレウ',BYN:'ベラルーシルーブル',
+  KZT:'カザフスタンテンゲ',UZS:'ウズベキスタンスム',AZN:'アゼルバイジャンマナト',GEL:'ジョージアラリ',AMD:'アルメニアドラム',
+  TJS:'タジキスタンソモニ',TMT:'トルクメニスタンマナト',KGS:'キルギスソム',TRY:'トルコリラ',
+  SAR:'サウジアラビアリヤル',AED:'アラブ首長国連邦ディルハム',KWD:'クウェートディナール',BHD:'バーレーンディナール',
+  OMR:'オマーンリアル',QAR:'カタールリヤル',JOD:'ヨルダンディナール',ILS:'イスラエルシェケル',LBP:'レバノンポンド',
+  IRR:'イランリアル',IQD:'イラクディナール',AFN:'アフガニスタンアフガニ',
+  ZAR:'南アフリカランド',NGN:'ナイジェリアナイラ',KES:'ケニアシリング',GHS:'ガーナセディ',ETB:'エチオピアブル',
+  TZS:'タンザニアシリング',UGX:'ウガンダシリング',RWF:'ルワンダフラン',MAD:'モロッコディルハム',DZD:'アルジェリアディナール',
+  TND:'チュニジアディナール',EGP:'エジプトポンド',SDG:'スーダンポンド',GNF:'ギニアフラン',GMD:'ガンビアダラシ',
+  SLL:'シエラレオネレオン',LRD:'リベリアドル',NAD:'ナミビアドル',BWP:'ボツワナプラ',ZMW:'ザンビアクワチャ',
+  MZN:'モザンビークメティカル',AOA:'アンゴラクワンザ',CDF:'コンゴフラン',MGA:'マダガスカルアリアリ',MUR:'モーリシャスルピー',
+  XOF:'西アフリカCFAフラン',XAF:'中央アフリカCFAフラン',
+  FJD:'フィジードル',PGK:'パプアニューギニアキナ',SBD:'ソロモン諸島ドル',TOP:'トンガパアンガ',WST:'サモアタラ',VUV:'バヌアツバツ',XPF:'CFPフラン',
+};
+const CURRENCY_NAMES_ZH = {
+  KRW:'韩国韩元',USD:'美元',EUR:'欧元',JPY:'日元',GBP:'英镑',CNY:'人民币',
+  HKD:'港元',TWD:'台湾新台币',SGD:'新加坡元',AUD:'澳大利亚元',CAD:'加拿大元',CHF:'瑞士法郎',
+  SEK:'瑞典克朗',NOK:'挪威克朗',DKK:'丹麦克朗',NZD:'新西兰元',
+  THB:'泰铢',MYR:'马来西亚林吉特',IDR:'印度尼西亚卢比',PHP:'菲律宾比索',VND:'越南盾',INR:'印度卢比',
+  PKR:'巴基斯坦卢比',BDT:'孟加拉塔卡',LKR:'斯里兰卡卢比',NPR:'尼泊尔卢比',MMK:'缅甸缅元',
+  KHR:'柬埔寨瑞尔',LAK:'老挝基普',MNT:'蒙古图格里克',BND:'文莱元',MOP:'澳门元',MVR:'马尔代夫拉菲亚',
+  MXN:'墨西哥比索',BRL:'巴西雷亚尔',ARS:'阿根廷比索',CLP:'智利比索',COP:'哥伦比亚比索',PEN:'秘鲁索尔',
+  UYU:'乌拉圭比索',BOB:'玻利维亚玻利维亚诺',PYG:'巴拉圭瓜拉尼',VES:'委内瑞拉博利瓦尔',
+  GYD:'圭亚那元',TTD:'特立尼达元',JMD:'牙买加元',DOP:'多米尼加比索',HTG:'海地古德',
+  GTQ:'危地马拉格查尔',HNL:'洪都拉斯伦皮拉',NIO:'尼加拉瓜科多巴',CRC:'哥斯达黎加科朗',PAB:'巴拿马巴波亚',
+  BSD:'巴哈马元',BBD:'巴巴多斯元',XCD:'东加勒比元',CUP:'古巴比索',
+  RUB:'俄罗斯卢布',UAH:'乌克兰格里夫纳',PLN:'波兰兹罗提',CZK:'捷克克朗',HUF:'匈牙利福林',
+  RON:'罗马尼亚列伊',BGN:'保加利亚列弗',ISK:'冰岛克朗',HRK:'克罗地亚库纳',RSD:'塞尔维亚第纳尔',
+  ALL:'阿尔巴尼亚列克',MKD:'北马其顿代纳尔',BAM:'波斯尼亚马克',MDL:'摩尔多瓦列伊',BYN:'白俄罗斯卢布',
+  KZT:'哈萨克斯坦坚戈',UZS:'乌兹别克斯坦苏姆',AZN:'阿塞拜疆马纳特',GEL:'格鲁吉亚拉里',AMD:'亚美尼亚德拉姆',
+  TJS:'塔吉克斯坦索莫尼',TMT:'土库曼斯坦马纳特',KGS:'吉尔吉斯斯坦索姆',TRY:'土耳其里拉',
+  SAR:'沙特里亚尔',AED:'阿联酋迪拉姆',KWD:'科威特第纳尔',BHD:'巴林第纳尔',
+  OMR:'阿曼里亚尔',QAR:'卡塔尔里亚尔',JOD:'约旦第纳尔',ILS:'以色列谢克尔',LBP:'黎巴嫩镑',
+  IRR:'伊朗里亚尔',IQD:'伊拉克第纳尔',AFN:'阿富汗阿富汗尼',
+  ZAR:'南非兰特',NGN:'尼日利亚奈拉',KES:'肯尼亚先令',GHS:'加纳塞地',ETB:'埃塞俄比亚比尔',
+  TZS:'坦桑尼亚先令',UGX:'乌干达先令',RWF:'卢旺达法郎',MAD:'摩洛哥迪拉姆',DZD:'阿尔及利亚第纳尔',
+  TND:'突尼斯第纳尔',EGP:'埃及镑',SDG:'苏丹镑',GNF:'几内亚法郎',GMD:'冈比亚达拉西',
+  SLL:'塞拉利昂利昂',LRD:'利比里亚元',NAD:'纳米比亚元',BWP:'博茨瓦纳普拉',ZMW:'赞比亚克瓦查',
+  MZN:'莫桑比克梅蒂卡尔',AOA:'安哥拉宽扎',CDF:'刚果法郎',MGA:'马达加斯加阿里亚里',MUR:'毛里求斯卢比',
+  XOF:'西非CFA法郎',XAF:'中非CFA法郎',
+  FJD:'斐济元',PGK:'巴布亚新几内亚基那',SBD:'所罗门群岛元',TOP:'汤加帕兰加',WST:'萨摩亚塔拉',VUV:'瓦努阿图瓦图',XPF:'CFP法郎',
+};
+const CURRENCY_NAMES_ES = {
+  KRW:'Won surcoreano',USD:'Dólar estadounidense',EUR:'Euro',JPY:'Yen japonés',GBP:'Libra esterlina',CNY:'Yuan chino',
+  HKD:'Dólar de Hong Kong',TWD:'Dólar taiwanés',SGD:'Dólar de Singapur',AUD:'Dólar australiano',CAD:'Dólar canadiense',CHF:'Franco suizo',
+  SEK:'Corona sueca',NOK:'Corona noruega',DKK:'Corona danesa',NZD:'Dólar neozelandés',
+  THB:'Baht tailandés',MYR:'Ringgit malayo',IDR:'Rupia indonesia',PHP:'Peso filipino',VND:'Dong vietnamita',INR:'Rupia india',
+  PKR:'Rupia pakistaní',BDT:'Taka bangladesí',LKR:'Rupia de Sri Lanka',NPR:'Rupia nepalesa',MMK:'Kyat birmano',
+  KHR:'Riel camboyano',LAK:'Kip laosiano',MNT:'Tugrik mongol',BND:'Dólar de Brunéi',MOP:'Pataca macaense',MVR:'Rufiyaa maldiva',
+  MXN:'Peso mexicano',BRL:'Real brasileño',ARS:'Peso argentino',CLP:'Peso chileno',COP:'Peso colombiano',PEN:'Sol peruano',
+  UYU:'Peso uruguayo',BOB:'Boliviano',PYG:'Guaraní paraguayo',VES:'Bolívar venezolano',
+  GYD:'Dólar guyanés',TTD:'Dólar de Trinidad',JMD:'Dólar jamaicano',DOP:'Peso dominicano',HTG:'Gourde haitiano',
+  GTQ:'Quetzal guatemalteco',HNL:'Lempira hondureño',NIO:'Córdoba nicaragüense',CRC:'Colón costarricense',PAB:'Balboa panameño',
+  BSD:'Dólar bahameño',BBD:'Dólar de Barbados',XCD:'Dólar del Caribe Oriental',CUP:'Peso cubano',
+  RUB:'Rublo ruso',UAH:'Grivna ucraniana',PLN:'Esloti polaco',CZK:'Corona checa',HUF:'Forinto húngaro',
+  RON:'Leu rumano',BGN:'Lev búlgaro',ISK:'Corona islandesa',HRK:'Kuna croata',RSD:'Dinar serbio',
+  ALL:'Lek albanés',MKD:'Denar macedonio',BAM:'Marco de Bosnia',MDL:'Leu moldavo',BYN:'Rublo bielorruso',
+  KZT:'Tenge kazajo',UZS:'Som uzbeko',AZN:'Manat azerbaiyano',GEL:'Lari georgiano',AMD:'Dram armenio',
+  TJS:'Somoni tayiko',TMT:'Manat turcomano',KGS:'Som kirguís',TRY:'Lira turca',
+  SAR:'Riyal saudí',AED:'Dírham emiratí',KWD:'Dinar kuwaití',BHD:'Dinar bareiní',
+  OMR:'Rial omaní',QAR:'Riyal catarí',JOD:'Dinar jordano',ILS:'Séquel israelí',LBP:'Libra libanesa',
+  IRR:'Rial iraní',IQD:'Dinar iraquí',AFN:'Afgani afgano',
+  ZAR:'Rand sudafricano',NGN:'Naira nigeriana',KES:'Chelín keniano',GHS:'Cedi ghanés',ETB:'Birr etíope',
+  TZS:'Chelín tanzano',UGX:'Chelín ugandés',RWF:'Franco ruandés',MAD:'Dírham marroquí',DZD:'Dinar argelino',
+  TND:'Dinar tunecino',EGP:'Libra egipcia',SDG:'Libra sudanesa',GNF:'Franco guineano',GMD:'Dalasi gambiano',
+  SLL:'Leone de Sierra Leona',LRD:'Dólar liberiano',NAD:'Dólar namibio',BWP:'Pula botsuanesa',ZMW:'Kwacha zambiano',
+  MZN:'Metical mozambiqueño',AOA:'Kwanza angoleño',CDF:'Franco congoleño',MGA:'Ariary malgache',MUR:'Rupia mauriciana',
+  XOF:'Franco CFA de África Occidental',XAF:'Franco CFA de África Central',
+  FJD:'Dólar fiyiano',PGK:'Kina de Papúa Nueva Guinea',SBD:'Dólar de las Islas Salomón',TOP:'Paʻanga tongano',WST:'Tālā samoano',VUV:'Vatu vanuatense',XPF:'Franco CFP',
+};
+function getCurrLocalName(c) {
+  const lang = (typeof LANG_SK !== 'undefined' ? localStorage.getItem(LANG_SK) : null) || '한국어';
+  const code = (typeof LANG_CODE_MAP !== 'undefined' ? LANG_CODE_MAP[lang] : null) || 'ko';
+  if (code === 'ko') return CURRENCY_NAMES_KO[c.code] || c.name;
+  if (code === 'ja') return CURRENCY_NAMES_JA[c.code] || c.name;
+  if (code === 'zh') return CURRENCY_NAMES_ZH[c.code] || c.name;
+  if (code === 'es') return CURRENCY_NAMES_ES[c.code] || c.name;
+  return c.name;
+}
 function getCurrSymbol() {
   try { const c = JSON.parse(localStorage.getItem(CURRENCY_SK)); return (c && c.symbol) ? c.symbol : '₩'; } catch { return '₩'; }
 }
@@ -2839,6 +2973,7 @@ function toggleCalendar() {
   if (calVisible) {
     goTab('ledger');
   } else {
+    closeInlineSearch();
     closeSurvModal();
     goTab('calendar');
   }
@@ -3596,12 +3731,12 @@ function renderReport() {
   const prevExp  = prevExps.reduce((s,t) => s + t.amount, 0);
 
   const RS_WIDGET_HTML = {
-    trend: `<div class="rs-header"><div class="rs-trend-label">6개월 지출 트렌드</div><div id="rsTrendChart"></div><div class="rs-header-compare" id="rsCompare"></div></div>`,
-    top3:  `<div class="rs-card"><div class="rs-card-label">카테고리 TOP 3</div><div class="rs-top3-layout"><div class="rs-donut-wrap"><svg id="rsDonutSvg" viewBox="0 0 36 36"></svg><div class="rs-donut-center" id="rsDonutCenter"></div></div><div class="rs-top3-list" id="rsTop3List"></div></div></div>`,
-    dow:   `<div class="rs-card"><div class="rs-card-label">요일별 소비 패턴</div><div class="rs-dow-bars" id="rsDowBars"></div><div class="rs-dow-insight" id="rsDowInsight"></div></div>`,
-    week:  `<div class="rs-card"><div class="rs-card-label">주별 지출</div><div id="rsWeekBars"></div></div>`,
-    vs:    `<div class="rs-card"><div class="rs-card-label">수입 VS 지출</div><div id="rsVsBar"></div></div>`,
-    davg:  `<div class="rs-card"><div class="rs-card-label">일평균 지출</div><div id="rsDavgCard"></div></div>`,
+    trend: `<div class="rs-header"><div class="rs-trend-label" data-i18n="rs.trend">6개월 지출 트렌드</div><div id="rsTrendChart"></div><div class="rs-header-compare" id="rsCompare"></div></div>`,
+    top3:  `<div class="rs-card"><div class="rs-card-label" data-i18n="wdef.top3cats">카테고리 TOP 3</div><div class="rs-top3-layout"><div class="rs-donut-wrap"><svg id="rsDonutSvg" viewBox="0 0 36 36"></svg><div class="rs-donut-center" id="rsDonutCenter"></div></div><div class="rs-top3-list" id="rsTop3List"></div></div></div>`,
+    dow:   `<div class="rs-card"><div class="rs-card-label" data-i18n="wdef.dayofweek">요일별 소비 패턴</div><div class="rs-dow-bars" id="rsDowBars"></div><div class="rs-dow-insight" id="rsDowInsight"></div></div>`,
+    week:  `<div class="rs-card"><div class="rs-card-label" data-i18n="rs.week">주별 지출</div><div id="rsWeekBars"></div></div>`,
+    vs:    `<div class="rs-card"><div class="rs-card-label" data-i18n="rs.vs">수입 VS 지출</div><div id="rsVsBar"></div></div>`,
+    davg:  `<div class="rs-card"><div class="rs-card-label" data-i18n="wdef.dailyavg">일평균 지출</div><div id="rsDavgCard"></div></div>`,
   };
   const rsOrder  = _getRsOrder();
   const rsHidden = _getRsHidden();
@@ -3610,9 +3745,9 @@ function renderReport() {
     const inner = RS_WIDGET_HTML[id] || '';
     const menu = `
       <div class="rs-dots-menu" id="rsDots_${id}">
-        <button onclick="rsMoveWidget('${id}',-1)">↑ 위로</button>
-        <button onclick="rsMoveWidget('${id}',1)">↓ 아래로</button>
-        <button class="rs-del-btn" onclick="rsDeleteWidget('${id}')">🗑 삭제</button>
+        <button onclick="rsMoveWidget('${id}',-1)">${tr('wpop.moveUp')}</button>
+        <button onclick="rsMoveWidget('${id}',1)">${tr('wpop.moveDown')}</button>
+        <button class="rs-del-btn" onclick="rsDeleteWidget('${id}')">${tr('wpop.delete')}</button>
       </div>`;
     return `<div class="rs-widget-wrap${id==='trend'?' rs-hdr-wrap':''}" data-wid="${id}">${inner}<button class="rs-dots-btn" onclick="rsToggleDots(event,'${id}')">···</button>${menu}</div>`;
   }).join('');
@@ -3625,17 +3760,17 @@ function renderReport() {
   const pct  = prevExp > 0 ? Math.round(Math.abs(diff) / prevExp * 100) : null;
   let eyebrow, compareText;
   if (prevExp === 0 && thisExp === 0) {
-    eyebrow = '🌱 소비 기록 없음'; compareText = '이번 달 지출이 없어요';
+    eyebrow = '🌱'; compareText = tr('rs.cmp.noData');
   } else if (prevExp === 0) {
-    eyebrow = '🎉 첫 기록'; compareText = '지난달 데이터가 없어요';
+    eyebrow = '🎉'; compareText = tr('rs.cmp.noLast');
   } else if (diff < 0) {
-    eyebrow = pct >= 30 ? '💚 절약 고수!' : '🎉 잘 아끼고 있어요';
-    compareText = `지난달보다 ${pct}% 아꼈어요! ${fmt(-diff)} 절약`;
+    eyebrow = pct >= 30 ? '💚' : '🎉';
+    compareText = tr('rs.cmp.saved').replace('{pct}',pct).replace('{amt}',fmt(-diff));
   } else if (diff === 0) {
-    eyebrow = '😐 지난달과 동일'; compareText = '지난달과 지출이 같아요';
+    eyebrow = '😐'; compareText = tr('rs.cmp.same');
   } else {
-    eyebrow = pct >= 50 ? '🔴 지출 주의' : pct >= 20 ? '📈 지출 증가' : '📊 소폭 증가';
-    compareText = `지난달보다 ${pct}% 더 썼어요 (${fmt(diff)})`;
+    eyebrow = pct >= 50 ? '🔴' : pct >= 20 ? '📈' : '📊';
+    compareText = tr('rs.cmp.more').replace('{pct}',pct).replace('{amt}',fmt(diff));
   }
   document.getElementById('rsCompare').textContent = compareText;
 
@@ -3648,7 +3783,8 @@ function renderReport() {
       const mData = monthOf(key);
       const exp = mData.filter(t => t.type==='expense').reduce((s,t) => s+t.amount, 0);
       const inc = mData.filter(t => t.type==='income').reduce((s,t) => s+t.amount, 0);
-      months.push({ label: `${d.getMonth()+1}월`, exp, inc });
+      const _locale = LANG_CODE_MAP[localStorage.getItem(LANG_SK)||'한국어']||'ko';
+      months.push({ label: d.toLocaleString(_locale, {month:'short'}), exp, inc });
     }
     const maxVal = Math.max(...months.map(m => Math.max(m.exp, m.inc)), 1);
     const W = 280, H = 64, PAD = 10;
@@ -3680,8 +3816,8 @@ function renderReport() {
     }).join('');
     document.getElementById('rsTrendChart').innerHTML =
       `<div style="display:flex;justify-content:flex-end;gap:12px;margin-bottom:6px">
-        <span style="font-size:11px;font-weight:700;color:#ff0044">● 지출</span>
-        <span style="font-size:11px;font-weight:700;color:#00ff6a">● 수입</span>
+        <span style="font-size:11px;font-weight:700;color:#ff0044">● ${tr('lbl.expense')}</span>
+        <span style="font-size:11px;font-weight:700;color:#00ff6a">● ${tr('lbl.income')}</span>
       </div>
       <svg class="rs-trend-svg" viewBox="0 0 ${W} ${H+18}" height="85">
         <defs>
@@ -3738,7 +3874,8 @@ function renderReport() {
   }
 
   // ── 3. Day of Week ───────────────────────────────────────────
-  const SLOTS = [{l:'월',js:1},{l:'화',js:2},{l:'수',js:3},{l:'목',js:4},{l:'금',js:5},{l:'토',js:6},{l:'일',js:0}];
+  const _DOW_I18N = ['day.mon','day.tue','day.wed','day.thu','day.fri','day.sat','day.sun'];
+  const SLOTS = [{l:tr('day.mon'),js:1},{l:tr('day.tue'),js:2},{l:tr('day.wed'),js:3},{l:tr('day.thu'),js:4},{l:tr('day.fri'),js:5},{l:tr('day.sat'),js:6},{l:tr('day.sun'),js:0}];
   const jsToSlot = {}; SLOTS.forEach((s,i) => { jsToSlot[s.js]=i; });
   const dowSum = [0,0,0,0,0,0,0], dowCnt = [0,0,0,0,0,0,0];
   thisExps.forEach(t => {
@@ -3762,8 +3899,8 @@ function renderReport() {
     return `<div class="rs-dow-col"><div class="rs-dow-bar-wrap" style="cursor:${dowSum[i]>0?'default':'auto'}">${isPeak?'<div class="rs-dow-crown">👑</div>':''}${tip}<div class="rs-dow-bar${isPeak?' rs-dow-peak':''}" style="height:${h}px;${colorStyle}"></div></div><div class="rs-dow-lbl${isPeak?' rs-dow-peak-lbl':''}">${s.l}</div></div>`;
   }).join('');
   const dowInsEl = document.getElementById('rsDowInsight');
-  if (!thisExps.length) { dowInsEl.textContent = '이번 달 지출 데이터가 없어요.'; }
-  else { dowInsEl.innerHTML = `${SLOTS[peakIdx].l}요일에 가장 많이 지출했어요 — <strong>${fmt(dowSum[peakIdx])}</strong>`; }
+  if (!thisExps.length) { dowInsEl.textContent = tr('rs.dowNoData'); }
+  else { dowInsEl.innerHTML = `${tr('rs.dowInsight').replace('{day}', SLOTS[peakIdx].l)} — <strong>${fmt(dowSum[peakIdx])}</strong>`; }
 
   // ── 4. 주별 지출 ────────────────────────────────────────────
   const WEEK_RANK_COLORS = ['#1E293B','#4A6FA5','#7BA7CC','#B8CDE0'];
@@ -3780,7 +3917,7 @@ function renderReport() {
   const weekEl = document.getElementById('rsWeekBars');
   if (weekEl) {
     const lastDay = new Date(wY, wM, 0).getDate();
-    const weekLabels = ['1주차','2주차','3주차','4주차'];
+    const weekLabels = [tr('rs.week1'),tr('rs.week2'),tr('rs.week3'),tr('rs.week4')];
     weekEl.innerHTML = weekSums.map((sum, i) => {
       if (i*7+1 > lastDay) return '';
       const pct = sum > 0 ? Math.max(4, Math.round(Math.cbrt(sum)/cbrtMaxWeek*100)) : 0;
@@ -3807,8 +3944,8 @@ function renderReport() {
         <div style="width:${expPct}%;background:#ef4444;border-radius:${expPct>98?'20px':'0 20px 20px 0'};height:100%;display:${thisExp===0?'none':'flex'}"></div>
       </div>
       <div class="rs-vs-labels">
-        <div><div class="rs-vs-lbl">수입</div><div class="rs-vs-amt" style="color:#16a34a">${fmt(thisInc)}</div></div>
-        <div style="text-align:right"><div class="rs-vs-lbl">지출</div><div class="rs-vs-amt" style="color:#dc2626">${fmt(thisExp)}</div></div>
+        <div><div class="rs-vs-lbl">${tr('lbl.income')}</div><div class="rs-vs-amt" style="color:#16a34a">${fmt(thisInc)}</div></div>
+        <div style="text-align:right"><div class="rs-vs-lbl">${tr('lbl.expense')}</div><div class="rs-vs-amt" style="color:#dc2626">${fmt(thisExp)}</div></div>
       </div>`;
   }
 
@@ -3831,7 +3968,7 @@ function renderReport() {
       const diffPct = Math.round((dailyAvg - prevDailyAvg) / prevDailyAvg * 100);
       const diffColor = diffPct <= 0 ? '#16a34a' : '#dc2626';
       const diffSign = diffPct > 0 ? '+' : '';
-      diffHtml = `<span style="font-size:12px;font-weight:700;color:${diffColor}">${diffSign}${diffPct}% 지난달 대비</span>`;
+      diffHtml = `<span style="font-size:12px;font-weight:700;color:${diffColor}">${diffSign}${diffPct}% ${tr('rs.prevMonthCmp')}</span>`;
     }
 
     const davgBarPct = prevDailyAvg > 0 ? Math.min(Math.round(dailyAvg / prevDailyAvg * 100), 200) : 100;
@@ -3846,17 +3983,19 @@ function renderReport() {
         <div style="width:${davgBarW}%;height:100%;background:${davgBarColor};border-radius:20px;transition:width .4s ease"></div>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <div style="font-size:11px;color:#9e9e9e">총 ${fmt(thisExp)} / ${elapsedDays}일 기준</div>
-        ${prevDailyAvg > 0 ? `<div style="font-size:11px;color:#9e9e9e">지난달 ${fmt(prevDailyAvg)}/일</div>` : ''}
+        <div style="font-size:11px;color:#9e9e9e">${tr('rs.davgTotal').replace('{amt}',fmt(thisExp)).replace('{n}',elapsedDays)}</div>
+        ${prevDailyAvg > 0 ? `<div style="font-size:11px;color:#9e9e9e">${tr('rs.davgPrev').replace('{amt}',fmt(prevDailyAvg))}</div>` : ''}
       </div>`;
   }
 
+  applyLang();
 }
 
 
 // ── 위젯 관리 ─────────────────────────────────────────────────
 const _RS_ALL = ['trend','top3','dow','week','vs','davg'];
-const _RS_LABELS = {trend:'6개월 지출 트렌드', top3:'카테고리 TOP 3', dow:'요일별 소비 패턴', week:'주별 지출', vs:'수입 VS 지출', davg:'일평균 지출'};
+const _RS_I18N = {trend:'rs.trend', top3:'wdef.top3cats', dow:'wdef.dayofweek', week:'rs.week', vs:'rs.vs', davg:'wdef.dailyavg'};
+function _rsLabel(id) { return _RS_I18N[id] ? tr(_RS_I18N[id]) : id; }
 function _getRsOrder()  { try { const o=JSON.parse(localStorage.getItem('rsOrder')); return Array.isArray(o)?o:[..._RS_ALL]; } catch{ return [..._RS_ALL]; } }
 function _getRsHidden() { try { const h=JSON.parse(localStorage.getItem('rsHidden')); return Array.isArray(h)?h:[]; } catch{ return []; } }
 function _saveRsOrder(o)  { localStorage.setItem('rsOrder', JSON.stringify(o)); }
@@ -3897,16 +4036,16 @@ function rsAddWidget(id) {
 function openRsAddModal() {
   document.getElementById('rsAddModal')?.remove();
   const hidden = _getRsHidden();
-  if (!hidden.length) { alert('숨겨진 위젯이 없어요'); return; }
+  if (!hidden.length) { alert(tr('report.noHidden')||'숨겨진 위젯이 없어요'); return; }
   const items = hidden.map(id => `
     <div class="rs-add-item">
-      <span class="rs-add-item-label">${_RS_LABELS[id]||id}</span>
-      <button class="rs-add-item-btn" onclick="rsAddWidget('${id}')">추가</button>
+      <span class="rs-add-item-label">${_rsLabel(id)}</span>
+      <button class="rs-add-item-btn" onclick="rsAddWidget('${id}')">${tr('report.addWidget')||'추가'}</button>
     </div>`).join('');
   const modal = document.createElement('div');
   modal.id = 'rsAddModal';
   modal.className = 'rs-add-modal-overlay';
-  modal.innerHTML = `<div class="rs-add-modal"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px"><span style="font-size:16px;font-weight:800;color:var(--text)">위젯 추가</span><button onclick="document.getElementById('rsAddModal').remove()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#9e9e9e;line-height:1">×</button></div>${items}</div>`;
+  modal.innerHTML = `<div class="rs-add-modal"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px"><span style="font-size:16px;font-weight:800;color:var(--text)">${tr('report.addWidget')||'위젯 추가'}</span><button onclick="document.getElementById('rsAddModal').remove()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#9e9e9e;line-height:1">×</button></div>${items}</div>`;
   modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
   document.body.appendChild(modal);
 }
@@ -4530,9 +4669,10 @@ const INCOME_ICON_OPTIONS = [
   { lu:'star',               bg:'#FF9800', label:'포상'     },
   { lu:'package',            bg:'#607D8B', label:'기타'     },
 ];
-let selectedCatIcon = { lu: 'package', bg: '#607D8B' };
-let selectedPayIcon = { lu: 'credit-card', bg: '#7C3AED' };
-let _iconPickerMode = 'cat'; // 'cat' | 'pay'
+let selectedCatIcon     = { lu: 'package', bg: '#607D8B' };
+let selectedCatEditIcon = { lu: 'package', bg: '#607D8B' };
+let selectedPayIcon     = { lu: 'credit-card', bg: '#7C3AED' };
+let _iconPickerMode = 'cat'; // 'cat' | 'cat-edit' | 'pay' | 'pay-edit'
 const ICON_LABEL_TR = {
   '음식':'ico.food','쇼핑':'ico.shopping','교통':'ico.transport','자동차':'ico.car',
   '주거':'ico.housing','건강':'ico.health','통신':'ico.telecom','문화':'ico.culture',
@@ -4553,9 +4693,12 @@ function trIconLabel(label) { const k = ICON_LABEL_TR[label]; return k ? tr(k) :
 
 function openIconPicker(mode) {
   _iconPickerMode = mode || 'cat';
-  const current = (_iconPickerMode === 'pay' || _iconPickerMode === 'pay-edit') ? selectedPayIcon : selectedCatIcon;
+  const current = (_iconPickerMode === 'pay' || _iconPickerMode === 'pay-edit') ? selectedPayIcon
+                : (_iconPickerMode === 'cat-edit') ? selectedCatEditIcon
+                : selectedCatIcon;
   let opts;
   if (_iconPickerMode === 'pay' || _iconPickerMode === 'pay-edit') opts = PAY_ICON_OPTIONS;
+  else if (_iconPickerMode === 'cat-edit') opts = catEditType === 'income' ? INCOME_ICON_OPTIONS : ICON_OPTIONS;
   else if (curType === 'income') opts = INCOME_ICON_OPTIONS;
   else opts = ICON_OPTIONS;
   const grid = document.getElementById('iconPickerGrid');
@@ -4576,13 +4719,17 @@ function onIconPickerBg(e) {
   if (e.target === document.getElementById('iconPickerOverlay')) closeIconPicker();
 }
 function selectIcon(idx) {
-  const opts = (_iconPickerMode === 'pay' || _iconPickerMode === 'pay-edit') ? PAY_ICON_OPTIONS : (curType === 'income' ? INCOME_ICON_OPTIONS : ICON_OPTIONS);
+  const opts = (_iconPickerMode === 'pay' || _iconPickerMode === 'pay-edit') ? PAY_ICON_OPTIONS
+             : (_iconPickerMode === 'cat-edit') ? (catEditType === 'income' ? INCOME_ICON_OPTIONS : ICON_OPTIONS)
+             : (curType === 'income' ? INCOME_ICON_OPTIONS : ICON_OPTIONS);
   const icon = opts[idx];
   let previewId;
   if (_iconPickerMode === 'pay') previewId = 'npIconPreview';
   else if (_iconPickerMode === 'pay-edit') previewId = 'peIconPreview';
+  else if (_iconPickerMode === 'cat-edit') previewId = 'ceIconPreview';
   else previewId = 'ncIconPreview';
   if (_iconPickerMode === 'pay' || _iconPickerMode === 'pay-edit') selectedPayIcon = icon;
+  else if (_iconPickerMode === 'cat-edit') selectedCatEditIcon = icon;
   else selectedCatIcon = icon;
   const preview = document.getElementById(previewId);
   if (preview) {
@@ -4635,7 +4782,7 @@ function renderCustomCatList() {
 }
 function deleteCustomCat(idx, name, id) {
   if (IS_LOGGED_IN) {
-    if (!confirm('"' + name + '" 카테고리를 삭제할까요?')) return;
+    if (!confirm(tr('cat.deleteConfirm').replace('{name}', name))) return;
     dbCats[curType] = (dbCats[curType]||[]).filter(c => String(c.id) !== String(id));
     buildCatSelect(curType);
     renderLedger();
@@ -4652,7 +4799,7 @@ function deleteCustomCat(idx, name, id) {
   } else {
     const catName = (customCats[curType] || [])[idx]?.name;
     if (!catName) return;
-    if (!confirm('"' + catName + '" 카테고리를 삭제할까요?')) return;
+    if (!confirm(tr('cat.deleteConfirm').replace('{name}', catName))) return;
     customCats[curType].splice(idx, 1);
     persistCats();
     buildCatSelect(curType);
@@ -4806,6 +4953,8 @@ function toggleInlineSearch() {
   if (inp.style.display === 'none') openInlineSearch(); else closeInlineSearch();
 }
 function openInlineSearch() {
+  if (calVisible) goTab('ledger');
+  closeSurvModal();
   document.querySelector('.header-title').style.display = 'none';
   const inp = document.getElementById('hdrSearchInput');
   inp.style.display = 'block';
@@ -4831,11 +4980,11 @@ function doInlineSearch(q) {
   if (!q) { renderLedger(); return; }
   const results = txs.filter(t =>
     (t.description||'').toLowerCase().includes(q) ||
-    (t.category||'').toLowerCase().includes(q) ||
-    String(t.amount).includes(q) ||
-    (t.payment||'').toLowerCase().includes(q)
+    dn(t.category||'', CAT_NAME_MAP).toLowerCase().includes(q) ||
+    dn(t.payment||'', PAY_NAME_MAP).toLowerCase().includes(q) ||
+    String(t.amount).includes(q)
   ).sort((a,b) => b.date.localeCompare(a.date));
-  if (!results.length) { list.innerHTML = '<div class="empty-msg">검색 결과가 없어요</div>'; return; }
+  if (!results.length) { list.innerHTML = `<div class="empty-msg">${tr('search.empty')}</div>`; return; }
   list.innerHTML = results.map(t => txRowHtml(t)).join('');
   lucide.createIcons();
 }
@@ -5044,6 +5193,7 @@ function fxCycleLabel(f) {
 }
 
 function openSurvModal() {
+  closeInlineSearch();
   if (!document.getElementById('pane-ledger').classList.contains('active')) goTab('ledger');
   document.getElementById('txList').style.display = 'none';
   document.getElementById('survPane').style.display = 'block';
@@ -5065,17 +5215,11 @@ function closeSurvModal() {
 }
 function openFixedModal() {
   document.getElementById('fixedModal').classList.add('show');
-  // 카테고리 셀렉트 채우기
-  if (IS_LOGGED_IN) {
-    fetch('../api/?action=categories', { credentials:'same-origin' })
-      .then(r => r.json()).then(cats => {
-        const sel = document.getElementById('fxCat');
-        const cur = sel.value;
-        sel.innerHTML = '<option value="">카테고리 선택</option>';
-        cats.filter(c => c.type === (document.getElementById('fxType').value || 'expense'))
-            .forEach(c => { sel.innerHTML += `<option value="${c.id}">${c.icon||'📦'} ${esc(c.name)}</option>`; });
-        sel.value = cur;
-      }).catch(() => {});
+  const type = document.getElementById('fxType').value || 'expense';
+  if (IS_LOGGED_IN && dbCats.expense.length === 0 && dbCats.income.length === 0) {
+    loadDbCats(() => buildFxCatSelect(type));
+  } else {
+    buildFxCatSelect(type);
   }
   loadFixedList();
 }
@@ -5092,10 +5236,64 @@ function loadFixedList() {
 function closeFixedModal() {
   document.getElementById('fixedModal').classList.remove('show');
 }
+
+function buildFxCatSelect(type) {
+  let baseCatNames, allCats;
+  if (IS_LOGGED_IN) {
+    const baseNames = BASE_CATS[type] || [];
+    const typed = dbCats[type] || [];
+    baseCatNames = typed.filter(c => baseNames.includes(c.name)).map(c => c.name);
+    const customList = typed.filter(c => !baseNames.includes(c.name));
+    allCats = [...baseCatNames, ...customList.map(c => c.name)];
+  } else {
+    baseCatNames = BASE_CATS[type] || [];
+    allCats = [...baseCatNames];
+  }
+  const cur = document.getElementById('fxCat').value;
+  const dropdown = document.getElementById('fxCatCsDropdown');
+  if (!dropdown) return;
+  dropdown.innerHTML = allCats.map(name => {
+    const m = _icMeta(name);
+    return `<div class="cat-cs-option${name===cur?' selected':''}" onclick="selectFxCatOption('${esc(name)}')">
+      <span class="cat-cs-option-icon" style="background:${m.bg}">
+        <i data-lucide="${m.lu}" style="width:14px;height:14px;color:${m.c};stroke-width:1.75"></i>
+      </span>
+      <span class="cat-cs-option-name">${dn(name, CAT_NAME_MAP)}</span>
+    </div>`;
+  }).join('');
+  refreshIcons();
+  const val = allCats.includes(cur) ? cur : (allCats[0] || '');
+  document.getElementById('fxCat').value = val;
+  const lbl = document.getElementById('fxCatCsLabel');
+  if (lbl) lbl.textContent = val ? dn(val, CAT_NAME_MAP) : tr('fx.catPh');
+}
+
+function toggleFxCatDropdown() {
+  const dd = document.getElementById('fxCatCsDropdown');
+  if (!dd) return;
+  const isOpen = dd.classList.contains('open');
+  dd.classList.toggle('open', !isOpen);
+  if (!isOpen) {
+    setTimeout(() => document.addEventListener('click', _closeFxCatOutside, { once: true }), 0);
+  }
+}
+function _closeFxCatOutside(e) {
+  const wrap = document.getElementById('fxCatCustomSelect');
+  if (wrap && !wrap.contains(e.target)) {
+    document.getElementById('fxCatCsDropdown')?.classList.remove('open');
+  }
+}
+function selectFxCatOption(name) {
+  document.getElementById('fxCat').value = name;
+  const lbl = document.getElementById('fxCatCsLabel');
+  if (lbl) lbl.textContent = dn(name, CAT_NAME_MAP);
+  document.getElementById('fxCatCsDropdown')?.classList.remove('open');
+}
+
 function renderFixedList() {
   const el = document.getElementById('fixedList');
   if (!fixedItems.length) {
-    el.innerHTML = '<div style="text-align:center;padding:20px 0;color:#bdbdbd;font-size:13px">등록된 고정 항목이 없어요<br>아래에서 추가해보세요</div>';
+    el.innerHTML = `<div style="text-align:center;padding:20px 0;color:#bdbdbd;font-size:13px">${tr('fx.empty')}<br><span style="font-size:12px">${tr('fx.emptySub')}</span></div>`;
     return;
   }
   el.innerHTML = fixedItems.map(f => {
@@ -5109,7 +5307,7 @@ function renderFixedList() {
       </span>
       <div style="flex:1;min-width:0">
         <div style="font-size:14px;font-weight:600;color:#111827">${esc(f.name)}</div>
-        <div style="font-size:12px;color:#9e9e9e;margin-top:3px">${fxCycleLabel(f)} · ${f.type==='income'?'수입':'지출'}</div>
+        <div style="font-size:12px;color:#9e9e9e;margin-top:3px">${fxCycleLabel(f)} · ${f.type==='income'?tr('fx.typeInc').replace(/^.\s/,''):tr('fx.typeExp').replace(/^.\s/,'')}</div>
       </div>
       <span style="font-size:14px;font-weight:700;color:${f.type==='income'?'#3B82F6':'#EF4444'};white-space:nowrap">${f.type==='income'?'+':'−'}${fmtH(f.amount)}</span>
       <button onclick="deleteFixed(${f.id})"
@@ -5196,7 +5394,7 @@ async function manualSync() {
 
 document.addEventListener('DOMContentLoaded', () => {
   const fxType = document.getElementById('fxType');
-  if (fxType) fxType.addEventListener('change', () => { if(document.getElementById('fixedModal').classList.contains('show')) openFixedModal(); });
+  if (fxType) fxType.addEventListener('change', () => { if(document.getElementById('fixedModal').classList.contains('show')) buildFxCatSelect(fxType.value || 'expense'); });
   // 주기 버튼 초기 스타일
   setFxCycle('weekly');
   // 초기 탭(가계부)은 흰 헤더 모드
@@ -5219,8 +5417,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     // surv_budget은 서버가 우선 (syncFromServer에서 덮어씀) — 여기서 push 안 함
   }
-  // 서버에서 데이터 동기화
-  syncFromServer();
   // 탭/창 포커스 시 자동 동기화 (다른 기기에서 추가한 내역 반영)
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') syncFromServer();
@@ -5236,14 +5432,13 @@ function addFixed() {
   const amtRaw = document.getElementById('fxAmt').value.replace(/[^0-9]/g,'');
   const amount = parseInt(amtRaw)||0;
   const type   = document.getElementById('fxType').value;
-  const catId  = document.getElementById('fxCat').value;
-  if (!name)       { showToast('항목명을 입력해주세요'); return; }
-  if (amount <= 0) { showToast('금액을 입력해주세요'); return; }
+  const catName = document.getElementById('fxCat').value || name;
+  if (!name)       { showToast(tr('toast.nameRequired')); return; }
+  if (amount <= 0) { showToast(tr('toast.amtRequired')); return; }
 
-  const catSelect = document.getElementById('fxCat');
-  const catName   = catId && catSelect.selectedIndex > 0
-    ? catSelect.options[catSelect.selectedIndex].text.replace(/^[^\s]+\s/, '') // 이모지 제거
-    : name;
+  // category_id: look up from dbCats by name
+  const catObj = IS_LOGGED_IN ? (dbCats[type] || []).find(c => c.name === catName) : null;
+  const catId  = catObj ? catObj.id : null;
 
   const fd = new FormData();
   fd.append('name', name); fd.append('amount', amount);
@@ -5412,24 +5607,10 @@ function deleteFixed(id) {
   }
 }
 function autoApplyFixed() {
-  if (!IS_LOGGED_IN) return;
-  fetch('../api/?action=fixed_apply', { method:'POST', body:new FormData(), credentials:'same-origin' })
+  if (!IS_LOGGED_IN) return Promise.resolve();
+  return fetch('../api/?action=fixed_apply', { method:'POST', body:new FormData(), credentials:'same-origin' })
     .then(r => r.json()).then(res => {
       if (res.added > 0 && Array.isArray(res.items) && res.items.length > 0) {
-        // 로컬 txs에 없는 항목만 추가 (중복 방지)
-        // 이중 중복 방지: id 기반 + description+date 기반
-        const existingIds  = new Set(txs.map(t => t.id));
-        const existingKeys = new Set(txs.map(t => t.description + '|' + t.date));
-        res.items.forEach(item => {
-          const key = item.description + '|' + item.date;
-          if (!existingIds.has(item.id) && !existingKeys.has(key)) {
-            item.db_id = parseInt(item.id.split('_').pop()) || null;
-            txs.push(item);
-          }
-        });
-        persist();
-        renderLedger();
-        if (calVisible) renderCalendar();
         showToast(`고정 항목 ${res.added}건이 자동 등록됐어요 📌`);
       }
     }).catch(() => {});
@@ -5445,8 +5626,15 @@ function openCatEditModal() {
   document.getElementById('cetab-expense').classList.add('on');
   document.getElementById('cetab-income').classList.remove('on');
   document.getElementById('catEditModal').classList.add('show');
-  // PHP가 이미 dbCats를 채워줬으므로 바로 렌더
+  _resetCatEditIcon();
   renderCatEditList();
+}
+function _resetCatEditIcon() {
+  selectedCatEditIcon = { lu: 'package', bg: '#607D8B' };
+  const prev = document.getElementById('ceIconPreview');
+  if (prev) { prev.style.background = '#607D8B'; prev.innerHTML = `<i data-lucide="package" style="width:18px;height:18px;color:#fff;stroke-width:1.75"></i>`; refreshIcons(); }
+  const nameEl = document.getElementById('ceName');
+  if (nameEl) nameEl.value = '';
 }
 function closeCatEditModal() {
   document.getElementById('catEditModal').classList.remove('show');
@@ -5457,33 +5645,43 @@ function setCatEditType(t) {
   catEditType = t;
   document.getElementById('cetab-expense').classList.toggle('on', t==='expense');
   document.getElementById('cetab-income').classList.toggle('on', t==='income');
+  _resetCatEditIcon();
   renderCatEditList();
 }
 function renderCatEditList() {
-  const el   = document.getElementById('catEditList');
-  const cats = IS_LOGGED_IN ? (dbCats[catEditType]||[]) : (customCats[catEditType]||[]);
-  if (!cats.length) {
-    el.innerHTML = '<div style="text-align:center;padding:28px 0;color:#bdbdbd;font-size:14px">카테고리가 없어요<br><span style="font-size:12px">아래에서 추가해보세요</span></div>';
+  const el = document.getElementById('catEditList');
+  let baseCatNames, customCatList;
+  if (IS_LOGGED_IN) {
+    const baseNames = BASE_CATS[catEditType] || [];
+    baseCatNames  = (dbCats[catEditType]||[]).filter(c => baseNames.includes(c.name));
+    customCatList = (dbCats[catEditType]||[]).filter(c => !baseNames.includes(c.name));
+  } else {
+    baseCatNames  = (BASE_CATS[catEditType]||[]).map(n => ({ name: n }));
+    customCatList = (customCats[catEditType]||[]);
+  }
+  if (!customCatList.length) {
+    el.innerHTML = `<div style="text-align:center;padding:28px 0;color:#bdbdbd;font-size:14px">${tr('cat.empty')}<br><span style="font-size:12px">${tr('cat.emptySub')}</span></div>`;
     return;
   }
-  el.innerHTML = cats.map(c => {
+  const baseHtml = '';
+  const customHtml = customCatList.map((c, i) => {
     const m = _icMeta(c.name);
-    return `
-    <div style="display:flex;align-items:center;padding:14px 8px;border-bottom:1px solid #f0f0f0;gap:14px">
+    const delArg = IS_LOGGED_IN ? `deleteCatEditItem(${c.id||0},'${esc(c.name)}')` : `deleteCatEditItem(null,'${esc(c.name)}')`;
+    return `<div style="display:flex;align-items:center;padding:14px 8px;border-bottom:1px solid #f0f0f0;gap:14px">
       <span style="width:42px;height:42px;border-radius:50%;background:${m.bg};display:flex;align-items:center;justify-content:center;flex-shrink:0">
         <i data-lucide="${m.lu}" style="width:18px;height:18px;color:${m.c};stroke-width:1.75"></i>
       </span>
       <span style="flex:1;font-size:15px;font-weight:600;color:#111827">${esc(c.name)}</span>
-      <button onclick="deleteCatEditItem(${c.id||0},'${esc(c.name)}')"
-        style="background:none;border:1px solid #e2e8f0;cursor:pointer;color:#94a3b8;padding:7px 10px;border-radius:8px;line-height:1;display:flex;align-items:center">
+      <button onclick="${delArg}" style="background:none;border:1px solid #e2e8f0;cursor:pointer;color:#94a3b8;padding:7px 10px;border-radius:8px;line-height:1;display:flex;align-items:center">
         <i data-lucide="trash-2" style="width:14px;height:14px;stroke-width:1.75"></i>
       </button>
     </div>`;
   }).join('');
+  el.innerHTML = baseHtml + customHtml;
   refreshIcons();
 }
 function deleteCatEditItem(id, name) {
-  if (!confirm('"' + name + '" 카테고리를 삭제할까요?')) return;
+  if (!confirm(tr('cat.deleteConfirm').replace('{name}', name))) return;
   if (IS_LOGGED_IN) {
     // ① 즉시 로컬에서 제거 (UI 먼저)
     dbCats[catEditType] = (dbCats[catEditType]||[]).filter(c => String(c.id) !== String(id));
@@ -5511,17 +5709,17 @@ function deleteCatEditItem(id, name) {
   }
 }
 function addCatEdit() {
-  const icon = document.getElementById('ceEmoji').value.trim() || '📦';
+  const icon = selectedCatEditIcon.lu + '|' + selectedCatEditIcon.bg;
   const name = document.getElementById('ceName').value.trim();
-  if (!name) { showToast('카테고리 이름을 입력해주세요'); return; }
+  if (!name) { showToast(tr('toast.catEmptyName')); return; }
   if (IS_LOGGED_IN) {
     // ① 즉시 로컬에 추가 (UI 먼저)
     if (!Array.isArray(dbCats[catEditType])) dbCats[catEditType] = [];
     const tempId = 'tmp_' + Date.now();
     dbCats[catEditType] = [...dbCats[catEditType], { id: tempId, name, icon, type: catEditType }];
-    document.getElementById('ceEmoji').value = '';
-    document.getElementById('ceName').value  = '';
+    _resetCatEditIcon();
     renderCatEditList();
+    buildFxCatSelect(catEditType);
     buildCatSelect(curType);
     showToast('카테고리가 추가됐어요 🏷️');
     // ② 백그라운드 서버 저장
@@ -5777,7 +5975,15 @@ function addPayEdit() {
 
 // ── 푸시 알림 ────────────────────────────────────────────────
 const NOTIF_SK = 'ddgb_notif_v1';
+const VAPID_PUB = 'BMv50tM5lqdQRjnxCsMLgi9BWuyz49HXBk2x3jOOKTdfbH1bm0kdbAdoKg43iHWkJmffzQtKA01v3Lyp4wc1cOc';
 let _notifInterval = null;
+
+function _urlB64ToUint8(b64) {
+  const pad = '='.repeat((4 - b64.length % 4) % 4);
+  const raw = atob((b64 + pad).replace(/-/g, '+').replace(/_/g, '/'));
+  return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
+}
+
 function openNotifModal() {
   const saved = JSON.parse(localStorage.getItem(NOTIF_SK)||'{}');
   document.getElementById('notifTimeInput').value = saved.time || '21:00';
@@ -5786,57 +5992,82 @@ function openNotifModal() {
 }
 function closeNotifModal() { document.getElementById('notifModal').classList.remove('show'); }
 function updateNotifStatus() {
-  const dot  = document.getElementById('notifDot');
-  const text = document.getElementById('notifStatusText');
-  const btn  = document.getElementById('notifPermBtn');
-  if (!('Notification' in window)) {
-    text.textContent = '이 브라우저는 알림을 지원하지 않아요.';
+  const dot   = document.getElementById('notifDot');
+  const text  = document.getElementById('notifStatusText');
+  const btn   = document.getElementById('notifPermBtn');
+  const guide = document.getElementById('notifInstallGuide');
+  if (!('Notification' in window) || !('serviceWorker' in navigator) || !('PushManager' in window)) {
+    const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
+    text.textContent = isMobile ? '홈 화면에 추가 후 사용 가능해요' : tr('notif.noSupport');
+    if (guide) guide.style.display = isMobile ? '' : 'none';
     btn.disabled = true;
     return;
   }
+  if (guide) guide.style.display = 'none';
   const perm = Notification.permission;
   if (perm === 'granted') {
     dot.classList.add('on');
-    text.textContent = '알림이 허용되어 있습니다';
-    btn.textContent  = '저장';
+    text.textContent = tr('notif.granted');
+    btn.textContent  = tr('btn.save');
   } else if (perm === 'denied') {
     dot.classList.remove('on');
-    text.textContent = '알림이 차단됐습니다. 브라우저 설정에서 허용해주세요.';
-    btn.textContent  = '닫기';
+    text.textContent = tr('notif.denied');
+    btn.textContent  = tr('btn.close');
   } else {
     dot.classList.remove('on');
-    text.textContent = '알림 권한을 허용해야 합니다';
-    btn.textContent  = '권한 허용 후 저장';
+    text.textContent = tr('notif.needPerm');
+    btn.textContent  = tr('notif.saveBtn');
   }
-  // 알림 행 값 업데이트
-  const saved   = JSON.parse(localStorage.getItem(NOTIF_SK)||'{}');
-  const rowVal  = document.getElementById('notifRowValue');
-  if (rowVal) rowVal.textContent = (saved.enabled && perm === 'granted') ? (saved.time||'켜짐') : '꺼짐';
+  const saved  = JSON.parse(localStorage.getItem(NOTIF_SK)||'{}');
+  const rowVal = document.getElementById('notifRowValue');
+  if (rowVal) rowVal.textContent = (saved.enabled && perm === 'granted') ? (saved.time||tr('notif.on')) : tr('notif.off');
 }
-function handleNotifPermission() {
-  if (!('Notification' in window)) { showToast('알림을 지원하지 않는 브라우저예요'); return; }
+async function handleNotifPermission() {
+  if (!('Notification' in window)) { showToast(tr('notif.noSupportToast')); return; }
   if (Notification.permission === 'denied') { closeNotifModal(); return; }
   const time = document.getElementById('notifTimeInput').value;
-  function save() {
-    localStorage.setItem(NOTIF_SK, JSON.stringify({ time, enabled: true }));
-    startNotifScheduler();
+  let perm = Notification.permission;
+  if (perm !== 'granted') {
+    perm = await Notification.requestPermission();
     updateNotifStatus();
-    closeNotifModal();
-    showToast(`매일 ${time}에 리마인드를 보내드릴게요 🔔`);
-    if (IS_LOGGED_IN) {
-      const fd = new FormData();
-      fd.append('key', 'notif_time');    fd.append('value', time);
-      fetch('../api/?action=settings_save', { method: 'POST', body: fd }).catch(() => {});
-      const fd2 = new FormData();
-      fd2.append('key', 'notif_enabled'); fd2.append('value', '1');
-      fetch('../api/?action=settings_save', { method: 'POST', body: fd2 }).catch(() => {});
-    }
   }
-  if (Notification.permission === 'granted') { save(); return; }
-  Notification.requestPermission().then(perm => {
-    updateNotifStatus();
-    if (perm === 'granted') save();
-  });
+  if (perm !== 'granted') return;
+  localStorage.setItem(NOTIF_SK, JSON.stringify({ time, enabled: true }));
+  // Web Push 구독 (백그라운드 알림 — 앱 꺼져도 동작)
+  if ('serviceWorker' in navigator && 'PushManager' in window && IS_LOGGED_IN) {
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      const sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: _urlB64ToUint8(VAPID_PUB),
+      });
+      await fetch('../api/?action=push_subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...sub.toJSON(), time }),
+        credentials: 'same-origin',
+      });
+    } catch(e) { console.warn('Web Push 구독 실패:', e); }
+  }
+  if (IS_LOGGED_IN) {
+    const fd = new FormData(); fd.append('key','notif_time'); fd.append('value',time);
+    fetch('../api/?action=settings_save', { method:'POST', body:fd }).catch(()=>{});
+    const fd2 = new FormData(); fd2.append('key','notif_enabled'); fd2.append('value','1');
+    fetch('../api/?action=settings_save', { method:'POST', body:fd2 }).catch(()=>{});
+  }
+  startNotifScheduler();
+  updateNotifStatus();
+  closeNotifModal();
+  showToast(tr('toast.notifSet').replace('{time}', time));
+}
+function _fireNotif(title, body) {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.ready.then(reg => {
+      reg.showNotification(title, { body, icon: 'icon-192.png' });
+    }).catch(() => { try { new Notification(title, { body }); } catch(e) {} });
+  } else {
+    try { new Notification(title, { body }); } catch(e) {}
+  }
 }
 function startNotifScheduler() {
   clearInterval(_notifInterval);
@@ -5849,15 +6080,15 @@ function startNotifScheduler() {
     const now = new Date();
     if (now.getHours() !== hh || now.getMinutes() !== mm) return;
     const todayStr = localDateStr(now);
-    if (_lastNotifDate === todayStr) return; // 하루 1회
+    if (_lastNotifDate === todayStr) return;
     _lastNotifDate = todayStr;
     const todayTxs = txs.filter(t => t.date === todayStr);
     const todayExp = todayTxs.filter(t => t.type==='expense').reduce((s,t) => s+t.amount, 0);
     const msg = todayTxs.length > 0
-      ? `오늘 ${todayTxs.length}건, 총 지출 ${fmt(todayExp)} 기록됐어요!`
-      : '오늘 가계부를 아직 기록하지 않으셨어요. 잊지 마세요! 💪';
-    new Notification('마이가계부 📒', { body: msg });
-  }, 30000); // 30초마다 체크
+      ? tr('notif.msgRecorded').replace('{n}', todayTxs.length).replace('{amt}', fmt(todayExp))
+      : tr('notif.msgReminder');
+    _fireNotif('마이가계부 📒', msg);
+  }, 30000);
 }
 
 // ── 백업 & 복구 ──────────────────────────────────────────────
@@ -6066,7 +6297,7 @@ function renderCurrencyGrid(q) {
   const cur = getCurrCode();
   const kw = (q || '').trim().toLowerCase();
   const list = kw
-    ? CURRENCY_LIST.filter(c => c.code.toLowerCase().includes(kw) || c.name.toLowerCase().includes(kw) || c.symbol.toLowerCase().includes(kw))
+    ? CURRENCY_LIST.filter(c => c.code.toLowerCase().includes(kw) || getCurrLocalName(c).toLowerCase().includes(kw) || c.name.toLowerCase().includes(kw) || c.symbol.toLowerCase().includes(kw))
     : CURRENCY_LIST;
   const grid = document.getElementById('currencyGrid');
   if (!list.length) {
@@ -6076,7 +6307,7 @@ function renderCurrencyGrid(q) {
   grid.innerHTML = list.map((c, i) => `
     <div onclick="setCurrency('${c.code}','${c.symbol}','${c.name}')"
       style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;cursor:pointer;${i>0?'border-top:1px solid #f0f0f0':''}${c.code===cur?';background:#f5f7ff':''}">
-      <span style="font-size:15px;color:#222;font-weight:${c.code===cur?'600':'400'}">${c.name} ( ${c.symbol} )</span>
+      <span style="font-size:15px;color:#222;font-weight:${c.code===cur?'600':'400'}">${getCurrLocalName(c)} ( ${c.symbol} )</span>
       <span style="font-size:14px;font-weight:700;color:${c.code===cur?'#364A6D':'#9e9e9e'}">${c.code}</span>
     </div>`).join('');
 }
@@ -6095,7 +6326,7 @@ function setCurrency(code, symbol, name) {
   const rowVal = document.getElementById('currencyRowValue');
   if (rowVal) rowVal.textContent = symbol + ' ' + code;
   closeCurrencyModal();
-  showToast('통화가 변경됐어요');
+  showToast(tr('currency.changed'));
   renderLedger();
   if (document.getElementById('pane-stats')?.classList.contains('active')) renderStats();
 }
@@ -6128,7 +6359,7 @@ const TRANSLATIONS = {
     'btn.save':'저장','btn.add':'추가','btn.close':'닫기',
     'btn.detail':'상세정보','btn.edit':'수정','btn.copy':'복사','btn.delete':'삭제',
     'fmt.daySheet':'{d}일 ({dow})',
-    'fx.addNew':'새 고정 항목 추가','fx.namePh':'항목명 (예: 월세)','fx.amtPh':'금액','fx.catPh':'카테고리 선택',
+    'fx.addNew':'새 고정 항목 추가','fx.namePh':'항목명 (예: 월세)','fx.amtPh':'금액','fx.catPh':'카테고리 선택','fx.empty':'등록된 고정 항목이 없어요','fx.emptySub':'아래에서 추가해보세요',
     'fx.typeExp':'💸 지출','fx.typeInc':'💰 수입',
     'fx.weekly':'매주','fx.monthly':'매달','fx.yearly':'매년','fx.addBtn':'＋ 추가하기',
     'fx.retroTitle':'📅 이미 지난 날짜예요!','fx.retroConfirm':'✅ 네, 지금 바로 기록할게요','fx.retroSkip':'다음 달부터만 적용할게요',
@@ -6137,8 +6368,26 @@ const TRANSLATIONS = {
     'cat.addNew':'새 카테고리 추가','cat.namePh':'카테고리 이름','cat.tabExp':'지출','cat.tabInc':'수입',
     'pay.addNew':'새 결제수단 추가','pay.namePh':'결제수단 이름',
     'notif.checking':'알림 권한 확인 중...','notif.timeLabel':'알림 시간',
-    'notif.desc':'설정한 시간에 가계부 작성 리마인드를 보내드립니다. 앱이 열려 있을 때 작동합니다.',
+    'notif.desc':'설정한 시간에 가계부 작성 리마인드를 보내드립니다. 앱을 닫아도 알림이 와요.',
     'notif.saveBtn':'권한 허용 후 저장',
+    'notif.noSupport':'이 브라우저는 알림을 지원하지 않아요.','notif.granted':'알림이 허용되어 있습니다',
+    'notif.denied':'알림이 차단됐습니다. 브라우저 설정에서 허용해주세요.','notif.needPerm':'알림 권한을 허용해야 합니다',
+    'notif.on':'켜짐','notif.off':'꺼짐','notif.noSupportToast':'알림을 지원하지 않는 브라우저예요',
+    'notif.msgReminder':'오늘 가계부를 아직 작성하지 않으셨어요. 잊지 마세요! 💪',
+    'notif.msgRecorded':'오늘 {n}건, 총 지출 {amt} 기록됐어요! 잘 하셨어요 👍',
+    'toast.notifSet':'매일 {time}에 리마인드를 보내드릴게요 🔔',
+    'cat.empty':'카테고리가 없어요','cat.emptySub':'아래에서 추가해보세요','cat.deleteConfirm':'"{name}" 카테고리를 삭제할까요?','cat.base':'기본',
+    'row.sync':'서버 동기화','currency.searchPh':'통화 검색...','currency.changed':'통화가 변경됐어요',
+    'upg.title':'마이가계부 프리미엄','upg.sub':'더 스마트한 가계부 관리를 경험하세요','upg.label':'프리미엄으로 이동',
+    'upg.headline':'지출을 완전히 통제하는 스마트한 방법',
+    'upg.b1t':'PDF 리포트 내보내기','upg.b1s':'월간 소비 리포트를 PDF로 저장·공유',
+    'upg.b2t':'멀티 디바이스 실시간 동기화','upg.b2s':'폰, 태블릿, PC 어디서든 데이터 공유',
+    'upg.b3t':'AI 소비 분석 & 절약 코칭','upg.b3s':'지출 패턴 기반 맞춤 절약 팁 제공',
+    'upg.b4t':'다중 계좌 & 프리미엄 테마','upg.b4s':'계좌별 분리 관리 + 독점 디자인 테마',
+    'upg.plan1mo':'1개월','upg.plan1y':'1년','upg.planLife':'평생',
+    'upg.planUnit':'/ 월','upg.planUnit2':'1회 결제','upg.save57':'57% 절약',
+    'upg.cta':'지금 시작하기 →','upg.restore':'구매 복원',
+    'upg.comingSoon':'🔔 곧 오픈 예정이에요!','upg.restoreWip':'복원 기능은 준비 중이에요.',
     'backup.backupTitle':'데이터 백업 (JSON 다운로드)','backup.backupSub':'모든 내역·카테고리·설정을 파일로 저장합니다',
     'backup.restoreTitle':'데이터 복구 (파일 업로드)','backup.restoreSub':'백업 JSON 파일로 복원합니다 (현재 데이터 덮어쓰기)',
     'export.thisMonth':'이번 달 내역','export.allTime':'전체 기간 내역',
@@ -6171,6 +6420,14 @@ const TRANSLATIONS = {
     'wdef.insight':'이번 달 요약','wdef.champion':'최고 지출 항목','wdef.dayofweek':'요일별 소비 패턴',
     'wdef.survival':'목표 예산','wdef.mbti':'나의 소비 MBTI','wdef.top3cats':'카테고리 TOP 3',
     'wdef.nospend':'무지출 달력','wdef.alert':'지출 경고','wdef.dailyavg':'일평균 지출',
+    'rs.trend':'6개월 지출 트렌드','rs.week':'주별 지출','rs.vs':'수입 VS 지출',
+    'rs.week1':'1주차','rs.week2':'2주차','rs.week3':'3주차','rs.week4':'4주차',
+    'rs.prevMonthCmp':'지난달 대비','rs.davgTotal':'총 {amt} / {n}일 기준','rs.davgPrev':'지난달 {amt}/일',
+    'rs.dowInsight':'{day}요일에 가장 많이 지출했어요','rs.dowNoData':'이번 달 지출 데이터가 없어요.',
+    'rs.moSuffix':'월',
+    'rs.cmp.noData':'이번 달 지출이 없어요','rs.cmp.noLast':'지난달 데이터가 없어요',
+    'rs.cmp.saved':'{pct}% 아꼈어요! {amt} 절약','rs.cmp.same':'지난달과 지출이 같아요',
+    'rs.cmp.more':'{pct}% 더 썼어요 ({amt})',
     'me.streak':'🔥 연속 기록 {n}일','me.streakZero':'아직 기록을 시작해봐요!',
     'me.monthRecord':'이번 달 기록','me.streakDays':'연속 기록일',
     'me.notLoggedIn':'비로그인','me.syncInfo':'로그인하면 서버에 동기화됩니다','me.loginBtn':'로그인 / 회원가입',
@@ -6276,6 +6533,7 @@ const TRANSLATIONS = {
     'toast.allDeleted':'모든 내역이 삭제됐어요 🗑️','toast.deleteFail':'삭제에 실패했어요: {msg}',
     'toast.serverError':'서버 오류가 발생했어요',
     'toast.inquirySent':'문의가 접수됐어요 ✓','toast.inquiryEmpty':'제목과 내용을 입력해주세요',
+    'toast.nameRequired':'항목명을 입력해주세요','toast.amtRequired':'금액을 입력해주세요',
     'upgrade.title':'프리미엄','upgrade.currentPlan':'현재 플랜','upgrade.freePlan':'무료 (Free)','upgrade.freeBadge':'FREE',
     'upgrade.featuresTitle':'PREMIUM 기능','upgrade.soon':'준비 중','upgrade.closeBtn':'확인했어요 👍',
     'upgrade.feat1':'PDF 리포트 내보내기','upgrade.feat1sub':'월간 소비 리포트를 PDF로 저장',
@@ -6290,7 +6548,7 @@ const TRANSLATIONS = {
     'fx.loadingList':'불러오는 중...','fx.emptyList':'등록된 고정 항목이 없어요<br>아래에서 추가해보세요',
     'confirm.deleteLinked':'이번 달에 이미 기록된 "{name}" 내역 {count}건도 함께 삭제할까요?\n\n취소하면 고정 항목 설정만 삭제되고 내역은 유지됩니다.',
     'opt.selectCat':'카테고리 선택',
-    'fontsize.normal':'보통','fontsize.large':'크게','fontsize.xlarge':'아주 크게',
+    'fontsize.small':'작게','fontsize.normal':'보통','fontsize.large':'크게',
     'lang.ko':'한국어','lang.en':'영어','lang.ja':'일본어','lang.zh':'중국어','lang.es':'스페인어',
     'alert.dateRange':'시작일과 종료일을 선택해주세요.','alert.dateOrder':'종료일이 시작일보다 빠를 수 없어요.',
     'alert.enterAmt':'금액을 입력해주세요.','alert.enterDate':'날짜를 선택해주세요.',
@@ -6333,7 +6591,7 @@ const TRANSLATIONS = {
     'btn.save':'Save','btn.add':'Add','btn.close':'Close',
     'btn.detail':'Detail','btn.edit':'Edit','btn.copy':'Copy','btn.delete':'Delete',
     'fmt.daySheet':'Day {d} ({dow})',
-    'fx.addNew':'Add New Fixed Item','fx.namePh':'Item name (e.g. Rent)','fx.amtPh':'Amount','fx.catPh':'Select Category',
+    'fx.addNew':'Add New Fixed Item','fx.namePh':'Item name (e.g. Rent)','fx.amtPh':'Amount','fx.catPh':'Select Category','fx.empty':'No fixed items yet','fx.emptySub':'Add one below',
     'fx.typeExp':'💸 Expense','fx.typeInc':'💰 Income',
     'fx.weekly':'Weekly','fx.monthly':'Monthly','fx.yearly':'Yearly','fx.addBtn':'＋ Add',
     'fx.retroTitle':'📅 This date has passed!','fx.retroConfirm':'✅ Yes, record now','fx.retroSkip':'Apply from next month',
@@ -6342,8 +6600,26 @@ const TRANSLATIONS = {
     'cat.addNew':'Add New Category','cat.namePh':'Category name','cat.tabExp':'Expense','cat.tabInc':'Income',
     'pay.addNew':'Add New Payment','pay.namePh':'Payment method name',
     'notif.checking':'Checking notification permission...','notif.timeLabel':'Notification time',
-    'notif.desc':'Sends a reminder at the set time. Works when the app is open.',
+    'notif.desc':'Sends a daily reminder at the set time. Works even when the app is closed.',
     'notif.saveBtn':'Allow & Save',
+    'notif.noSupport':'This browser does not support notifications.','notif.granted':'Notifications are allowed',
+    'notif.denied':'Notifications are blocked. Please allow in browser settings.','notif.needPerm':'You need to allow notification permission',
+    'notif.on':'On','notif.off':'Off','notif.noSupportToast':'This browser does not support notifications',
+    'notif.msgReminder':'You haven\'t recorded today yet. Don\'t forget! 💪',
+    'notif.msgRecorded':'Today {n} records, total expense {amt}. Great job! 👍',
+    'toast.notifSet':'Daily reminder set for {time} 🔔',
+    'cat.empty':'No categories','cat.emptySub':'Add one below','cat.deleteConfirm':'Delete "{name}" category?','cat.base':'Default',
+    'row.sync':'Sync with server','currency.searchPh':'Search currency...','currency.changed':'Currency changed',
+    'upg.title':'MyBudget Premium','upg.sub':'Experience smarter budget management','upg.label':'Go Premium',
+    'upg.headline':'The smart way to take full control of your spending',
+    'upg.b1t':'PDF Report Export','upg.b1s':'Save & share monthly spending reports as PDF',
+    'upg.b2t':'Multi-device Real-time Sync','upg.b2s':'Access your data from phone, tablet, or PC',
+    'upg.b3t':'AI Spending Analysis & Coaching','upg.b3s':'Personalized saving tips based on your patterns',
+    'upg.b4t':'Multi-account & Premium Themes','upg.b4s':'Manage by account + exclusive design themes',
+    'upg.plan1mo':'1 Month','upg.plan1y':'1 Year','upg.planLife':'Lifetime',
+    'upg.planUnit':'/ mo','upg.planUnit2':'one-time','upg.save57':'Save 57%',
+    'upg.cta':'Get Started →','upg.restore':'Restore Purchase',
+    'upg.comingSoon':'🔔 Coming soon!','upg.restoreWip':'Restore feature is in progress.',
     'backup.backupTitle':'Data Backup (JSON Download)','backup.backupSub':'Save all records, categories & settings to a file',
     'backup.restoreTitle':'Data Restore (File Upload)','backup.restoreSub':'Restore from backup JSON (overwrites current data)',
     'export.thisMonth':'This month\'s records','export.allTime':'All-time records',
@@ -6376,6 +6652,14 @@ const TRANSLATIONS = {
     'wdef.insight':'Monthly Summary','wdef.champion':'Top Expense','wdef.dayofweek':'Spending by Day',
     'wdef.survival':'Budget Goal','wdef.mbti':'Spending MBTI','wdef.top3cats':'Category TOP 3',
     'wdef.nospend':'Zero-Spend Calendar','wdef.alert':'Spending Alert','wdef.dailyavg':'Daily Avg Spend',
+    'rs.trend':'6-Month Trend','rs.week':'Weekly Expense','rs.vs':'Income VS Expense',
+    'rs.week1':'Week 1','rs.week2':'Week 2','rs.week3':'Week 3','rs.week4':'Week 4',
+    'rs.prevMonthCmp':'vs last month','rs.davgTotal':'Total {amt} / {n} days','rs.davgPrev':'Prev {amt}/day',
+    'rs.dowInsight':'{day} had the most spending','rs.dowNoData':'No spending data this month.',
+    'rs.moSuffix':'',
+    'rs.cmp.noData':'No spending this month','rs.cmp.noLast':'No last month data',
+    'rs.cmp.saved':'Saved {pct}% vs last month! Saved {amt}','rs.cmp.same':'Same as last month',
+    'rs.cmp.more':'Spent {pct}% more ({amt})',
     'me.streak':'🔥 {n}-day streak','me.streakZero':'Start recording today!',
     'me.monthRecord':'This month','me.streakDays':'Streak days',
     'me.notLoggedIn':'Not logged in','me.syncInfo':'Log in to sync to server','me.loginBtn':'Login / Sign up',
@@ -6481,6 +6765,7 @@ const TRANSLATIONS = {
     'toast.allDeleted':'All records deleted 🗑️','toast.deleteFail':'Deletion failed: {msg}',
     'toast.serverError':'Server error occurred',
     'toast.inquirySent':'Inquiry submitted ✓','toast.inquiryEmpty':'Enter title and content',
+    'toast.nameRequired':'Enter item name','toast.amtRequired':'Enter amount',
     'upgrade.title':'Premium','upgrade.currentPlan':'Current Plan','upgrade.freePlan':'Free','upgrade.freeBadge':'FREE',
     'upgrade.featuresTitle':'PREMIUM FEATURES','upgrade.soon':'Coming Soon','upgrade.closeBtn':'Got it 👍',
     'upgrade.feat1':'PDF Report Export','upgrade.feat1sub':'Save monthly spending report as PDF',
@@ -6495,7 +6780,7 @@ const TRANSLATIONS = {
     'fx.loadingList':'Loading...','fx.emptyList':'No fixed items yet<br>Add one below',
     'confirm.deleteLinked':'"{name}" has {count} record(s) this month. Delete them too?\n\nCancel to remove only the fixed item setting.',
     'opt.selectCat':'Select category',
-    'fontsize.normal':'Normal','fontsize.large':'Large','fontsize.xlarge':'X-Large',
+    'fontsize.small':'Small','fontsize.normal':'Normal','fontsize.large':'Large',
     'lang.ko':'Korean','lang.en':'English','lang.ja':'Japanese','lang.zh':'Chinese','lang.es':'Spanish',
     'alert.dateRange':'Please select start and end dates.','alert.dateOrder':'End date cannot be before start date.',
     'alert.enterAmt':'Please enter an amount.','alert.enterDate':'Please select a date.',
@@ -6538,7 +6823,7 @@ const TRANSLATIONS = {
     'btn.save':'保存','btn.add':'追加','btn.close':'閉じる',
     'btn.detail':'詳細','btn.edit':'編集','btn.copy':'コピー','btn.delete':'削除',
     'fmt.daySheet':'{d}日（{dow}）',
-    'fx.addNew':'新規固定項目追加','fx.namePh':'項目名（例：家賃）','fx.amtPh':'金額','fx.catPh':'カテゴリ選択',
+    'fx.addNew':'新規固定項目追加','fx.namePh':'項目名（例：家賃）','fx.amtPh':'金額','fx.catPh':'カテゴリ選択','fx.empty':'固定項目がありません','fx.emptySub':'下から追加してください',
     'fx.typeExp':'💸 支出','fx.typeInc':'💰 収入',
     'fx.weekly':'毎週','fx.monthly':'毎月','fx.yearly':'毎年','fx.addBtn':'＋追加',
     'fx.retroTitle':'📅 日付を過ぎています！','fx.retroConfirm':'✅ はい、今すぐ記録します','fx.retroSkip':'来月から適用します',
@@ -6547,8 +6832,26 @@ const TRANSLATIONS = {
     'cat.addNew':'新規カテゴリ追加','cat.namePh':'カテゴリ名','cat.tabExp':'支出','cat.tabInc':'収入',
     'pay.addNew':'新規支払方法追加','pay.namePh':'支払方法名',
     'notif.checking':'通知権限確認中...','notif.timeLabel':'通知時間',
-    'notif.desc':'設定した時間に記録リマインドを送ります。アプリ起動時に動作します。',
+    'notif.desc':'設定した時間に記録リマインドを送ります。アプリを閉じても通知が届きます。',
     'notif.saveBtn':'許可して保存',
+    'notif.noSupport':'このブラウザは通知をサポートしていません。','notif.granted':'通知が許可されています',
+    'notif.denied':'通知がブロックされています。ブラウザ設定で許可してください。','notif.needPerm':'通知の許可が必要です',
+    'notif.on':'オン','notif.off':'オフ','notif.noSupportToast':'このブラウザは通知に対応していません',
+    'notif.msgReminder':'本日まだ記録していません。忘れずに！💪',
+    'notif.msgRecorded':'今日{n}件、合計支出{amt}記録しました！お疲れ様👍',
+    'toast.notifSet':'毎日{time}にリマインドをお送りします 🔔',
+    'cat.empty':'カテゴリがありません','cat.emptySub':'下から追加してください','cat.deleteConfirm':'"{name}"を削除しますか？','cat.base':'既定',
+    'row.sync':'サーバー同期','currency.searchPh':'通貨を検索...','currency.changed':'通貨が変更されました',
+    'upg.title':'マイ家計簿 プレミアム','upg.sub':'よりスマートな家計管理を体験しましょう','upg.label':'プレミアムへ',
+    'upg.headline':'支出を完全にコントロールするスマートな方法',
+    'upg.b1t':'PDFレポートエクスポート','upg.b1s':'月間レポートをPDFで保存・共有',
+    'upg.b2t':'マルチデバイスリアルタイム同期','upg.b2s':'スマホ・タブレット・PCどこでもデータ共有',
+    'upg.b3t':'AI消費分析＆節約コーチング','upg.b3s':'支出パターンに基づく節約アドバイス',
+    'upg.b4t':'マルチ口座＆プレミアムテーマ','upg.b4s':'口座別管理＋限定デザインテーマ',
+    'upg.plan1mo':'1ヶ月','upg.plan1y':'1年','upg.planLife':'永久',
+    'upg.planUnit':'/ 月','upg.planUnit2':'一括払い','upg.save57':'57%お得',
+    'upg.cta':'今すぐ始める →','upg.restore':'購入を復元',
+    'upg.comingSoon':'🔔 近日公開予定！','upg.restoreWip':'復元機能は準備中です。',
     'backup.backupTitle':'データバックアップ (JSONダウンロード)','backup.backupSub':'全履歴・カテゴリ・設定をファイル保存します',
     'backup.restoreTitle':'データ復元 (ファイルアップロード)','backup.restoreSub':'バックアップJSONで復元します（現在データ上書き）',
     'export.thisMonth':'今月の履歴','export.allTime':'全期間履歴',
@@ -6581,6 +6884,14 @@ const TRANSLATIONS = {
     'wdef.insight':'月間サマリー','wdef.champion':'最高支出','wdef.dayofweek':'曜日別消費',
     'wdef.survival':'予算目標','wdef.mbti':'消費MBTI','wdef.top3cats':'カテゴリ TOP 3',
     'wdef.nospend':'無支出カレンダー','wdef.alert':'支出警告','wdef.dailyavg':'1日平均支出',
+    'rs.trend':'6ヶ月支出トレンド','rs.week':'週別支出','rs.vs':'収入 VS 支出',
+    'rs.week1':'第1週','rs.week2':'第2週','rs.week3':'第3週','rs.week4':'第4週',
+    'rs.prevMonthCmp':'先月比','rs.davgTotal':'合計 {amt} / {n}日基準','rs.davgPrev':'先月 {amt}/日',
+    'rs.dowInsight':'{day}曜日に最も支出しました','rs.dowNoData':'今月の支出データがありません。',
+    'rs.moSuffix':'月',
+    'rs.cmp.noData':'今月の支出はありません','rs.cmp.noLast':'先月データなし',
+    'rs.cmp.saved':'{pct}%節約！{amt}の節約','rs.cmp.same':'先月と同じです',
+    'rs.cmp.more':'{pct}%多く使いました（{amt}）',
     'me.streak':'🔥 {n}日連続記録','me.streakZero':'今日から記録を始めましょう！',
     'me.monthRecord':'今月の記録','me.streakDays':'連続記録日',
     'me.notLoggedIn':'未ログイン','me.syncInfo':'ログインするとサーバーに同期されます','me.loginBtn':'ログイン / 会員登録',
@@ -6686,6 +6997,7 @@ const TRANSLATIONS = {
     'toast.allDeleted':'全データが削除されました 🗑️','toast.deleteFail':'削除に失敗しました: {msg}',
     'toast.serverError':'サーバーエラーが発生しました',
     'toast.inquirySent':'お問合せを受け付けました ✓','toast.inquiryEmpty':'タイトルと内容を入力してください',
+    'toast.nameRequired':'項目名を入力してください','toast.amtRequired':'金額を入力してください',
     'upgrade.title':'プレミアム','upgrade.currentPlan':'現在のプラン','upgrade.freePlan':'無料 (Free)','upgrade.freeBadge':'FREE',
     'upgrade.featuresTitle':'プレミアム機能','upgrade.soon':'準備中','upgrade.closeBtn':'確認しました 👍',
     'upgrade.feat1':'PDFレポート書き出し','upgrade.feat1sub':'月次消費レポートをPDFで保存',
@@ -6700,7 +7012,7 @@ const TRANSLATIONS = {
     'fx.loadingList':'読み込み中...','fx.emptyList':'固定項目がまだありません<br>下で追加してください',
     'confirm.deleteLinked':'今月に記録された"{name}"の{count}件も一緒に削除しますか？\n\nキャンセルすると固定設定のみ削除され記録は保持されます。',
     'opt.selectCat':'カテゴリを選択',
-    'fontsize.normal':'普通','fontsize.large':'大きく','fontsize.xlarge':'とても大きく',
+    'fontsize.small':'小さく','fontsize.normal':'普通','fontsize.large':'大きく',
     'lang.ko':'韓国語','lang.en':'英語','lang.ja':'日本語','lang.zh':'中国語','lang.es':'スペイン語',
     'alert.dateRange':'開始日と終了日を選択してください。','alert.dateOrder':'終了日は開始日より前にできません。',
     'alert.enterAmt':'金額を入力してください。','alert.enterDate':'日付を選択してください。',
@@ -6743,7 +7055,7 @@ const TRANSLATIONS = {
     'btn.save':'保存','btn.add':'添加','btn.close':'关闭',
     'btn.detail':'详情','btn.edit':'编辑','btn.copy':'复制','btn.delete':'删除',
     'fmt.daySheet':'{d}日（{dow}）',
-    'fx.addNew':'添加新固定项目','fx.namePh':'项目名（例：房租）','fx.amtPh':'金额','fx.catPh':'选择分类',
+    'fx.addNew':'添加新固定项目','fx.namePh':'项目名（例：房租）','fx.amtPh':'金额','fx.catPh':'选择分类','fx.empty':'暂无固定项目','fx.emptySub':'请在下方添加',
     'fx.typeExp':'💸 支出','fx.typeInc':'💰 收入',
     'fx.weekly':'每周','fx.monthly':'每月','fx.yearly':'每年','fx.addBtn':'＋添加',
     'fx.retroTitle':'📅 日期已过！','fx.retroConfirm':'✅ 是，立即记录','fx.retroSkip':'从下月开始应用',
@@ -6752,8 +7064,26 @@ const TRANSLATIONS = {
     'cat.addNew':'添加新分类','cat.namePh':'分类名称','cat.tabExp':'支出','cat.tabInc':'收入',
     'pay.addNew':'添加新支付方式','pay.namePh':'支付方式名称',
     'notif.checking':'检查通知权限...','notif.timeLabel':'通知时间',
-    'notif.desc':'在设置的时间发送记账提醒，应用打开时有效。',
+    'notif.desc':'在设置的时间发送记账提醒，关闭应用也能收到通知。',
     'notif.saveBtn':'允许并保存',
+    'notif.noSupport':'此浏览器不支持通知。','notif.granted':'通知已允许',
+    'notif.denied':'通知已被屏蔽，请在浏览器设置中允许。','notif.needPerm':'需要允许通知权限',
+    'notif.on':'开启','notif.off':'关闭','notif.noSupportToast':'此浏览器不支持通知',
+    'notif.msgReminder':'今天还没有记账，别忘了！💪',
+    'notif.msgRecorded':'今天{n}笔，总支出{amt}，记录成功！👍',
+    'toast.notifSet':'已设置每天{time}发送提醒 🔔',
+    'cat.empty':'没有分类','cat.emptySub':'请在下方添加','cat.deleteConfirm':'删除"{name}"分类？','cat.base':'默认',
+    'row.sync':'同步服务器','currency.searchPh':'搜索货币...','currency.changed':'货币已更改',
+    'upg.title':'我的账本 高级版','upg.sub':'体验更智能的记账管理','upg.label':'升级为高级版',
+    'upg.headline':'完全掌控支出的智能方式',
+    'upg.b1t':'PDF报告导出','upg.b1s':'将月度报告保存为PDF并分享',
+    'upg.b2t':'多设备实时同步','upg.b2s':'手机、平板、PC随时随地共享数据',
+    'upg.b3t':'AI消费分析＆省钱指导','upg.b3s':'基于消费模式提供个性化省钱建议',
+    'upg.b4t':'多账户＆高级主题','upg.b4s':'按账户分开管理＋专属设计主题',
+    'upg.plan1mo':'1个月','upg.plan1y':'1年','upg.planLife':'永久',
+    'upg.planUnit':'/ 月','upg.planUnit2':'一次性付款','upg.save57':'省57%',
+    'upg.cta':'立即开始 →','upg.restore':'恢复购买',
+    'upg.comingSoon':'🔔 即将上线！','upg.restoreWip':'恢复功能正在开发中。',
     'backup.backupTitle':'数据备份 (JSON下载)','backup.backupSub':'将所有记录、分类和设置保存到文件',
     'backup.restoreTitle':'数据恢复 (文件上传)','backup.restoreSub':'从备份JSON恢复（覆盖当前数据）',
     'export.thisMonth':'本月记录','export.allTime':'全部记录',
@@ -6786,6 +7116,14 @@ const TRANSLATIONS = {
     'wdef.insight':'月度摘要','wdef.champion':'最高支出','wdef.dayofweek':'按星期消费',
     'wdef.survival':'预算目标','wdef.mbti':'消费MBTI','wdef.top3cats':'分类 TOP 3',
     'wdef.nospend':'零消费日历','wdef.alert':'支出警告','wdef.dailyavg':'日均支出',
+    'rs.trend':'6个月支出趋势','rs.week':'每周支出','rs.vs':'收入 VS 支出',
+    'rs.week1':'第1周','rs.week2':'第2周','rs.week3':'第3周','rs.week4':'第4周',
+    'rs.prevMonthCmp':'较上月','rs.davgTotal':'共 {amt} / {n}天','rs.davgPrev':'上月 {amt}/天',
+    'rs.dowInsight':'{day}支出最多','rs.dowNoData':'本月没有支出数据。',
+    'rs.moSuffix':'月',
+    'rs.cmp.noData':'本月暂无支出','rs.cmp.noLast':'无上月数据',
+    'rs.cmp.saved':'比上月节省了{pct}%！节省{amt}','rs.cmp.same':'与上月相同',
+    'rs.cmp.more':'比上月多花了{pct}%（{amt}）',
     'me.streak':'🔥 连续记录 {n} 天','me.streakZero':'快来开始记录吧！',
     'me.monthRecord':'本月记录','me.streakDays':'连续记录天数',
     'me.notLoggedIn':'未登录','me.syncInfo':'登录后同步到服务器','me.loginBtn':'登录 / 注册',
@@ -6891,6 +7229,7 @@ const TRANSLATIONS = {
     'toast.allDeleted':'所有记录已删除 🗑️','toast.deleteFail':'删除失败: {msg}',
     'toast.serverError':'服务器发生错误',
     'toast.inquirySent':'问题已提交 ✓','toast.inquiryEmpty':'请输入标题和内容',
+    'toast.nameRequired':'请输入项目名称','toast.amtRequired':'请输入金额',
     'upgrade.title':'高级版','upgrade.currentPlan':'当前方案','upgrade.freePlan':'免费 (Free)','upgrade.freeBadge':'FREE',
     'upgrade.featuresTitle':'高级功能','upgrade.soon':'即将推出','upgrade.closeBtn':'知道了 👍',
     'upgrade.feat1':'PDF报告导出','upgrade.feat1sub':'将月度消费报告保存为PDF',
@@ -6905,7 +7244,7 @@ const TRANSLATIONS = {
     'fx.loadingList':'加载中...','fx.emptyList':'还没有固定项目<br>在下方添加',
     'confirm.deleteLinked':'本月已有"{name}"的{count}条记录，一并删除吗？\n\n取消则只删除固定设置，记录保留。',
     'opt.selectCat':'选择分类',
-    'fontsize.normal':'普通','fontsize.large':'大','fontsize.xlarge':'超大',
+    'fontsize.small':'小','fontsize.normal':'普通','fontsize.large':'大',
     'lang.ko':'韩语','lang.en':'英语','lang.ja':'日语','lang.zh':'中文','lang.es':'西班牙语',
     'alert.dateRange':'请选择开始日期和结束日期。','alert.dateOrder':'结束日期不能早于开始日期。',
     'alert.enterAmt':'请输入金额。','alert.enterDate':'请选择日期。',
@@ -6948,7 +7287,7 @@ const TRANSLATIONS = {
     'btn.save':'Guardar','btn.add':'Añadir','btn.close':'Cerrar',
     'btn.detail':'Detalle','btn.edit':'Editar','btn.copy':'Copiar','btn.delete':'Eliminar',
     'fmt.daySheet':'Día {d} ({dow})',
-    'fx.addNew':'Agregar nuevo fijo','fx.namePh':'Nombre (ej. Alquiler)','fx.amtPh':'Importe','fx.catPh':'Seleccionar categoría',
+    'fx.addNew':'Agregar nuevo fijo','fx.namePh':'Nombre (ej. Alquiler)','fx.amtPh':'Importe','fx.catPh':'Seleccionar categoría','fx.empty':'No hay elementos fijos','fx.emptySub':'Añade uno abajo',
     'fx.typeExp':'💸 Gasto','fx.typeInc':'💰 Ingreso',
     'fx.weekly':'Semanal','fx.monthly':'Mensual','fx.yearly':'Anual','fx.addBtn':'＋Agregar',
     'fx.retroTitle':'📅 ¡Esta fecha ya pasó!','fx.retroConfirm':'✅ Sí, registrar ahora','fx.retroSkip':'Aplicar desde el próximo mes',
@@ -6957,8 +7296,26 @@ const TRANSLATIONS = {
     'cat.addNew':'Agregar nueva categoría','cat.namePh':'Nombre de categoría','cat.tabExp':'Gasto','cat.tabInc':'Ingreso',
     'pay.addNew':'Agregar nuevo método','pay.namePh':'Nombre del método',
     'notif.checking':'Verificando permiso de notificación...','notif.timeLabel':'Hora de notificación',
-    'notif.desc':'Envía un recordatorio a la hora configurada. Funciona con la app abierta.',
+    'notif.desc':'Envía un recordatorio a la hora configurada. Funciona aunque la app esté cerrada.',
     'notif.saveBtn':'Permitir y guardar',
+    'notif.noSupport':'Este navegador no soporta notificaciones.','notif.granted':'Las notificaciones están permitidas',
+    'notif.denied':'Las notificaciones están bloqueadas. Permite en configuración del navegador.','notif.needPerm':'Debes permitir las notificaciones',
+    'notif.on':'Activado','notif.off':'Desactivado','notif.noSupportToast':'Este navegador no soporta notificaciones',
+    'notif.msgReminder':'Aún no has registrado hoy. ¡No lo olvides! 💪',
+    'notif.msgRecorded':'Hoy {n} registros, gasto total {amt}. ¡Buen trabajo! 👍',
+    'toast.notifSet':'Recordatorio diario configurado para las {time} 🔔',
+    'cat.empty':'No hay categorías','cat.emptySub':'Añade una abajo','cat.deleteConfirm':'¿Eliminar categoría "{name}"?','cat.base':'Predeterminado',
+    'row.sync':'Sincronizar servidor','currency.searchPh':'Buscar moneda...','currency.changed':'Moneda cambiada',
+    'upg.title':'MiPresupuesto Premium','upg.sub':'Experimenta una gestión más inteligente','upg.label':'Ir a Premium',
+    'upg.headline':'La manera inteligente de controlar tus gastos',
+    'upg.b1t':'Exportar PDF','upg.b1s':'Guarda y comparte reportes mensuales en PDF',
+    'upg.b2t':'Sincronización multi-dispositivo','upg.b2s':'Accede desde móvil, tablet o PC',
+    'upg.b3t':'Análisis IA & Coaching','upg.b3s':'Consejos de ahorro basados en tus patrones',
+    'upg.b4t':'Multi-cuenta & Temas Premium','upg.b4s':'Gestión por cuenta + temas exclusivos',
+    'upg.plan1mo':'1 Mes','upg.plan1y':'1 Año','upg.planLife':'De por vida',
+    'upg.planUnit':'/ mes','upg.planUnit2':'pago único','upg.save57':'Ahorra 57%',
+    'upg.cta':'Empezar →','upg.restore':'Restaurar compra',
+    'upg.comingSoon':'🔔 ¡Próximamente!','upg.restoreWip':'La función de restauración está en desarrollo.',
     'backup.backupTitle':'Copia de datos (JSON)','backup.backupSub':'Guarda todos los registros, categorías y configuraciones',
     'backup.restoreTitle':'Restaurar datos (subir archivo)','backup.restoreSub':'Restaurar desde JSON de copia (sobrescribe datos)',
     'export.thisMonth':'Registros de este mes','export.allTime':'Todos los registros',
@@ -6991,6 +7348,14 @@ const TRANSLATIONS = {
     'wdef.insight':'Resumen mensual','wdef.champion':'Mayor gasto','wdef.dayofweek':'Gastos por día',
     'wdef.survival':'Presupuesto','wdef.mbti':'MBTI de consumo','wdef.top3cats':'Categoría TOP 3',
     'wdef.nospend':'Días sin gasto','wdef.alert':'Alerta de gasto','wdef.dailyavg':'Gasto diario',
+    'rs.trend':'Tendencia 6 meses','rs.week':'Gasto semanal','rs.vs':'Ingresos VS Gastos',
+    'rs.week1':'Semana 1','rs.week2':'Semana 2','rs.week3':'Semana 3','rs.week4':'Semana 4',
+    'rs.prevMonthCmp':'vs mes ant.','rs.davgTotal':'Total {amt} / {n} días','rs.davgPrev':'Mes ant. {amt}/día',
+    'rs.dowInsight':'{day} tuvo el mayor gasto','rs.dowNoData':'Sin datos de gasto este mes.',
+    'rs.moSuffix':'',
+    'rs.cmp.noData':'Sin gastos este mes','rs.cmp.noLast':'Sin datos del mes anterior',
+    'rs.cmp.saved':'¡Ahorraste {pct}%! {amt} ahorrado','rs.cmp.same':'Igual que el mes pasado',
+    'rs.cmp.more':'{pct}% más que el mes pasado ({amt})',
     'me.streak':'🔥 {n} días seguidos','me.streakZero':'¡Empieza a registrar hoy!',
     'me.monthRecord':'Este mes','me.streakDays':'Días seguidos',
     'me.notLoggedIn':'No conectado','me.syncInfo':'Inicia sesión para sincronizar','me.loginBtn':'Iniciar sesión / Registrarse',
@@ -7096,6 +7461,7 @@ const TRANSLATIONS = {
     'toast.allDeleted':'Todos los registros eliminados 🗑️','toast.deleteFail':'Error al eliminar: {msg}',
     'toast.serverError':'Error de servidor',
     'toast.inquirySent':'Consulta enviada ✓','toast.inquiryEmpty':'Introduce título y contenido',
+    'toast.nameRequired':'Introduce el nombre del artículo','toast.amtRequired':'Introduce el importe',
     'upgrade.title':'Premium','upgrade.currentPlan':'Plan actual','upgrade.freePlan':'Gratis (Free)','upgrade.freeBadge':'FREE',
     'upgrade.featuresTitle':'FUNCIONES PREMIUM','upgrade.soon':'Próximamente','upgrade.closeBtn':'Entendido 👍',
     'upgrade.feat1':'Exportar informe PDF','upgrade.feat1sub':'Guarda el informe mensual como PDF',
@@ -7110,7 +7476,7 @@ const TRANSLATIONS = {
     'fx.loadingList':'Cargando...','fx.emptyList':'Sin elementos fijos aún<br>Añade uno abajo',
     'confirm.deleteLinked':'"{name}" tiene {count} registro(s) este mes. ¿Eliminarlos también?\n\nCancelar para eliminar solo la configuración del elemento fijo.',
     'opt.selectCat':'Seleccionar categoría',
-    'fontsize.normal':'Normal','fontsize.large':'Grande','fontsize.xlarge':'Muy grande',
+    'fontsize.small':'Pequeño','fontsize.normal':'Normal','fontsize.large':'Grande',
     'lang.ko':'Coreano','lang.en':'Inglés','lang.ja':'Japonés','lang.zh':'Chino','lang.es':'Español',
     'alert.dateRange':'Selecciona fecha de inicio y fin.','alert.dateOrder':'La fecha de fin no puede ser anterior a la de inicio.',
     'alert.enterAmt':'Por favor introduce un importe.','alert.enterDate':'Por favor selecciona una fecha.',
@@ -7135,9 +7501,7 @@ function tr(key) {
   const T = TRANSLATIONS[LANG_CODE_MAP[name] || 'ko'];
   return T[key] || TRANSLATIONS.ko[key] || key;
 }
-const _FONTSIZE_KEY = {'보통':'fontsize.normal','크게':'fontsize.large','아주 크게':'fontsize.xlarge'};
 const _LANG_KEY = {'한국어':'lang.ko','영어':'lang.en','일본어':'lang.ja','중국어':'lang.zh','스페인어':'lang.es'};
-function trFontSize(v) { return _FONTSIZE_KEY[v] ? tr(_FONTSIZE_KEY[v]) : v; }
 function trLang(v) { return _LANG_KEY[v] ? tr(_LANG_KEY[v]) : v; }
 function applyLang() {
   const name = localStorage.getItem(LANG_SK) || '한국어';
@@ -7160,8 +7524,7 @@ function applyLang() {
   }
   const rowVal = document.getElementById('langRowValue');
   if (rowVal) rowVal.textContent = trLang(name);
-  const fszVal = document.getElementById('fontSizeRowValue');
-  if (fszVal) { const fv = localStorage.getItem('design_fontsize')||'보통'; fszVal.textContent = trFontSize(fv); }
+
   const currVal = document.getElementById('currencyRowValue');
   if (currVal) { const sym = getCurrSymbol(); const code = getCurrCode(); currVal.textContent = sym + ' ' + code; }
   buildFxDynamicOptions();
@@ -7223,18 +7586,23 @@ function closeLangModal() {
   document.getElementById('langModal').classList.remove('show');
 }
 
+
 // ── 초기화 ───────────────────────────────────────────────────
 load();
 loadFixed();
 applyDarkMode();
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
 startNotifScheduler();
 setMonthLabel();
 refreshIcons();
 applyLang();
 // DB 카테고리를 먼저 로드한 뒤 렌더 (로그인 상태에서 카테고리 즉시 반영)
+// autoApplyFixed 완료 후 syncFromServer(강제) — 타이밍 충돌 방지
 loadDbCats(() => {
   renderLedger();
-  autoApplyFixed();
+  autoApplyFixed().then(() => syncFromServer(true));
 });
 </script>
 </body>

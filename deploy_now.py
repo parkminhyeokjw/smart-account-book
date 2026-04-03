@@ -139,6 +139,7 @@ to_deploy = [
     ('public/register.php',       'public/register.php'),
     ('public/forgot_password.php','public/forgot_password.php'),
     ('public/design_apply.js',    'public/design_apply.js'),
+    ('public/sw.js',              'public/sw.js'),
     ('public/design_settings.php','public/design_settings.php'),
     ('public/settings.php',       'public/settings.php'),
     ('public/balance.php',        'public/balance.php'),
@@ -146,6 +147,8 @@ to_deploy = [
     ('public/calculator.php',     'public/calculator.php'),
     ('public/currency.php',       'public/currency.php'),
     ('api/index.php',             'api/index.php'),
+    ('api/webpush.php',           'api/webpush.php'),
+    ('api/push_cron.php',         'api/push_cron.php'),
 ]
 ok = 0
 for local_rel, remote_rel in to_deploy:
