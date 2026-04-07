@@ -57,9 +57,11 @@ if ($isLoggedIn) {
 
     // 배지
     $mc = $dbStats['month_count'];
-    if      ($mc >= 50) $dbStats['badge'] = '자산 수비대 🛡️';
-    elseif  ($mc >= 20) $dbStats['badge'] = '절약 탐험가 🧭';
-    elseif  ($mc >=  5) $dbStats['badge'] = '기록 새싹 🌱';
+    if      ($mc >= 36) $dbStats['badge'] = '재테크 고수 👑';
+    elseif  ($mc >= 24) $dbStats['badge'] = '자산 수비대 🛡️';
+    elseif  ($mc >= 12) $dbStats['badge'] = '절약 탐험가 🧭';
+    elseif  ($mc >=  6) $dbStats['badge'] = '절약 루키 🌿';
+    elseif  ($mc >=  3) $dbStats['badge'] = '기록 새싹 🌱';
 
     // 설정 로드 (다크모드, 알림)
     try {
@@ -154,7 +156,7 @@ body {
 .app-header {
   position: sticky; top: 0; z-index: 100;
   background: #364B6D; color: #fff;
-  height: calc(56px + env(safe-area-inset-top));
+  height: calc(44px + env(safe-area-inset-top));
   padding: env(safe-area-inset-top) 14px 0;
   display: flex; justify-content: space-between; align-items: center;
   box-shadow: none;
@@ -237,15 +239,17 @@ body.dark .stats-period-menu-item.on { color:#93c5fd; }
 
 /* ── 요약 스트립 (월 네비 + 카드) ── */
 .sum-strip {
-  position: sticky; top: calc(56px + env(safe-area-inset-top)); z-index: 90;
+  position: sticky; top: calc(44px + env(safe-area-inset-top)); z-index: 90;
   background: #364B6D;
   border: none; box-shadow: none;
+  overflow: hidden;
 }
 /* 월 네비 */
 .sum-strip .month-nav {
   justify-content: space-between;
   background: #364B6D;
-  padding: 4px 16px 36px;
+  padding: 0px 16px 10px;
+  margin-top: 0;
   margin: 0;
 }
 /* 통계/분석 탭은 sumCols 없으므로 패딩 줄임 */
@@ -256,14 +260,13 @@ body.dark .stats-period-menu-item.on { color:#93c5fd; }
 .sum-strip .month-btn:active { background: rgba(255,255,255,.1); }
 .sum-strip .month-btn:disabled { color: rgba(255,255,255,.25) !important; cursor:default; }
 .sum-strip #monthLabel { font-size: 16px !important; font-weight: 700; color: #fff !important; min-width: 80px; text-align: center; }
-.sum-strip #monthLabel.picker-mode { background: rgba(255,255,255,.15); border-radius: 6px; padding: 3px 10px; cursor: pointer; color: #fff; }
+.sum-strip #monthLabel.picker-mode { background: none; border-radius: 6px; padding: 3px 10px; cursor: pointer; color: #fff; }
 .sum-strip #monthLabel.picker-mode::after { content: ' ▾'; font-size: 10px; opacity: .8; }
-/* 카드 컬럼 — 위로 당겨서 네이비 영역에 절반 걸치게 */
+/* 카드 컬럼 */
 .sum-cols {
   display: flex; gap: 10px;
-  padding: 0 16px 16px;
-  margin-top: -36px;
-  background: var(--bg);
+  padding: 0 16px 0;
+  background: linear-gradient(to bottom, #364B6D 50%, #F8FAFC 50%);
   position: relative; z-index: 2;
 }
 .sum-col {
@@ -271,7 +274,7 @@ body.dark .stats-period-menu-item.on { color:#93c5fd; }
   border-radius: 14px !important;
   padding: 10px 8px 10px !important;
   text-align: center; border: none !important;
-  box-shadow: 0 6px 16px rgba(0,0,0,.08) !important;
+  box-shadow: none !important;
 }
 .sum-col-label { font-size: 12px; font-weight: 600; color: #64748B; letter-spacing: .2px; }
 .sum-col-value { font-size: 15px; font-weight: 800; margin-top: 4px; color: var(--text1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -287,14 +290,14 @@ body.dark .stats-period-menu-item.on { color:#93c5fd; }
 /* ── 거래 목록 ── */
 .date-header {
   display: flex; justify-content: space-between; align-items: center;
-  padding: 14px 20px 6px; font-size: 12px; font-weight: 700; color: var(--text2); background: transparent;
+  padding: 8px 20px 6px; font-size: 12px; font-weight: 700; color: var(--text2); background: transparent;
 }
 .tx-row {
   display: flex; align-items: center; gap: 14px;
   padding: 16px 20px !important;
   background: #ffffff !important;
   border-radius: 14px !important;
-  margin: 8px 16px !important;
+  margin: 6px 16px !important;
   box-shadow: 0 2px 12px rgba(0,0,0,.06) !important;
   border-bottom: none !important;
   cursor: pointer;
@@ -698,11 +701,11 @@ body.dark .avatar-sheet-sep { background:#334155; }
 .me-row-value { font-size: 12px; color: #9e9e9e; }
 .me-row-arrow { font-size: 16px; color: #c8c8c8; }
 .me-row.danger .me-row-label { color: #EF4444; }
-.me-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 6px 16px 0; }
-.me-grid-item { background: var(--surface); border-radius: 16px; padding: 20px 8px 16px; display: flex; flex-direction: column; align-items: center; gap: 10px; cursor: pointer; box-shadow: none; border: 1.5px solid var(--border); transition: background .12s; }
-.me-grid-item:active { background: #eef2ff; }
-.me-grid-icon { width: 52px; height: 52px; border-radius: 50%; background: transparent; border: 1.5px solid #b0b8c8; display: flex; align-items: center; justify-content: center; }
-.me-grid-icon svg { width: 22px; height: 22px; stroke-width: 1.5; color: #333; }
+.me-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 36px 20px 0; }
+.me-grid-item { background: #fff; border-radius: 14px; padding: 18px 8px 14px; display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; box-shadow: var(--shadow); border: 1.5px solid var(--border); transition: opacity .12s; }
+.me-grid-item:active { opacity: .75; }
+.me-grid-icon { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; }
+.me-grid-icon svg { width: 26px; height: 26px; stroke-width: 1.5; color: #364B6D; }
 .me-grid-label { font-size: 13px; font-weight: 600; color: var(--text1); text-align: center; }
 .me-footer { text-align: center; padding: 28px 20px 16px; font-size: 12px; color: #bdbdbd; line-height: 1.7; }
 
@@ -912,9 +915,7 @@ body.dark .me-section-title { color:#475569; }
 body.dark .me-footer { color:#334155; }
 body.dark .me-subpage { background:#0d1117; }
 body.dark .me-subpage-hd { background:#0F172A; }
-body.dark .me-grid-item { background:#131c27; border-color:#1e293b; }
-body.dark .me-grid-item:active { background:#1a2638; }
-body.dark .me-grid-icon { background:transparent; border-color:#334155; }
+body.dark .me-grid-item { background:#1a2638; }
 body.dark .me-grid-icon svg { color:#94a3b8; }
 body.dark .me-grid-label { color:#cbd5e1; }
 body.dark .widget-card { background:#131c27; }
@@ -993,6 +994,18 @@ body.dark .txa-desc { color:#e0e0e0; }
 body.dark .txa-sub { color:#666; }
 body.dark .day-sheet-overlay { background:rgba(0,0,0,.7); }
 
+/* ── 가계부탭 년/월 선택 피커 ── */
+.ym-picker-year { display:flex; align-items:center; justify-content:center; gap:12px; margin-bottom:16px; }
+.ym-picker-year-btn { background:none; border:none; color:var(--p); font-size:22px; cursor:pointer; padding:4px 10px; border-radius:6px; }
+.ym-picker-year-btn:active { background:rgba(0,0,0,.08); }
+.ym-picker-year-val { font-size:17px; font-weight:700; color:#222; min-width:60px; text-align:center; }
+.ym-picker-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+.ym-picker-m { background:#f3f6fa; border:none; border-radius:10px; padding:11px 0; font-size:14px; font-weight:600; color:#555; cursor:pointer; font-family:inherit; transition:background .15s; }
+.ym-picker-m:active { background:#dbe6f5; }
+.ym-picker-m.selected { background:var(--p); color:#fff; }
+body.dark .ym-picker-year-val { color:#e2e8f0; }
+body.dark .ym-picker-m { background:#1e293b; color:#94a3b8; }
+body.dark .ym-picker-m.selected { background:var(--p); color:#fff; }
 /* ── 공통 센터 모달 오버레이 ── */
 .center-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:600; align-items:center; justify-content:center; padding:16px; }
 .center-overlay.show { display:flex; }
@@ -1484,20 +1497,20 @@ body.dark .widget-card.surv-danger { background:#2d1515; }
     <button class="month-btn" onclick="changeMonth(1)" id="monthBtnNext">›</button>
   </div>
   <div class="sum-cols" id="sumCols">
-    <div class="sum-col">
-      <div class="sum-col-label" data-i18n="lbl.income">수입</div>
-      <div class="sum-col-value sum-income" id="sumInc">₩0</div>
-    </div>
-    <div class="sum-col">
-      <div class="sum-col-label" data-i18n="lbl.expense">지출</div>
-      <div class="sum-col-value sum-expense" id="sumExp">₩0</div>
-    </div>
-    <div class="sum-col">
-      <div class="sum-col-label" data-i18n="lbl.balance">잔액</div>
-      <div class="sum-col-value" id="sumBal">₩0</div>
-    </div>
+      <div class="sum-col">
+        <div class="sum-col-label" data-i18n="lbl.income">수입</div>
+        <div class="sum-col-value sum-income" id="sumInc">₩0</div>
+      </div>
+      <div class="sum-col">
+        <div class="sum-col-label" data-i18n="lbl.expense">지출</div>
+        <div class="sum-col-value sum-expense" id="sumExp">₩0</div>
+      </div>
+      <div class="sum-col">
+        <div class="sum-col-label" data-i18n="lbl.balance">잔액</div>
+        <div class="sum-col-value" id="sumBal">₩0</div>
+      </div>
   </div>
-</div>
+</div><!-- /sumStrip -->
 
 <!-- ① 가계부 탭 -->
 <div class="tab-pane active" id="pane-ledger">
@@ -1772,6 +1785,24 @@ body.dark .widget-card.surv-danger { background:#2d1515; }
     <div style="height:60px"></div>
     </div><!-- end me-subpage-body -->
 
+  </div>
+</div>
+
+<!-- 가계부탭 년/월 선택 피커 모달 -->
+<div class="center-overlay" id="ledgerYMModal" onclick="if(event.target===this)closeLedgerYMPicker()">
+  <div class="center-modal" style="width:calc(100% - 40px);max-width:340px">
+    <div class="center-modal-hd">
+      <span class="center-modal-hd-title">📅 년/월 선택</span>
+      <button class="center-modal-x" onclick="closeLedgerYMPicker()">×</button>
+    </div>
+    <div class="center-modal-body">
+      <div class="ym-picker-year">
+        <button class="ym-picker-year-btn" onclick="ymPickerChangeYear(-1)">‹</button>
+        <span class="ym-picker-year-val" id="ymPickerYear"></span>
+        <button class="ym-picker-year-btn" onclick="ymPickerChangeYear(1)">›</button>
+      </div>
+      <div class="ym-picker-grid" id="ymPickerGrid"></div>
+    </div>
   </div>
 </div>
 
@@ -2991,7 +3022,7 @@ function goTab(name) {
     document.getElementById('haStats').style.display   = isStats  ? 'flex' : 'none';
     document.getElementById('haReport').style.display  = isReport ? 'flex' : 'none';
   }
-  document.getElementById('monthLabel').classList.toggle('picker-mode', isStats);
+  document.getElementById('monthLabel').classList.toggle('picker-mode', isStats || name === 'ledger' || name === 'calendar');
   setMonthLabel();
   if (name==='ledger')   { prevTab='ledger';   renderLedger(); }
   if (name==='calendar') { prevTab='calendar'; renderCalendar(); }
@@ -3050,6 +3081,7 @@ function getStatsHeaderLabel() {
 
 function setMonthLabel() {
   const active = TABS.find(t => document.getElementById('pane-'+t)?.classList.contains('active'));
+  document.getElementById('monthLabel').classList.toggle('picker-mode', active === 'stats' || active === 'ledger' || active === 'calendar');
   const [y,m] = curMonth.split('-');
   const monthText = fmtYearMonth(y, m);
   if (active === 'stats') {
@@ -3554,6 +3586,62 @@ function openCatDetail(cat) { openGroupDetail(cat); }
 function onMonthLabelClick() {
   const active = TABS.find(t => document.getElementById('pane-'+t)?.classList.contains('active'));
   if (active === 'stats') openDateRangePicker();
+  if (active === 'ledger' || active === 'calendar') openLedgerYMPicker();
+}
+let _ymPickerYear = 0;
+function openLedgerYMPicker() {
+  const [y, m] = curMonth.split('-').map(Number);
+  _ymPickerYear = y;
+  renderYMPickerGrid(m);
+  document.getElementById('ledgerYMModal').classList.add('show');
+}
+function closeLedgerYMPicker() {
+  document.getElementById('ledgerYMModal').classList.remove('show');
+}
+function ymPickerChangeYear(d) {
+  _ymPickerYear += d;
+  const curM = parseInt(curMonth.split('-')[1]);
+  renderYMPickerGrid(curM);
+}
+function renderYMPickerGrid(selM) {
+  const now = new Date();
+  const todayY = now.getFullYear();
+  const todayM = now.getMonth() + 1;
+  document.getElementById('ymPickerYear').textContent = _ymPickerYear + '년';
+  // 미래 년도면 > 버튼 비활성화
+  const nextBtn = document.querySelector('#ledgerYMModal .ym-picker-year-btn:last-child');
+  if (nextBtn) {
+    const isFutureYear = _ymPickerYear >= todayY;
+    nextBtn.disabled = isFutureYear;
+    nextBtn.style.opacity = isFutureYear ? '0.3' : '';
+    nextBtn.style.cursor = isFutureYear ? 'default' : '';
+  }
+  const curY = parseInt(curMonth.split('-')[0]);
+  const curMo = parseInt(curMonth.split('-')[1]);
+  const grid = document.getElementById('ymPickerGrid');
+  grid.innerHTML = '';
+  for (let i = 1; i <= 12; i++) {
+    const isFuture = _ymPickerYear > todayY || (_ymPickerYear === todayY && i > todayM);
+    const btn = document.createElement('button');
+    btn.className = 'ym-picker-m';
+    btn.textContent = i + '월';
+    if (_ymPickerYear === curY && i === curMo) btn.classList.add('selected');
+    if (isFuture) {
+      btn.disabled = true;
+      btn.style.opacity = '0.3';
+      btn.style.cursor = 'default';
+    } else {
+      btn.onclick = () => {
+        const nm = String(i).padStart(2, '0');
+        curMonth = _ymPickerYear + '-' + nm;
+        closeLedgerYMPicker();
+        setMonthLabel();
+        const _at = TABS.find(t => document.getElementById('pane-'+t)?.classList.contains('active'));
+        if (_at === 'calendar') renderCalendar(); else renderLedger();
+      };
+    }
+    grid.appendChild(btn);
+  }
 }
 
 function openDateRangePicker() {
