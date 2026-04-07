@@ -336,12 +336,22 @@ try {
         // ── 고정 지출 자동 적용 (앱 접속 시 호출) ────────────────────
         case 'fixed_apply':
             $pdo    = getConnection();
-            $year   = (int)date('Y');
-            $mon    = (int)date('n');
-            $todayD = (int)date('j');
-            $todayW = (int)date('w'); // 0=일,1=월...6=토
-            $today  = date('Y-m-d');
-            $maxDay = (int)date('t', mktime(0, 0, 0, $mon, 1, $year)); // cal 확장 없이
+            // 클라이언트가 로컬 날짜를 넘겨주면 그걸 사용, 없으면 서버 날짜 fallback
+            $clientDate = trim($_POST['client_date'] ?? '');
+            if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $clientDate)) {
+                $today  = $clientDate;
+                $year   = (int)substr($clientDate, 0, 4);
+                $mon    = (int)substr($clientDate, 5, 2);
+                $todayD = (int)substr($clientDate, 8, 2);
+                $todayW = (int)date('w', strtotime($clientDate));
+            } else {
+                $year   = (int)date('Y');
+                $mon    = (int)date('n');
+                $todayD = (int)date('j');
+                $todayW = (int)date('w');
+                $today  = date('Y-m-d');
+            }
+            $maxDay = (int)date('t', mktime(0, 0, 0, $mon, 1, $year));
 
             $stmt = $pdo->prepare("SELECT * FROM fixed_expenses WHERE user_id=:uid");
             $stmt->execute([':uid'=>$userId]);

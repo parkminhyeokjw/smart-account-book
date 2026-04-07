@@ -60,4 +60,9 @@ if (file_put_contents($absPath, $content) === false) {
     exit;
 }
 
+// OPcache 무효화
+if (function_exists('opcache_invalidate')) {
+    opcache_invalidate($absPath, true);
+}
+
 echo json_encode(['ok' => true, 'path' => $relPath, 'size' => strlen($content)]);

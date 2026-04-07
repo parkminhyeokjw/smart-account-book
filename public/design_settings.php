@@ -315,11 +315,5 @@ function selectOption(key, val) {
   updateLabel(key, getSetting(key));
 });
 </script>
-<script>
-(function(){
-  var fs = localStorage.getItem('design_fontsize') || '보통';
-  document.body.style.zoom = fs==='아주 크게'?'1.2':fs==='크게'?'1.1':'1';
-})();
-</script>
 </body>
 </html>

@@ -40,17 +40,22 @@
     r.style.setProperty('--color-minus',   minus);
     r.style.setProperty('--color-plus',    plus);
 
-    // ── 글자 크기 ──
+    // ── 글자 크기 (data-fontsize 속성만 → CSS에서 처리) ──
     r.setAttribute('data-fontsize', fontsize);
-    if (document.body) {
-      document.body.style.zoom =
-        fontsize === '아주 크게' ? '1.2' :
-        fontsize === '크게'      ? '1.1' : '1';
+
+    // ── Android 앱에 테마 색 전달 (상단/하단 바 색 동기화) ──
+    if (window.AndroidBridge) {
+      window.AndroidBridge.setStatusBarColor(primary);
     }
   }
 
   // ── 즉시 실행 (렌더 전) ──
   apply();
+
+  // ── body가 없을 때(head 실행) DOMContentLoaded에서 재적용 ──
+  if (!document.body) {
+    document.addEventListener('DOMContentLoaded', apply);
+  }
 
   // ── bfcache 복원 시 재적용 (뒤로가기 후 구버전 방지) ──
   window.addEventListener('pageshow', function (e) {
@@ -59,4 +64,17 @@
 
   // ── 설정 변경 후 현재 페이지 즉시 반영용 ──
   window.applyDesignSettings = apply;
+
+  // ── sum-strip 배경 네이비 고정 (CDN 캐시 우회용 직접 주입) ──
+  function fixSumStrip() {
+    var strip = document.getElementById('sumStrip');
+    if (strip) strip.style.background = '#364B6D';
+    var cols = document.getElementById('sumCols');
+    if (cols) cols.style.background = 'var(--bg, #f5f6fa)';
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', fixSumStrip);
+  } else {
+    fixSumStrip();
+  }
 })();

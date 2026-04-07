@@ -134,6 +134,7 @@ if not ensure_cookie():
 
 # Step 1: deploy changed files
 to_deploy = [
+    ('public/deploy.php',         'public/deploy.php'),
     ('public/index.php',          'public/index.php'),
     ('public/login.php',          'public/login.php'),
     ('public/register.php',       'public/register.php'),
