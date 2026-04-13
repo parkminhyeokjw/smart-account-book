@@ -165,7 +165,7 @@ body {
   box-shadow: none;
 }
 .header-title { display:flex; align-items:center; gap:4px; }
-.header-logo-text { font-size: 16px; font-weight: 700; letter-spacing: .3px; }
+.header-logo-text { font-size: clamp(15px, 4vw, 18px); font-weight: 700; letter-spacing: .3px; }
 #headerBackBtn { background:none; border:none; color:#fff; cursor:pointer; padding:4px 2px 4px 0; line-height:1; display:none; align-items:center; transition:opacity .15s; }
 #headerBackBtn:active { opacity:.6; }
 .app-header.stats-mode .header-logo-text,
@@ -226,17 +226,19 @@ body.dark .stats-period-menu-item.on { color:#93c5fd; }
 .month-btn:disabled:active { background: none; }
 #monthLabel { font-size: 14px; font-weight: 600; min-width: 70px; text-align: center; }
 .cal-btn {
-  background: none; border: none; color: #fff; font-size: 18px;
+  background: none; border: none; color: #fff; font-size: clamp(18px, 4.8vw, 22px);
   cursor: pointer; padding: 4px 6px; border-radius: 4px; line-height: 1;
   display:flex; align-items:center; justify-content:center;
 }
 .cal-btn:active { background: rgba(255,255,255,.2); }
+.cal-btn svg, .cal-btn i { width: clamp(19px, 5vw, 23px) !important; height: clamp(19px, 5vw, 23px) !important; }
 .search-btn {
-  background: none; border: none; color: #fff; font-size: 18px;
+  background: none; border: none; color: #fff; font-size: clamp(18px, 4.8vw, 22px);
   cursor: pointer; padding: 4px 6px; border-radius: 4px; line-height: 1;
   display:flex; align-items:center; justify-content:center;
 }
 .search-btn:active { background: rgba(255,255,255,.2); }
+.search-btn svg, .search-btn i { width: clamp(19px, 5vw, 23px) !important; height: clamp(19px, 5vw, 23px) !important; }
 
 /* ── 탭 패인 ── */
 .tab-pane { display: none; padding-bottom: calc(72px + env(safe-area-inset-bottom)); }
@@ -277,8 +279,8 @@ body.dark .stats-period-menu-item.on { color:#93c5fd; }
 .sum-col {
   flex: 1; background: #ffffff !important;
   border-radius: 14px !important;
-  padding: 10px 8px !important;
-  height: 68px; min-height: 68px;
+  padding: clamp(9px, 2.5vw, 14px) 8px !important;
+  height: clamp(64px, 17vw, 80px); min-height: clamp(64px, 17vw, 80px);
   display: flex; flex-direction: column; justify-content: center;
   text-align: center; border: none !important;
   box-shadow: 0 2px 8px rgba(0,0,0,.06) !important;
@@ -714,7 +716,7 @@ body.dark .avatar-sheet-sep { background:#334155; }
 .me-row-arrow { font-size: 16px; color: #c8c8c8; }
 .me-row.danger .me-row-label { color: #EF4444; }
 .me-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(10px, 2.5vw, 14px); margin: clamp(28px, 7vw, 44px) clamp(16px, 4.5vw, 28px) 0; }
-.me-grid-item { background: #fff; border-radius: 14px; padding: clamp(16px, 4vw, 24px) 8px clamp(12px, 3vw, 18px); display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; box-shadow: var(--shadow); border: 1.5px solid var(--border); transition: opacity .12s; }
+.me-grid-item { background: #fff; border-radius: 14px; padding: 8px; aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; cursor: pointer; box-shadow: var(--shadow); border: 1.5px solid var(--border); transition: opacity .12s; }
 .me-grid-item:active { opacity: .75; }
 .me-grid-icon { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; }
 .me-grid-icon svg { width: 26px; height: 26px; stroke-width: 1.5; color: #364B6D; }
@@ -1483,7 +1485,7 @@ body.dark #survPane .widget-card { background:#0f172a !important; border-bottom-
 <script>
 // 캐시 강제 초기화 — 버전 바뀌면 자동 하드리로드
 (function(){
-  var V = '20260414-01';
+  var V = '20260414-02';
   if (localStorage.getItem('_av') !== V) {
     localStorage.setItem('_av', V);
     // 서비스워커 캐시도 함께 제거
@@ -5629,6 +5631,8 @@ function _updateSafeAreaColors() {
   const b = document.getElementById('_safeBottom');
   if (t) t.style.background = isDark ? '#0F172A' : '#364B6D';
   if (b) b.style.background = isDark ? '#131c27' : '#ffffff';
+  // body 밖 html 영역(가로 여백, 하단) 배경 동기화
+  document.documentElement.style.background = isDark ? '#0d1117' : '#F8FAFC';
 }
 function applyDarkMode() {
   document.body.classList.toggle('dark', isDark);
