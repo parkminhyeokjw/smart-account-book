@@ -147,9 +147,14 @@ to_deploy = [
     ('public/spending_pattern.php','public/spending_pattern.php'),
     ('public/calculator.php',     'public/calculator.php'),
     ('public/currency.php',       'public/currency.php'),
+    ('public/help.php',           'public/help.php'),
+    ('public/admin_inquiries.php','public/admin_inquiries.php'),
     ('api/index.php',             'api/index.php'),
     ('api/webpush.php',           'api/webpush.php'),
     ('api/push_cron.php',         'api/push_cron.php'),
+    ('api/inquiry.php',           'api/inquiry.php'),
+    ('config/db.php',             'config/db.php'),
+    ('transaction/create.php',    'transaction/create.php'),
 ]
 ok = 0
 for local_rel, remote_rel in to_deploy:

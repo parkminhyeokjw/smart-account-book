@@ -1,3 +1,9 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) session_start();
+$_helpUserName  = htmlspecialchars($_SESSION['user_name']  ?? '');
+$_helpUserEmail = htmlspecialchars($_SESSION['user_email'] ?? '');
+$_helpLoggedIn  = !empty($_SESSION['user_id']);
+?>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -71,6 +77,54 @@ body {
   color: #E91E63; word-break: break-all;
   font-size: 16px; margin-top: 24px; display: block;
 }
+
+/* ── 문의하기 ── */
+.contact-section {
+  background: #fff;
+  margin-top: 8px;
+  border-top: 1px solid #E0E0E0;
+}
+.contact-header {
+  padding: 18px 20px 14px;
+  font-size: 18px; font-weight: 700; color: #212121;
+}
+.contact-sub {
+  padding: 0 20px 14px;
+  font-size: 14px; color: #757575; line-height: 1.6;
+}
+.contact-form { padding: 0 16px 32px; }
+.cf-field { margin-bottom: 12px; }
+.cf-label {
+  display: block;
+  font-size: 13px; font-weight: 600; color: #424242;
+  margin-bottom: 6px;
+}
+.cf-label .req { color: #E91E63; margin-left: 2px; }
+.cf-input, .cf-textarea {
+  width: 100%; padding: 12px 14px;
+  border: 1px solid #E0E0E0; border-radius: 10px;
+  font-size: 16px; font-family: inherit; color: #212121;
+  outline: none; background: #fff;
+  -webkit-appearance: none;
+}
+.cf-input:focus, .cf-textarea:focus { border-color: #212121; }
+.cf-textarea { resize: none; height: 120px; line-height: 1.6; }
+.cf-submit {
+  width: 100%; padding: 15px;
+  background: #212121; color: #fff;
+  border: none; border-radius: 12px;
+  font-size: 17px; font-weight: 700;
+  cursor: pointer; margin-top: 4px;
+}
+.cf-submit:active { background: #424242; }
+.cf-msg {
+  margin-top: 10px; padding: 12px 14px;
+  border-radius: 10px; font-size: 15px; font-weight: 500;
+  display: none;
+}
+.cf-msg.ok  { background: #E8F5E9; color: #2E7D32; }
+.cf-msg.err { background: #FFEBEE; color: #C62828; }
+.cf-char { font-size: 12px; color: #9E9E9E; text-align: right; margin-top: 4px; }
 </style>
 </head>
 <body>
@@ -131,6 +185,36 @@ body {
     <div class="h-item" onclick="showDetail(39)">사용할 수 있는 차트의 종류는?</div>
     <div class="h-item" onclick="showDetail(40)">자료차트 탭 화면의 구성은?</div>
     <div class="h-item" onclick="showDetail(41)">차트의 내용을 클릭하면?</div>
+  </div>
+
+  <!-- ══ 문의하기 섹션 ══ -->
+  <div class="contact-section" id="contact-section">
+    <div class="contact-header">문의하기</div>
+    <p class="contact-sub">도움말에서 해결되지 않는 문제가 있으시면 아래 양식으로 문의해 주세요.</p>
+    <div class="contact-form">
+      <?php if (!$_helpLoggedIn): ?>
+      <div class="cf-field">
+        <label class="cf-label">이름</label>
+        <input type="text" id="cf-name" class="cf-input" placeholder="이름을 입력해주세요" maxlength="50">
+      </div>
+      <div class="cf-field">
+        <label class="cf-label">이메일 <span style="color:#9E9E9E;font-weight:400">(선택)</span></label>
+        <input type="email" id="cf-email" class="cf-input" placeholder="답변 받을 이메일 (선택사항)">
+      </div>
+      <?php endif; ?>
+      <div class="cf-field">
+        <label class="cf-label">제목 <span class="req">*</span></label>
+        <input type="text" id="cf-subject" class="cf-input" placeholder="문의 제목을 입력해주세요" maxlength="200">
+      </div>
+      <div class="cf-field">
+        <label class="cf-label">내용 <span class="req">*</span></label>
+        <textarea id="cf-body" class="cf-textarea" placeholder="문의 내용을 자세히 적어주세요" maxlength="2000"
+                  oninput="updateChar(this)"></textarea>
+        <div class="cf-char"><span id="cf-char-count">0</span>/2000</div>
+      </div>
+      <button class="cf-submit" onclick="submitInquiry()">문의 등록</button>
+      <div class="cf-msg" id="cf-msg"></div>
+    </div>
   </div>
 </div>
 
@@ -491,6 +575,80 @@ function filterItems(q) {
   document.querySelectorAll('.h-item').forEach(function(el) {
     el.classList.toggle('hidden', q && !el.textContent.toLowerCase().includes(q));
   });
+  // 검색 시 문의하기 섹션 숨김/표시
+  var cs = document.getElementById('contact-section');
+  if (cs) cs.style.display = q ? 'none' : '';
+}
+
+function updateChar(el) {
+  var c = document.getElementById('cf-char-count');
+  if (c) c.textContent = el.value.length;
+}
+
+function submitInquiry() {
+  var subject = (document.getElementById('cf-subject') || {}).value || '';
+  var body    = (document.getElementById('cf-body')    || {}).value || '';
+  var msgEl   = document.getElementById('cf-msg');
+  var btn     = document.querySelector('.cf-submit');
+
+  subject = subject.trim();
+  body    = body.trim();
+
+  <?php if (!$_helpLoggedIn): ?>
+  var nameVal  = ((document.getElementById('cf-name')  || {}).value || '').trim();
+  var emailVal = ((document.getElementById('cf-email') || {}).value || '').trim();
+  if (!nameVal) { showMsg('이름을 입력해주세요.', false); return; }
+  <?php endif; ?>
+
+  if (!subject) { showMsg('제목을 입력해주세요.', false); return; }
+  if (!body)    { showMsg('내용을 입력해주세요.', false); return; }
+
+  btn.disabled    = true;
+  btn.textContent = '등록 중...';
+
+  var payload = { subject: subject, body: body };
+  <?php if (!$_helpLoggedIn): ?>
+  payload.name  = nameVal;
+  payload.email = emailVal;
+  <?php endif; ?>
+
+  fetch('../api/inquiry.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(d) {
+    showMsg(d.msg, d.ok);
+    if (d.ok) {
+      // 폼 초기화
+      document.getElementById('cf-subject').value = '';
+      document.getElementById('cf-body').value    = '';
+      var cc = document.getElementById('cf-char-count');
+      if (cc) cc.textContent = '0';
+      <?php if (!$_helpLoggedIn): ?>
+      var ni = document.getElementById('cf-name');
+      var ei = document.getElementById('cf-email');
+      if (ni) ni.value = '';
+      if (ei) ei.value = '';
+      <?php endif; ?>
+    }
+  })
+  .catch(function() { showMsg('오류가 발생했습니다. 잠시 후 다시 시도해주세요.', false); })
+  .finally(function() {
+    btn.disabled    = false;
+    btn.textContent = '문의 등록';
+  });
+}
+
+function showMsg(text, ok) {
+  var el = document.getElementById('cf-msg');
+  if (!el) return;
+  el.textContent  = text;
+  el.className    = 'cf-msg ' + (ok ? 'ok' : 'err');
+  el.style.display = 'block';
+  el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  if (ok) setTimeout(function(){ el.style.display='none'; }, 5000);
 }
 </script>
 <script>

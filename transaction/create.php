@@ -11,14 +11,20 @@ function insertTransaction(
     string $txDate,
     string $source = 'manual',
     string $paymentMethod = '현금',
-    ?string $txType = null
+    ?string $txType = null,
+    ?string $photos = null
 ): int {
     $pdo = getConnection();
+    // photos 컬럼 없으면 자동 추가
+    try {
+        $pdo->exec("ALTER TABLE transactions ADD COLUMN photos MEDIUMTEXT DEFAULT NULL");
+    } catch (PDOException $e) { /* 이미 있으면 무시 */ }
+
     $stmt = $pdo->prepare(
         "INSERT INTO transactions
-             (user_id, category_id, amount, description, payment_method, source, tx_date, tx_type)
+             (user_id, category_id, amount, description, payment_method, source, tx_date, tx_type, photos)
          VALUES
-             (:user_id, :category_id, :amount, :description, :payment_method, :source, :tx_date, :tx_type)"
+             (:user_id, :category_id, :amount, :description, :payment_method, :source, :tx_date, :tx_type, :photos)"
     );
     $stmt->execute([
         ':user_id'        => $userId,
@@ -29,6 +35,7 @@ function insertTransaction(
         ':source'         => $source,
         ':tx_date'        => $txDate,
         ':tx_type'        => $txType,
+        ':photos'         => $photos,
     ]);
     return (int) $pdo->lastInsertId();
 }

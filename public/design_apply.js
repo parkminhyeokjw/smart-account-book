@@ -44,7 +44,7 @@
     r.setAttribute('data-fontsize', fontsize);
 
     // ── Android 앱에 테마 색 전달 (상단/하단 바 색 동기화) ──
-    if (window.AndroidBridge) {
+    if (window.AndroidBridge && typeof window.AndroidBridge.setStatusBarColor === 'function') {
       window.AndroidBridge.setStatusBarColor(primary);
     }
   }

@@ -41,6 +41,85 @@ if ($action === 'export_csv') {
     exit;
 }
 
+if ($action === 'restore_json') {
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        http_response_code(405); echo json_encode(['ok'=>false,'msg'=>'POST only']); exit;
+    }
+    $body = json_decode(file_get_contents('php://input'), true);
+    if (!$body || !isset($body['transactions']) || !is_array($body['transactions'])) {
+        http_response_code(400); echo json_encode(['ok'=>false,'msg'=>'올바른 백업 파일이 아닙니다']); exit;
+    }
+    $pdo = getConnection();
+    $pdo->beginTransaction();
+    try {
+        // 1. 기존 거래내역 삭제
+        $pdo->prepare("DELETE FROM transactions WHERE user_id=:uid")->execute([':uid'=>$userId]);
+
+        // 2. 카테고리 복원 (있을 경우)
+        $catNameToId = [];
+        $backupCats  = $body['categories'] ?? [];
+        if (!empty($backupCats)) {
+            $pdo->prepare("DELETE FROM categories WHERE user_id=:uid")->execute([':uid'=>$userId]);
+            $insCat = $pdo->prepare("INSERT INTO categories (user_id,name,type,icon) VALUES (:uid,:n,:t,:i)");
+            foreach ($backupCats as $cat) {
+                $n = $cat['name'] ?? ''; $t = $cat['type'] ?? 'expense'; $i = $cat['icon'] ?? '📦';
+                if (!$n) continue;
+                $insCat->execute([':uid'=>$userId,':n'=>$n,':t'=>$t,':i'=>$i]);
+                $catNameToId[$n] = (int)$pdo->lastInsertId();
+            }
+        } else {
+            $cs = $pdo->prepare("SELECT id, name FROM categories WHERE user_id=:uid");
+            $cs->execute([':uid'=>$userId]);
+            foreach ($cs->fetchAll() as $c) { $catNameToId[$c['name']] = (int)$c['id']; }
+        }
+
+        // 3. 거래내역 재삽입
+        $insTx = $pdo->prepare(
+            "INSERT INTO transactions (user_id,category_id,amount,description,tx_date,tx_type,payment_method,source)
+             VALUES (:uid,:cat,:amt,:desc,:date,:type,:pay,:src)"
+        );
+        $count = 0;
+        foreach ($body['transactions'] as $tx) {
+            $catName = $tx['category_name'] ?? $tx['category'] ?? '';
+            $catId   = $catNameToId[$catName] ?? null;
+            $txType  = $tx['tx_type'] ?? $tx['type'] ?? 'expense';
+            $amount  = (int)($tx['amount'] ?? 0);
+            $desc    = $tx['description'] ?? '';
+            $date    = $tx['tx_date'] ?? $tx['date'] ?? date('Y-m-d');
+            $pay     = $tx['payment_method'] ?? $tx['payment'] ?? '';
+            $src     = in_array($tx['source'] ?? '', ['manual','auto','sms','ocr']) ? $tx['source'] : 'manual';
+            if ($amount <= 0) continue;
+            $insTx->execute([':uid'=>$userId,':cat'=>$catId,':amt'=>$amount,':desc'=>$desc,':date'=>$date,':type'=>$txType,':pay'=>$pay,':src'=>$src]);
+            $count++;
+        }
+
+        // 4. 고정지출 복원 (있을 경우)
+        $fixedRows = $body['fixed_expenses'] ?? [];
+        if (!empty($fixedRows)) {
+            $pdo->prepare("DELETE FROM fixed_expenses WHERE user_id=:uid")->execute([':uid'=>$userId]);
+            $insFx = $pdo->prepare(
+                "INSERT INTO fixed_expenses (user_id,name,amount,type,cycle,day_of_month,day_of_week,month_of_year,category_id)
+                 VALUES (:uid,:n,:a,:t,:c,:dom,:dow,:moy,:cat)"
+            );
+            foreach ($fixedRows as $fx) {
+                $fxCatId = $catNameToId[$fx['category_name'] ?? ''] ?? null;
+                $insFx->execute([':uid'=>$userId,':n'=>$fx['name']??'',':a'=>(int)($fx['amount']??0),
+                    ':t'=>$fx['type']??'expense',':c'=>$fx['cycle']??'monthly',
+                    ':dom'=>$fx['day_of_month']??null,':dow'=>$fx['day_of_week']??null,
+                    ':moy'=>$fx['month_of_year']??null,':cat'=>$fxCatId]);
+            }
+        }
+
+        $pdo->commit();
+        echo json_encode(['ok'=>true,'count'=>$count]);
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        http_response_code(500);
+        echo json_encode(['ok'=>false,'msg'=>$e->getMessage()]);
+    }
+    exit;
+}
+
 if ($action === 'export_json') {
     $pdo   = getConnection();
     $txSt  = $pdo->prepare(
@@ -165,14 +244,20 @@ try {
             $pay   = trim($_POST['payment'] ?? '');
             $type  = in_array($_POST['type'] ?? '', ['expense','income']) ? $_POST['type'] : 'expense';
             $catName = trim($_POST['category'] ?? '');
+            $photosRaw = trim($_POST['photos'] ?? '');
+            $photosJson = null;
+            if ($photosRaw) {
+                $decoded = json_decode($photosRaw, true);
+                if (is_array($decoded)) $photosJson = $photosRaw;
+            }
             if ($txId <= 0 || $amt <= 0 || !$date) { http_response_code(400); echo json_encode(['status'=>'error','message'=>'필수값 누락']); break; }
             $pdo = getConnection();
-            // category_id 조회 (없으면 null)
+            try { $pdo->exec("ALTER TABLE transactions ADD COLUMN photos MEDIUMTEXT DEFAULT NULL"); } catch (PDOException $e2) {}
             $cs = $pdo->prepare("SELECT id FROM categories WHERE user_id=:uid AND name=:n LIMIT 1");
             $cs->execute([':uid'=>$userId, ':n'=>$catName]);
             $catId = $cs->fetchColumn() ?: null;
-            $pdo->prepare("UPDATE transactions SET amount=:a, description=:d, tx_date=:dt, payment_method=:p, tx_type=:t, category_id=:c WHERE id=:id AND user_id=:uid")
-                ->execute([':a'=>$amt,':d'=>$desc,':dt'=>$date,':p'=>$pay,':t'=>$type,':c'=>$catId,':id'=>$txId,':uid'=>$userId]);
+            $pdo->prepare("UPDATE transactions SET amount=:a, description=:d, tx_date=:dt, payment_method=:p, tx_type=:t, category_id=:c, photos=:ph WHERE id=:id AND user_id=:uid")
+                ->execute([':a'=>$amt,':d'=>$desc,':dt'=>$date,':p'=>$pay,':t'=>$type,':c'=>$catId,':ph'=>$photosJson,':id'=>$txId,':uid'=>$userId]);
             echo json_encode(['status' => 'ok']);
             break;
 
@@ -279,12 +364,17 @@ try {
                 break;
             }
             $pdo = getConnection();
+            // created_at 컬럼 추가 (MySQL 5.x 호환: DEFAULT NULL)
+            try { $pdo->exec("ALTER TABLE fixed_expenses ADD COLUMN created_at DATE DEFAULT NULL"); } catch (PDOException $e2) {}
+            // created_at 없이 먼저 INSERT
             $pdo->prepare(
                 "INSERT INTO fixed_expenses (user_id,name,amount,type,cycle,day_of_month,day_of_week,month_of_year,category_id)
                  VALUES (:uid,:n,:a,:t,:cy,:dom,:dow,:moy,:c)"
             )->execute([':uid'=>$userId,':n'=>$name,':a'=>$amount,':t'=>$type,
                         ':cy'=>$cycle,':dom'=>$dayOfMonth,':dow'=>$dayOfWeek,':moy'=>$monthOfYear,':c'=>$catId]);
             $newId = (int)$pdo->lastInsertId();
+            // created_at을 오늘로 업데이트 (컬럼 있을 때만)
+            try { $pdo->prepare("UPDATE fixed_expenses SET created_at=CURDATE() WHERE id=:id")->execute([':id'=>$newId]); } catch (PDOException $e2) {}
 
             $applied = 0;
             if ($applyNow) {
@@ -335,72 +425,104 @@ try {
 
         // ── 고정 지출 자동 적용 (앱 접속 시 호출) ────────────────────
         case 'fixed_apply':
-            $pdo    = getConnection();
-            // 클라이언트가 로컬 날짜를 넘겨주면 그걸 사용, 없으면 서버 날짜 fallback
-            $clientDate = trim($_POST['client_date'] ?? '');
-            if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $clientDate)) {
-                $today  = $clientDate;
-                $year   = (int)substr($clientDate, 0, 4);
-                $mon    = (int)substr($clientDate, 5, 2);
-                $todayD = (int)substr($clientDate, 8, 2);
-                $todayW = (int)date('w', strtotime($clientDate));
-            } else {
-                $year   = (int)date('Y');
-                $mon    = (int)date('n');
-                $todayD = (int)date('j');
-                $todayW = (int)date('w');
-                $today  = date('Y-m-d');
-            }
-            $maxDay = (int)date('t', mktime(0, 0, 0, $mon, 1, $year));
+            $pdo   = getConnection();
+            $today = date('Y-m-d'); // KST (config/db.php에서 타임존 설정됨)
 
+            // created_at 컬럼 없으면 추가 (MySQL 5.x 호환)
+            try { $pdo->exec("ALTER TABLE fixed_expenses ADD COLUMN created_at DATE DEFAULT NULL"); } catch (PDOException $e2) {}
+            // NULL이면 오늘로 보정
+            try { $pdo->exec("UPDATE fixed_expenses SET created_at=CURDATE() WHERE created_at IS NULL"); } catch (PDOException $e2) {}
+
+            // 고정지출 목록 조회 (created_at 포함)
             $stmt = $pdo->prepare("SELECT * FROM fixed_expenses WHERE user_id=:uid");
-            $stmt->execute([':uid'=>$userId]);
+            $stmt->execute([':uid' => $userId]);
             $fixed = $stmt->fetchAll();
-            $added = 0;
-            $newItems = [];
-            // 중복 체크: source='fixed' ENUM 문제 우회, payment_method='자동' + 이번달 기준으로 체크
+
+            // 중복 체크: 날짜 + 이름 + 금액 + 자동 결제로 정확히 체크
             $chkSt = $pdo->prepare(
                 "SELECT COUNT(*) FROM transactions
-                 WHERE user_id=:uid AND LEFT(tx_date,7)=:ym AND description=:desc AND amount=:amt AND payment_method='자동'"
+                 WHERE user_id=:uid AND tx_date=:dt AND description=:desc AND amount=:amt AND payment_method='자동'"
             );
-            $insSt = $pdo->prepare("INSERT INTO transactions (user_id,category_id,amount,description,payment_method,source,tx_date,tx_type) VALUES (:uid,:cid,:amt,:desc,'자동','manual',:dt,:type)");
+            $insSt = $pdo->prepare(
+                "INSERT INTO transactions
+                     (user_id, category_id, amount, description, payment_method, source, tx_date, tx_type)
+                 VALUES (:uid, :cid, :amt, :desc, '자동', 'manual', :dt, :type)"
+            );
+
+            $added    = 0;
+            $newItems = [];
+            $todayTs  = strtotime($today);
 
             foreach ($fixed as $f) {
-                $cycle = $f['cycle'] ?? 'monthly';
-                $targetDt = null;
+                $cycle      = $f['cycle'] ?? 'monthly';
+                $dow        = (int)($f['day_of_week']   ?? 0);
+                $dom        = (int)($f['day_of_month']  ?? 1);
+                $moy        = (int)($f['month_of_year'] ?? 1);
+                $targetDates = [];
+
+                // 스캔 시작일 = 고정지출 등록일 (등록 전 날짜는 소급 안 함)
+                $createdAt = !empty($f['created_at']) && $f['created_at'] !== '0000-00-00'
+                    ? $f['created_at'] : $today;
+                $startTs = strtotime($createdAt);
 
                 if ($cycle === 'weekly') {
-                    if ((int)$f['day_of_week'] === $todayW) $targetDt = $today;
+                    $ts = $startTs;
+                    while ($ts <= $todayTs) {
+                        if ((int)date('w', $ts) === $dow) {
+                            $targetDates[] = date('Y-m-d', $ts);
+                        }
+                        $ts = strtotime('+1 day', $ts);
+                    }
                 } elseif ($cycle === 'monthly') {
-                    $dom = min((int)$f['day_of_month'], $maxDay);
-                    if ($dom <= $todayD) $targetDt = sprintf('%04d-%02d-%02d', $year, $mon, $dom);
+                    // 등록일 달부터 이번 달까지 각 달의 지정일 수집
+                    $startYear = (int)date('Y', $startTs);
+                    $startMon  = (int)date('n', $startTs);
+                    $endYear   = (int)date('Y', $todayTs);
+                    $endMon    = (int)date('n', $todayTs);
+                    $y = $startYear; $m = $startMon;
+                    while ($y < $endYear || ($y === $endYear && $m <= $endMon)) {
+                        $maxD = (int)date('t', mktime(0, 0, 0, $m, 1, $y));
+                        $d    = min($dom, $maxD);
+                        $dt   = sprintf('%04d-%02d-%02d', $y, $m, $d);
+                        if ($dt >= $createdAt && $dt <= $today) {
+                            $targetDates[] = $dt;
+                        }
+                        $m++;
+                        if ($m > 12) { $m = 1; $y++; }
+                    }
                 } elseif ($cycle === 'yearly') {
-                    $moy = (int)$f['month_of_year'];
-                    $maxD2 = (int)date('t', mktime(0, 0, 0, $moy, 1, $year)); // cal 확장 없이
-                    $dom = min((int)$f['day_of_month'], $maxD2);
-                    if ($moy === $mon && $dom <= $todayD)
-                        $targetDt = sprintf('%04d-%02d-%02d', $year, $mon, $dom);
+                    // 등록 연도부터 올해까지 지정 월/일 수집
+                    $startYear = (int)date('Y', $startTs);
+                    $endYear   = (int)date('Y', $todayTs);
+                    for ($y = $startYear; $y <= $endYear; $y++) {
+                        $maxD = (int)date('t', mktime(0, 0, 0, $moy, 1, $y));
+                        $d    = min($dom, $maxD);
+                        $dt   = sprintf('%04d-%02d-%02d', $y, $moy, $d);
+                        if ($dt >= $createdAt && $dt <= $today) {
+                            $targetDates[] = $dt;
+                        }
+                    }
                 }
 
-                if (!$targetDt) continue;
+                // 각 날짜에 대해 중복 없으면 삽입
+                foreach ($targetDates as $dt) {
+                    $chkSt->execute([':uid'=>$userId, ':dt'=>$dt, ':desc'=>$f['name'], ':amt'=>$f['amount']]);
+                    if ($chkSt->fetchColumn() > 0) continue;
 
-                // 중복 체크: 이번 달에 같은 이름·금액·자동 결제가 이미 있으면 스킵
-                $ym = substr($targetDt, 0, 7); // 'YYYY-MM'
-                $chkSt->execute([':uid'=>$userId,':ym'=>$ym,':desc'=>$f['name'],':amt'=>$f['amount']]);
-                if ($chkSt->fetchColumn() > 0) continue;
-
-                $insSt->execute([':uid'=>$userId,':cid'=>$f['category_id'],':amt'=>$f['amount'],':desc'=>$f['name'],':dt'=>$targetDt,':type'=>$f['type']]);
-                $added++;
-                $newItems[] = [
-                    'id'          => 'fixed_apply_' . $pdo->lastInsertId(),
-                    'type'        => $f['type'],
-                    'amount'      => (int)$f['amount'],
-                    'category'    => $f['name'],
-                    'description' => $f['name'],
-                    'date'        => $targetDt,
-                    'payment'     => '자동',
-                    'photos'      => [],
-                ];
+                    $insSt->execute([':uid'=>$userId, ':cid'=>$f['category_id'], ':amt'=>$f['amount'],
+                                     ':desc'=>$f['name'], ':dt'=>$dt, ':type'=>$f['type']]);
+                    $added++;
+                    $newItems[] = [
+                        'id'          => 'fixed_apply_' . $pdo->lastInsertId(),
+                        'type'        => $f['type'],
+                        'amount'      => (int)$f['amount'],
+                        'category'    => $f['name'],
+                        'description' => $f['name'],
+                        'date'        => $dt,
+                        'payment'     => '자동',
+                        'photos'      => [],
+                    ];
+                }
             }
             echo json_encode(['status'=>'ok','added'=>$added,'items'=>$newItems]);
             break;
@@ -477,12 +599,19 @@ try {
             $type    = in_array($_POST['type'] ?? '', ['expense','income']) ? $_POST['type'] : 'expense';
             $catName = trim($_POST['category'] ?? '');
             $pay     = trim($_POST['payment'] ?? '') ?: '현금';
+            $photosRaw = trim($_POST['photos'] ?? '');
+            // 유효한 JSON 배열인지 검증
+            $photosJson = null;
+            if ($photosRaw) {
+                $decoded = json_decode($photosRaw, true);
+                if (is_array($decoded) && count($decoded) > 0) $photosJson = $photosRaw;
+            }
             if ($amt <= 0 || !$date) { http_response_code(400); echo json_encode(['status'=>'error','message'=>'필수값 누락']); break; }
             $pdo = getConnection();
             $cs  = $pdo->prepare("SELECT id FROM categories WHERE user_id=:uid AND name=:n LIMIT 1");
             $cs->execute([':uid'=>$userId, ':n'=>$catName]);
             $catId = $cs->fetchColumn() ?: null;
-            $newId = insertTransaction($userId, $catId, $amt, $desc ?: $catName, $date, 'manual', $pay, $type);
+            $newId = insertTransaction($userId, $catId, $amt, $desc ?: $catName, $date, 'manual', $pay, $type, $photosJson);
             echo json_encode(['status'=>'ok','db_id'=>$newId]);
             break;
 
@@ -532,11 +661,13 @@ try {
         // ── 전체 내역 동기화 (새 기기 로그인 시) ──────────────────
         case 'sync_pull':
             $pdo  = getConnection();
+            try { $pdo->exec("ALTER TABLE transactions ADD COLUMN photos MEDIUMTEXT DEFAULT NULL"); } catch (PDOException $e2) {}
             $stmt = $pdo->prepare(
                 "SELECT t.id, t.amount, t.description, t.tx_date,
                         COALESCE(c.type, t.tx_type, 'expense') AS tx_type,
                         COALESCE(t.payment_method, '')          AS payment_method,
-                        COALESCE(c.name, '기타')                AS category_name
+                        COALESCE(c.name, '기타')                AS category_name,
+                        t.photos
                  FROM transactions t
                  LEFT JOIN categories c ON c.id = t.category_id
                  WHERE t.user_id = :uid
@@ -546,6 +677,11 @@ try {
             $rows   = $stmt->fetchAll();
             $result = [];
             foreach ($rows as $r) {
+                $photos = [];
+                if (!empty($r['photos'])) {
+                    $decoded = json_decode($r['photos'], true);
+                    if (is_array($decoded)) $photos = $decoded;
+                }
                 $result[] = [
                     'db_id'       => (int)$r['id'],
                     'amount'      => (int)$r['amount'],
@@ -554,6 +690,7 @@ try {
                     'type'        => $r['tx_type'],
                     'category'    => $r['category_name'],
                     'payment'     => $r['payment_method'],
+                    'photos'      => $photos,
                 ];
             }
             echo json_encode(['status'=>'ok','transactions'=>$result]);

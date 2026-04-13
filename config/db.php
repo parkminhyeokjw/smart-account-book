@@ -7,6 +7,9 @@ define('DB_USER',    'if0_41427872');
 define('DB_PASS',    'park20061226');
 define('DB_CHARSET', 'utf8mb4');
 
+// 한국 시간(KST, UTC+9) 고정 — 서버가 UTC여도 날짜 계산이 한국 기준으로 동작
+date_default_timezone_set('Asia/Seoul');
+
 function getConnection(): PDO
 {
     static $pdo = null;
@@ -21,5 +24,7 @@ function getConnection(): PDO
             PDO::ATTR_EMULATE_PREPARES   => true,
         ]
     );
+    // MySQL도 한국 시간으로 — CURDATE(), NOW() 등이 KST 기준으로 동작
+    $pdo->exec("SET time_zone = '+09:00'");
     return $pdo;
 }
