@@ -147,6 +147,9 @@ body {
   max-width: 480px; margin: 0 auto; min-height: 100vh; overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
+/* ── Safe area 채우기 — JS(_initSafeAreaOverlays)로 관리 ── */
+#_safeTop    { position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top);z-index:9999;pointer-events:none; }
+#_safeBottom { position:fixed;bottom:0;left:0;right:0;height:env(safe-area-inset-bottom);z-index:9999;pointer-events:none; }
 /* ₩ 기호 스타일 */
 .w-sym { font-size: .78em; font-weight: 400; opacity: .65; letter-spacing: 0; }
 /* 카테고리 아이콘 래퍼 — bg는 인라인으로 설정 */
@@ -888,6 +891,8 @@ body.dark .photo-btn { background: #1a2638; border-color: #263447; color: #94A3B
 
 /* ── 다크모드 ── */
 body.dark { background:#0d1117; color:#cbd5e1; }
+/* 다크모드 상단 safe area */
+html.dark::before { background: #0F172A; }
 body.dark .app-header { background:linear-gradient(135deg,#0F172A,#1e293b); }
 body.dark .app-header.ledger-mode { background: #0F172A !important; }
 body.dark .app-header.me-mode { background: #0F172A !important; box-shadow: none !important; }
@@ -1478,7 +1483,7 @@ body.dark #survPane .widget-card { background:#0f172a !important; border-bottom-
 <script>
 // 캐시 강제 초기화 — 버전 바뀌면 자동 하드리로드
 (function(){
-  var V = '20260413-14';
+  var V = '20260413-17';
   if (localStorage.getItem('_av') !== V) {
     localStorage.setItem('_av', V);
     // 서비스워커 캐시도 함께 제거
@@ -5611,10 +5616,26 @@ function askDelete(id) {
 // ── 다크 모드 ────────────────────────────────────────────────
 const DARK_SK = 'ddgb_dark_v1';
 let isDark = localStorage.getItem(DARK_SK) === '1';
+function _initSafeAreaOverlays() {
+  if (!document.getElementById('_safeTop')) {
+    const t = document.createElement('div'); t.id = '_safeTop'; document.body.appendChild(t);
+  }
+  if (!document.getElementById('_safeBottom')) {
+    const b = document.createElement('div'); b.id = '_safeBottom'; document.body.appendChild(b);
+  }
+}
+function _updateSafeAreaColors() {
+  const t = document.getElementById('_safeTop');
+  const b = document.getElementById('_safeBottom');
+  if (t) t.style.background = isDark ? '#0F172A' : '#364B6D';
+  if (b) b.style.background = isDark ? '#131c27' : '#ffffff';
+}
 function applyDarkMode() {
   document.body.classList.toggle('dark', isDark);
   const toggle = document.getElementById('darkToggle');
   if (toggle) toggle.checked = isDark;
+  _initSafeAreaOverlays();
+  _updateSafeAreaColors();
   if (window.AndroidBridge && typeof window.AndroidBridge.setNavBarColor === 'function') {
     window.AndroidBridge.setNavBarColor(isDark ? '#131c27' : '#ffffff');
   }
