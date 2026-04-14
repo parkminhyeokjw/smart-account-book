@@ -140,6 +140,8 @@ if ($isLoggedIn) {
 @keyframes fadeScaleIn { from { opacity:0; transform:scale(.95); }        to { opacity:1; transform:scale(1); } }
 @keyframes slideUp  { from { transform:translateY(30px); opacity:0; } to { transform:none; opacity:1; } }
 
+html { background: #F8FAFC; }
+html.dark-bg { background: #0d1117; }
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 body {
   font-family: 'Noto Sans KR', -apple-system, 'Malgun Gothic', sans-serif;
@@ -1485,7 +1487,7 @@ body.dark #survPane .widget-card { background:#0f172a !important; border-bottom-
 <script>
 // 캐시 강제 초기화 — 버전 바뀌면 자동 하드리로드
 (function(){
-  var V = '20260414-02';
+  var V = '20260414-03';
   if (localStorage.getItem('_av') !== V) {
     localStorage.setItem('_av', V);
     // 서비스워커 캐시도 함께 제거
@@ -5631,7 +5633,8 @@ function _updateSafeAreaColors() {
   const b = document.getElementById('_safeBottom');
   if (t) t.style.background = isDark ? '#0F172A' : '#364B6D';
   if (b) b.style.background = isDark ? '#131c27' : '#ffffff';
-  // body 밖 html 영역(가로 여백, 하단) 배경 동기화
+  // body 밖 html 영역(가로 여백, 하단) 배경 동기화 — CSS 클래스 + 인라인 이중 처리
+  document.documentElement.classList.toggle('dark-bg', isDark);
   document.documentElement.style.background = isDark ? '#0d1117' : '#F8FAFC';
 }
 function applyDarkMode() {
