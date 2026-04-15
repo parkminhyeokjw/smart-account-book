@@ -47,6 +47,11 @@
     if (window.AndroidBridge && typeof window.AndroidBridge.setStatusBarColor === 'function') {
       window.AndroidBridge.setStatusBarColor(primary);
     }
+    // 네비게이션 바(하단)는 항상 페이지 배경색으로 고정
+    if (window.AndroidBridge && typeof window.AndroidBridge.setNavBarColor === 'function') {
+      var isDarkMode = localStorage.getItem('ddgb_dark_v1') === '1';
+      window.AndroidBridge.setNavBarColor(isDarkMode ? '#131c27' : '#ffffff');
+    }
   }
 
   // ── 즉시 실행 (렌더 전) ──

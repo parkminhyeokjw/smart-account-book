@@ -113,7 +113,7 @@ if ($isLoggedIn) {
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="design_apply.js?v=3"></script>
+<script src="design_apply.js?v=4"></script>
 <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
@@ -140,15 +140,18 @@ if ($isLoggedIn) {
 @keyframes fadeScaleIn { from { opacity:0; transform:scale(.95); }        to { opacity:1; transform:scale(1); } }
 @keyframes slideUp  { from { transform:translateY(30px); opacity:0; } to { transform:none; opacity:1; } }
 
-html { background: #F8FAFC; }
+html { background: #F8FAFC; min-height: 100%; }
 html.dark-bg { background: #0d1117; }
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 body {
   font-family: 'Noto Sans KR', -apple-system, 'Malgun Gothic', sans-serif;
   background: var(--bg); color: var(--text1);
-  max-width: 600px; margin: 0 auto; min-height: 100vh; overflow-x: hidden;
+  max-width: 600px; margin: 0 auto;
+  min-height: 100vh; min-height: 100dvh;
+  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
+body.dark { background: #0d1117; }
 /* ── Safe area 채우기 — JS(_initSafeAreaOverlays)로 관리 ── */
 #_safeTop    { position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top);z-index:9999;pointer-events:none; }
 #_safeBottom { position:fixed;bottom:0;left:0;right:0;height:env(safe-area-inset-bottom);z-index:9999;pointer-events:none; }
@@ -243,9 +246,10 @@ body.dark .stats-period-menu-item.on { color:#93c5fd; }
 .search-btn svg, .search-btn i { width: clamp(19px, 5vw, 23px) !important; height: clamp(19px, 5vw, 23px) !important; }
 
 /* ── 탭 패인 ── */
-.tab-pane { display: none; padding-bottom: calc(72px + env(safe-area-inset-bottom)); }
+.tab-pane { display: none; padding-bottom: calc(72px + env(safe-area-inset-bottom)); background: var(--bg); }
 .tab-pane.active { display: block; animation: fadeUp .22s ease; }
 #pane-me.active { animation: fadeIn .18s ease; }
+body.dark .tab-pane { background: #0d1117; }
 
 /* ── 요약 스트립 (월 네비 + 카드) ── */
 .sum-strip {
@@ -644,7 +648,7 @@ body.dark .stats-period-menu-item.on { color:#93c5fd; }
 
 /* ── 나 ── */
 /* ── 나 탭 ── */
-#pane-me { overflow: hidden; height: calc(100vh - 56px - 64px); padding-bottom: 0 !important; }
+#pane-me { overflow: hidden; height: calc(100vh - calc(44px + env(safe-area-inset-top)) - calc(64px + env(safe-area-inset-bottom))); height: calc(100dvh - calc(44px + env(safe-area-inset-top)) - calc(64px + env(safe-area-inset-bottom))); padding-bottom: 0 !important; background: var(--bg); }
 .me-wrap { position: relative; height: 100%; overflow: hidden; touch-action: pan-y; }
 .me-subpage { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg); opacity: 0; pointer-events: none; transition: opacity .18s ease; overflow: hidden; display: flex; flex-direction: column; z-index: 10; }
 .me-subpage.active { opacity: 1; pointer-events: auto; }
@@ -1487,7 +1491,7 @@ body.dark #survPane .widget-card { background:#0f172a !important; border-bottom-
 <script>
 // 캐시 강제 초기화 — 버전 바뀌면 자동 하드리로드
 (function(){
-  var V = '20260414-03';
+  var V = '20260415-01';
   if (localStorage.getItem('_av') !== V) {
     localStorage.setItem('_av', V);
     // 서비스워커 캐시도 함께 제거
