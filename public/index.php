@@ -109,7 +109,16 @@ if ($isLoggedIn) {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" id="metaThemeColor" content="<?= $darkMode ? '#0F172A' : '#ffffff' ?>">
+<meta name="color-scheme" content="light dark">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="마이가계부">
 <title>마이가계부</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="apple-touch-icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -140,8 +149,8 @@ if ($isLoggedIn) {
 @keyframes fadeScaleIn { from { opacity:0; transform:scale(.95); }        to { opacity:1; transform:scale(1); } }
 @keyframes slideUp  { from { transform:translateY(30px); opacity:0; } to { transform:none; opacity:1; } }
 
-html { background: #F8FAFC; min-height: 100%; }
-html.dark-bg { background: #0d1117; }
+html { background: #F8FAFC; min-height: 100%; color-scheme: light; }
+html.dark-bg { background: #0d1117; color-scheme: dark; }
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 body {
   font-family: 'Noto Sans KR', -apple-system, 'Malgun Gothic', sans-serif;
@@ -207,8 +216,8 @@ body.dark { background: #0d1117; }
 .app-header.ledger-mode .search-btn,
 .app-header.ledger-mode .cal-btn { color: rgba(255,255,255,.85) !important; }
 /* 통계 탭 기간 드롭다운 버튼 */
-.stats-period-drop-btn { display:flex; align-items:center; gap:5px; background:rgba(255,255,255,.18); border:none; border-radius:20px; padding:6px 12px; color:#fff; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; white-space:nowrap; }
-.stats-period-drop-btn:active { background:rgba(255,255,255,.28); }
+.stats-period-drop-btn { display:flex; align-items:center; gap:5px; background:none; border:none; border-radius:20px; padding:6px 12px; color:#fff; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; white-space:nowrap; }
+.stats-period-drop-btn:active { background:rgba(255,255,255,.15); }
 .stats-period-drop-btn svg { width:14px; height:14px; stroke-width:2.5; transition:transform .2s; }
 .stats-period-drop-btn.open svg { transform:rotate(180deg); }
 .stats-period-menu { display:none; position:fixed; right:8px; background:#fff; border-radius:14px; box-shadow:0 8px 24px rgba(0,0,0,.18); overflow:hidden; z-index:9000; min-width:120px; max-width:calc(100vw - 16px); }
@@ -736,7 +745,7 @@ body.dark .avatar-sheet-sep { background:#334155; }
 .t-btn .ico-sv { width:clamp(20px, 5.6vw, 25px); height:clamp(20px, 5.6vw, 25px); stroke-width:1.5; display:block; }
 .t-btn.on { color: #1E293B; font-weight: 700; }
 .fab-wrap { flex: 1; display: flex; align-items: center; justify-content: center; border: none; background: none; cursor: pointer; padding: 0; }
-.fab { width: clamp(54px, 15vw, 64px); height: clamp(54px, 15vw, 64px); border-radius: 50%; background: #364B6D; color: #fff; display: flex; align-items: center; justify-content: center; font-size: clamp(28px, 8vw, 36px); line-height: 1; margin-top: -20px; box-shadow: 0 6px 20px rgba(30,41,59,.35); transition: transform .15s; }
+.fab { width: clamp(54px, 15vw, 64px); height: clamp(54px, 15vw, 64px); border-radius: 50%; background: #364B6D; color: #fff; display: flex; align-items: center; justify-content: center; font-size: clamp(28px, 8vw, 36px); line-height: 1; margin-top: -20px; box-shadow: 0 2px 4px rgba(30,41,59,.12); transition: transform .15s; }
 .fab:active { transform: scale(.92); }
 
 /* ── 내역 액션 시트 ── */
@@ -1179,28 +1188,28 @@ body.dark .export-option-title { color:#e0e0e0; }
 .upg-modal { overflow:hidden; padding:0 !important; }
 .upg-hero {
   background:linear-gradient(145deg,#1D2C55 0%,#2A3D80 60%,#1a2560 100%);
-  padding:32px 24px 28px; text-align:center; position:relative;
+  padding:20px 24px 16px; text-align:center; position:relative;
 }
 .upg-hero-close {
-  position:absolute; top:14px; right:14px;
+  position:absolute; top:12px; right:12px;
   background:rgba(255,255,255,.15); border:none; color:#fff;
-  width:30px; height:30px; border-radius:50%; font-size:18px; line-height:1;
+  width:28px; height:28px; border-radius:50%; font-size:16px; line-height:1;
   cursor:pointer; display:flex; align-items:center; justify-content:center;
 }
 .upg-hero-close:hover { background:rgba(255,255,255,.25); }
-.upg-hero-icon { font-size:52px; margin-bottom:10px; display:block; filter:drop-shadow(0 4px 12px rgba(0,0,0,.3)); }
-.upg-hero-title { font-size:22px; font-weight:900; color:#fff; margin-bottom:6px; letter-spacing:-.3px; }
-.upg-hero-sub { font-size:13px; color:rgba(255,255,255,.65); line-height:1.5; }
-.upg-body { padding:22px 20px 24px; }
+.upg-hero-icon { font-size:36px; margin-bottom:6px; display:block; filter:drop-shadow(0 4px 12px rgba(0,0,0,.3)); }
+.upg-hero-title { font-size:19px; font-weight:900; color:#fff; margin-bottom:4px; letter-spacing:-.3px; }
+.upg-hero-sub { font-size:12px; color:rgba(255,255,255,.65); line-height:1.4; }
+.upg-body { padding:16px 18px 18px; }
 .upg-section-label { font-size:11px; font-weight:800; color:var(--p); letter-spacing:1px; text-transform:uppercase; margin-bottom:6px; }
 .upg-headline { font-size:17px; font-weight:900; color:#1a1a2e; margin-bottom:16px; line-height:1.35; }
-.upg-benefits { display:flex; flex-direction:column; gap:9px; margin-bottom:20px; }
+.upg-benefits { display:flex; flex-direction:column; gap:7px; margin-bottom:14px; }
 .upg-benefit-row { display:flex; align-items:flex-start; gap:10px; font-size:13.5px; color:#374151; line-height:1.45; }
 .upg-benefit-check { width:20px; height:20px; background:var(--p); border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
 .upg-benefit-check::after { content:'✓'; color:#fff; font-size:11px; font-weight:800; }
 .upg-benefit-text strong { font-weight:700; color:#1a1a2e; }
 .upg-benefit-text span { color:#6B7280; font-size:12px; display:block; margin-top:1px; }
-.upg-plans { display:flex; gap:8px; margin-bottom:18px; }
+.upg-plans { display:flex; gap:8px; margin-bottom:14px; }
 .upg-plan-card {
   flex:1; border:2px solid #e5e7eb; border-radius:14px;
   padding:12px 8px; text-align:center; cursor:pointer;
@@ -1491,7 +1500,7 @@ body.dark #survPane .widget-card { background:#0f172a !important; border-bottom-
 <script>
 // 캐시 강제 초기화 — 버전 바뀌면 자동 하드리로드
 (function(){
-  var V = '20260415-01';
+  var V = '20260416-04';
   if (localStorage.getItem('_av') !== V) {
     localStorage.setItem('_av', V);
     // 서비스워커 캐시도 함께 제거
@@ -2112,20 +2121,16 @@ body.dark #survPane .widget-card { background:#0f172a !important; border-bottom-
         <div class="notif-status-dot" id="notifDot"></div>
         <div class="notif-status-text" id="notifStatusText" data-i18n="notif.checking">알림 권한 확인 중...</div>
       </div>
-      <div id="notifInstallGuide" style="display:none;background:#FFF8E1;border-radius:8px;padding:10px 12px;margin-bottom:10px;font-size:13px;color:#5D4037;line-height:1.7;">
-        📲 <b>홈 화면에 추가</b>하면 알림을 받을 수 있어요.<br>
-        Chrome 메뉴(⋮) → <b>홈 화면에 추가</b> → 추가된 앱에서 다시 설정해주세요.
-      </div>
       <div class="notif-time-row">
         <span class="notif-time-label" data-i18n="notif.timeLabel">알림 시간</span>
-        <input class="notif-time-input" id="notifTimeInput" type="time" value="21:00">
+        <input class="notif-time-input" id="notifTimeInput" type="time" value="18:00">
       </div>
       <div style="font-size:12px;color:#9e9e9e;line-height:1.7" data-i18n="notif.desc">
         설정한 시간에 가계부 작성 리마인드를 보내드립니다. 앱을 닫아도 알림이 와요.
       </div>
     </div>
     <div class="center-modal-footer">
-      <button class="center-modal-btn" id="notifPermBtn" onclick="handleNotifPermission()" data-i18n="notif.saveBtn">권한 허용 후 저장</button>
+      <button class="center-modal-btn" id="notifPermBtn" onclick="handleNotifPermission()">저장</button>
     </div>
   </div>
 </div>
@@ -2250,8 +2255,6 @@ body.dark #survPane .widget-card { background:#0f172a !important; border-bottom-
     </div>
     <!-- 바디 섹션 -->
     <div class="upg-body">
-      <div class="upg-section-label" data-i18n="upg.label">프리미엄으로 이동</div>
-      <div class="upg-headline" data-i18n="upg.headline">지출을 완전히 통제하는<br>스마트한 방법</div>
       <!-- 혜택 목록 -->
       <div class="upg-benefits">
         <div class="upg-benefit-row">
@@ -2264,22 +2267,15 @@ body.dark #survPane .widget-card { background:#0f172a !important; border-bottom-
         <div class="upg-benefit-row">
           <div class="upg-benefit-check"></div>
           <div class="upg-benefit-text">
-            <strong data-i18n="upg.b2t">멀티 디바이스 실시간 동기화</strong>
-            <span data-i18n="upg.b2s">폰, 태블릿, PC 어디서든 데이터 공유</span>
+            <strong data-i18n="upg.b2t">프리미엄 테마</strong>
+            <span data-i18n="upg.b2s">독점 디자인 테마로 앱을 꾸며보세요</span>
           </div>
         </div>
         <div class="upg-benefit-row">
           <div class="upg-benefit-check"></div>
           <div class="upg-benefit-text">
-            <strong data-i18n="upg.b3t">AI 소비 분석 & 절약 코칭</strong>
-            <span data-i18n="upg.b3s">지출 패턴 기반 맞춤 절약 팁 제공</span>
-          </div>
-        </div>
-        <div class="upg-benefit-row">
-          <div class="upg-benefit-check"></div>
-          <div class="upg-benefit-text">
-            <strong data-i18n="upg.b4t">다중 계좌 & 프리미엄 테마</strong>
-            <span data-i18n="upg.b4s">계좌별 분리 관리 + 독점 디자인 테마</span>
+            <strong data-i18n="upg.b3t">광고 제거</strong>
+            <span data-i18n="upg.b3s">광고 없이 깔끔하게 사용하세요</span>
           </div>
         </div>
       </div>
@@ -2287,18 +2283,18 @@ body.dark #survPane .widget-card { background:#0f172a !important; border-bottom-
       <div class="upg-plans" id="upgPlans">
         <div class="upg-plan-card" onclick="upgSelectPlan(this,'month')">
           <div class="upg-plan-period" data-i18n="upg.plan1mo">1개월</div>
-          <div class="upg-plan-price">₩3,900</div>
+          <div class="upg-plan-price">₩2,500</div>
           <div class="upg-plan-unit" data-i18n="upg.planUnit">/ 월</div>
         </div>
         <div class="upg-plan-card sel" onclick="upgSelectPlan(this,'year')">
-          <div class="upg-plan-badge" data-i18n="upg.save57">57% 절약</div>
+          <div class="upg-plan-badge" data-i18n="upg.save17">17% 절약</div>
           <div class="upg-plan-period" data-i18n="upg.plan1y">1년</div>
-          <div class="upg-plan-price">₩19,900</div>
-          <div class="upg-plan-unit">₩1,658 / 월</div>
+          <div class="upg-plan-price">₩25,000</div>
+          <div class="upg-plan-unit">₩2,083 / 월</div>
         </div>
         <div class="upg-plan-card" onclick="upgSelectPlan(this,'forever')">
           <div class="upg-plan-period" data-i18n="upg.planLife">평생</div>
-          <div class="upg-plan-price">₩49,900</div>
+          <div class="upg-plan-price">₩50,000</div>
           <div class="upg-plan-unit" data-i18n="upg.planUnit2">1회 결제</div>
         </div>
       </div>
@@ -2384,9 +2380,10 @@ body.dark #survPane .widget-card { background:#0f172a !important; border-bottom-
       <div class="help-section">
         <div class="help-section-title" data-i18n="help.ledgerTitle">가계부 탭</div>
         <div class="help-item" data-i18n="help.ledger1">하단 + 버튼으로 지출·수입을 기록하세요.</div>
-        <div class="help-item" data-i18n="help.ledger2">거래 항목을 탭하면 수정·삭제·상세보기가 가능해요.</div>
+        <div class="help-item" data-i18n="help.ledger2">거래 항목을 탭하면 수정·삭제·복사·상세보기가 가능해요.</div>
         <div class="help-item" data-i18n="help.ledger3">📅 버튼으로 달력 뷰를, 🔍로 내역을 검색해요.</div>
         <div class="help-item" data-i18n="help.ledger4">상단 ‹ › 버튼으로 월을 이동할 수 있어요.</div>
+        <div class="help-item" data-i18n="help.ledger5">💼 버튼으로 목표 예산을 설정하고 남은 금액을 확인해요.</div>
       </div>
       <div class="help-section">
         <div class="help-section-title" data-i18n="help.statsTitle">통계 탭</div>
@@ -2396,23 +2393,32 @@ body.dark #survPane .widget-card { background:#0f172a !important; border-bottom-
       </div>
       <div class="help-section">
         <div class="help-section-title" data-i18n="help.reportTitle">분석 탭</div>
-        <div class="help-item" data-i18n="help.report1">이번 달 소비 패턴을 위젯으로 분석해드립니다.</div>
-        <div class="help-item" data-i18n="help.report2">위젯 우측 ··· 버튼으로 추가·제거·순서 변경이 가능해요.</div>
-        <div class="help-item" data-i18n="help.report3">목표 예산에서 예산을 설정하면 남은 금액을 알 수 있어요.</div>
-        <div class="help-item" data-i18n="help.report4">최고 지출 항목에서 😊/💸 버튼으로 소비를 돌아보세요.</div>
+        <div class="help-item" data-i18n="help.report1">요약·챔피언·요일패턴·MBTI·TOP3 등 9가지 위젯으로 소비를 분석해요.</div>
+        <div class="help-item" data-i18n="help.report2">헤더 + 버튼으로 원하는 위젯을 추가하세요.</div>
+        <div class="help-item" data-i18n="help.report3">각 위젯 ··· 버튼으로 위·아래 이동, 삭제가 가능해요.</div>
+        <div class="help-item" data-i18n="help.report4">목표 예산 위젯에서 이번 달 남은 예산을 한눈에 확인해요.</div>
       </div>
       <div class="help-section">
-        <div class="help-section-title" data-i18n="help.meTitle">나 탭 — 데이터 관리</div>
-        <div class="help-item" data-i18n="help.me1">고정 지출 설정: 월세·통신비 등 정기 지출을 등록하면 지정일에 자동 기록돼요.</div>
+        <div class="help-section-title" data-i18n="help.meTitle">나 탭 — 설정</div>
+        <div class="help-item" data-i18n="help.me1">고정 지출: 월세·통신비 등 정기 지출을 등록하면 지정일에 자동 기록돼요.</div>
         <div class="help-item" data-i18n="help.me2">카테고리 편집: 이모지와 이름을 변경하거나 새 카테고리를 추가할 수 있어요.</div>
-        <div class="help-item" data-i18n="help.me3">백업/복구: JSON 파일로 데이터를 안전하게 보관하고 복원하세요.</div>
-        <div class="help-item" data-i18n="help.me4">엑셀 내보내기: 이번 달 또는 전체 내역을 CSV로 다운로드할 수 있어요.</div>
-        <div class="help-item" data-i18n="help.me5">푸시 알림: 원하는 시간에 가계부 작성 리마인드를 받을 수 있어요.</div>
+        <div class="help-item" data-i18n="help.me3">결제수단 편집: 카드·현금 등 결제수단을 추가·수정할 수 있어요.</div>
+        <div class="help-item" data-i18n="help.me4">프로필: 아바타와 별명을 설정할 수 있어요.</div>
+        <div class="help-item" data-i18n="help.me5">기본 통화: 원하는 통화로 변경할 수 있어요.</div>
+        <div class="help-item" data-i18n="help.me6">언어: 한국어·영어·일본어·중국어를 지원해요.</div>
+        <div class="help-item" data-i18n="help.me7">다크 모드: 눈이 편한 어두운 테마로 전환해요.</div>
+        <div class="help-item" data-i18n="help.me8">푸시 알림: 원하는 시간에 가계부 작성 리마인드를 받을 수 있어요.</div>
+      </div>
+      <div class="help-section">
+        <div class="help-section-title" data-i18n="help.dataTitle">데이터</div>
+        <div class="help-item" data-i18n="help.data1">서버 동기화: 여러 기기에서 같은 데이터를 사용할 수 있어요.</div>
+        <div class="help-item" data-i18n="help.data2">백업/복구: JSON 파일로 데이터를 안전하게 보관하고 복원하세요.</div>
+        <div class="help-item" data-i18n="help.data3">엑셀 내보내기: 이번 달 또는 전체 내역을 CSV로 다운로드할 수 있어요.</div>
       </div>
       <div class="help-section">
         <div class="help-section-title" data-i18n="help.appTitle">앱 정보</div>
-        <div class="help-item" data-i18n="help.app1">마이가계부 v1.0 — 현명한 소비 습관을 만들어드립니다.</div>
-        <div class="help-item" data-i18n="help.app2">데이터는 기기 브라우저에 저장되며 서버에도 연동됩니다.</div>
+        <div class="help-item" data-i18n="help.app1">마이가계부 — 현명한 소비 습관을 만들어드립니다.</div>
+        <div class="help-item" data-i18n="help.app2">데이터는 기기에 저장되며 서버와 동기화됩니다.</div>
       </div>
     </div>
   </div>
@@ -5648,8 +5654,11 @@ function applyDarkMode() {
   _initSafeAreaOverlays();
   _updateSafeAreaColors();
   if (window.AndroidBridge && typeof window.AndroidBridge.setNavBarColor === 'function') {
-    window.AndroidBridge.setNavBarColor(isDark ? '#131c27' : '#ffffff');
+    window.AndroidBridge.setNavBarColor(isDark ? '#0F172A' : '#ffffff');
   }
+  // theme-color 메타 태그 업데이트 → 브라우저/WebView 네비게이션 바 색 동기화
+  const metaTheme = document.getElementById('metaThemeColor');
+  if (metaTheme) metaTheme.setAttribute('content', isDark ? '#0F172A' : '#ffffff');
 }
 function toggleDarkMode() {
   isDark = !isDark;
@@ -6541,79 +6550,75 @@ function _urlB64ToUint8(b64) {
 
 function openNotifModal() {
   const saved = JSON.parse(localStorage.getItem(NOTIF_SK)||'{}');
-  document.getElementById('notifTimeInput').value = saved.time || '21:00';
+  document.getElementById('notifTimeInput').value = saved.time || '18:00';
   updateNotifStatus();
   document.getElementById('notifModal').classList.add('show');
 }
 function closeNotifModal() { document.getElementById('notifModal').classList.remove('show'); }
 function updateNotifStatus() {
-  const dot   = document.getElementById('notifDot');
-  const text  = document.getElementById('notifStatusText');
-  const btn   = document.getElementById('notifPermBtn');
-  const guide = document.getElementById('notifInstallGuide');
-  if (!('Notification' in window) || !('serviceWorker' in navigator) || !('PushManager' in window)) {
-    const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
-    text.textContent = isMobile ? '홈 화면에 추가 후 사용 가능해요' : tr('notif.noSupport');
-    if (guide) guide.style.display = isMobile ? '' : 'none';
-    btn.disabled = true;
-    return;
-  }
-  if (guide) guide.style.display = 'none';
-  const perm = Notification.permission;
-  if (perm === 'granted') {
+  const dot  = document.getElementById('notifDot');
+  const text = document.getElementById('notifStatusText');
+  const btn  = document.getElementById('notifPermBtn');
+  btn.disabled = false;
+  btn.textContent = '저장';
+  const saved = JSON.parse(localStorage.getItem(NOTIF_SK) || '{}');
+  if (saved.enabled && saved.time) {
     dot.classList.add('on');
-    text.textContent = tr('notif.granted');
-    btn.textContent  = tr('btn.save');
-  } else if (perm === 'denied') {
-    dot.classList.remove('on');
-    text.textContent = tr('notif.denied');
-    btn.textContent  = tr('btn.close');
+    text.textContent = '알림이 켜져 있어요 ✅';
   } else {
     dot.classList.remove('on');
-    text.textContent = tr('notif.needPerm');
-    btn.textContent  = tr('notif.saveBtn');
+    text.textContent = '저장 버튼을 눌러 알림을 설정하세요';
   }
-  const saved  = JSON.parse(localStorage.getItem(NOTIF_SK)||'{}');
   const rowVal = document.getElementById('notifRowValue');
-  if (rowVal) rowVal.textContent = (saved.enabled && perm === 'granted') ? (saved.time||tr('notif.on')) : tr('notif.off');
+  if (rowVal) rowVal.textContent = (saved.enabled && saved.time) ? saved.time : tr('notif.off');
 }
-async function handleNotifPermission() {
-  if (!('Notification' in window)) { showToast(tr('notif.noSupportToast')); return; }
-  if (Notification.permission === 'denied') { closeNotifModal(); return; }
+function handleNotifPermission() {
   const time = document.getElementById('notifTimeInput').value;
-  let perm = Notification.permission;
-  if (perm !== 'granted') {
-    perm = await Notification.requestPermission();
-    updateNotifStatus();
-  }
-  if (perm !== 'granted') return;
+
+  // 시간 저장 (항상)
   localStorage.setItem(NOTIF_SK, JSON.stringify({ time, enabled: true }));
-  // Web Push 구독 (백그라운드 알림 — 앱 꺼져도 동작)
-  if ('serviceWorker' in navigator && 'PushManager' in window && IS_LOGGED_IN) {
-    try {
-      const reg = await navigator.serviceWorker.ready;
-      const sub = await reg.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: _urlB64ToUint8(VAPID_PUB),
-      });
-      await fetch('../api/?action=push_subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...sub.toJSON(), time }),
-        credentials: 'same-origin',
-      });
-    } catch(e) { console.warn('Web Push 구독 실패:', e); }
-  }
   if (IS_LOGGED_IN) {
     const fd = new FormData(); fd.append('key','notif_time'); fd.append('value',time);
     fetch('../api/?action=settings_save', { method:'POST', body:fd }).catch(()=>{});
     const fd2 = new FormData(); fd2.append('key','notif_enabled'); fd2.append('value','1');
     fetch('../api/?action=settings_save', { method:'POST', body:fd2 }).catch(()=>{});
   }
+
+  // 네이티브 앱 알람 등록 (AndroidBridge)
+  if (window.AndroidBridge && typeof window.AndroidBridge.scheduleNotification === 'function') {
+    window.AndroidBridge.scheduleNotification(time);
+  }
+
+  // 모달 닫기 + 토스트
   startNotifScheduler();
   updateNotifStatus();
   closeNotifModal();
-  showToast(tr('toast.notifSet').replace('{time}', time));
+  showToast('🔔 알림이 ' + time + '으로 설정됐어요!');
+
+  // Web Push 구독은 지원되는 환경에서만 백그라운드로
+  _subscribeNotifAsync(time);
+}
+async function _subscribeNotifAsync(time) {
+  if (!('Notification' in window)) return;
+  if (Notification.permission === 'default') {
+    try { await Notification.requestPermission(); } catch(e) { return; }
+  }
+  if (Notification.permission !== 'granted') return;
+  if (!('serviceWorker' in navigator) || !('PushManager' in window) || !IS_LOGGED_IN) return;
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    const sub = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: _urlB64ToUint8(VAPID_PUB),
+    });
+    await fetch('../api/?action=push_subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...sub.toJSON(), time }),
+      credentials: 'same-origin',
+    });
+    updateNotifStatus();
+  } catch(e) { console.warn('Push 구독 실패:', e); }
 }
 function _fireNotif(title, body) {
   if ('serviceWorker' in navigator) {
@@ -6644,6 +6649,38 @@ function startNotifScheduler() {
       : tr('notif.msgReminder');
     _fireNotif('마이가계부 📒', msg);
   }, 30000);
+}
+
+// ── 앱 시작 시 알림 권한 자동 요청 ──────────────────────────
+async function _autoRequestNotif() {
+  if (!('Notification' in window) || !('serviceWorker' in navigator) || !('PushManager' in window)) return;
+  if (localStorage.getItem('ddgb_notif_asked_v1')) return; // 이미 물어봤음
+  if (Notification.permission !== 'default') return;       // 이미 결정됨
+  localStorage.setItem('ddgb_notif_asked_v1', '1');
+  await new Promise(r => setTimeout(r, 2500));             // 앱 로드 후 2.5초 뒤
+  const perm = await Notification.requestPermission();
+  if (perm !== 'granted') return;
+  // 허용됐으면 기본값(18:00)으로 자동 구독
+  const defaultTime = '18:00';
+  localStorage.setItem(NOTIF_SK, JSON.stringify({ time: defaultTime, enabled: true }));
+  if (IS_LOGGED_IN) {
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      const sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: _urlB64ToUint8(VAPID_PUB),
+      });
+      await fetch('../api/?action=push_subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...sub.toJSON(), time: defaultTime }),
+        credentials: 'same-origin',
+      });
+    } catch(e) { console.warn('자동 Push 구독 실패:', e); }
+  }
+  startNotifScheduler();
+  updateNotifStatus();
+  showToast('🔔 알림이 저녁 6시로 설정됐어요!');
 }
 
 // ── 백업 & 복구 ──────────────────────────────────────────────
@@ -7013,9 +7050,8 @@ const TRANSLATIONS = {
     'upg.title':'마이가계부 프리미엄','upg.sub':'더 스마트한 가계부 관리를 경험하세요','upg.label':'프리미엄으로 이동',
     'upg.headline':'지출을 완전히 통제하는 스마트한 방법',
     'upg.b1t':'PDF 리포트 내보내기','upg.b1s':'월간 소비 리포트를 PDF로 저장·공유',
-    'upg.b2t':'멀티 디바이스 실시간 동기화','upg.b2s':'폰, 태블릿, PC 어디서든 데이터 공유',
-    'upg.b3t':'AI 소비 분석 & 절약 코칭','upg.b3s':'지출 패턴 기반 맞춤 절약 팁 제공',
-    'upg.b4t':'다중 계좌 & 프리미엄 테마','upg.b4s':'계좌별 분리 관리 + 독점 디자인 테마',
+    'upg.b2t':'프리미엄 테마','upg.b2s':'독점 디자인 테마로 앱을 꾸며보세요',
+    'upg.b3t':'광고 제거','upg.b3s':'광고 없이 깔끔하게 사용하세요',
     'upg.plan1mo':'1개월','upg.plan1y':'1년','upg.planLife':'평생',
     'upg.planUnit':'/ 월','upg.planUnit2':'1회 결제','upg.save57':'57% 절약',
     'upg.cta':'지금 시작하기 →','upg.restore':'구매 복원',
@@ -7026,11 +7062,12 @@ const TRANSLATIONS = {
     'del.confirm':'정말로 모든 데이터를 삭제할까요?',
     'del.warn':'삭제된 데이터는 복구할 수 없습니다. 삭제 전에 반드시 백업하세요.',
     'del.cancel':'취소','del.deleteAll':'모두 삭제',
-    'help.ledgerTitle':'가계부 탭','help.ledger1':'하단 + 버튼으로 지출·수입을 기록하세요.','help.ledger2':'거래 항목을 탭하면 수정·삭제·상세보기가 가능해요.','help.ledger3':'📅 버튼으로 달력 뷰를, 🔍로 내역을 검색해요.','help.ledger4':'상단 ‹ › 버튼으로 월을 이동할 수 있어요.',
+    'help.ledgerTitle':'가계부 탭','help.ledger1':'하단 + 버튼으로 지출·수입을 기록하세요.','help.ledger2':'거래 항목을 탭하면 수정·삭제·복사·상세보기가 가능해요.','help.ledger3':'📅 버튼으로 달력 뷰를, 🔍로 내역을 검색해요.','help.ledger4':'상단 ‹ › 버튼으로 월을 이동할 수 있어요.','help.ledger5':'💼 버튼으로 목표 예산을 설정하고 남은 금액을 확인해요.',
     'help.statsTitle':'통계 탭','help.stats1':'카테고리별·결제수단별 지출 비중을 확인하세요.','help.stats2':'우측 상단에서 주·월·년 단위로 조회 가능해요.','help.stats3':'도넛 차트를 탭하면 해당 카테고리 내역을 볼 수 있어요.',
-    'help.reportTitle':'분석 탭','help.report1':'이번 달 소비 패턴을 위젯으로 분석해드립니다.','help.report2':'위젯 우측 ··· 버튼으로 추가·제거·순서 변경이 가능해요.','help.report3':'목표 예산에서 예산을 설정하면 남은 금액을 알 수 있어요.','help.report4':'최고 지출 항목에서 😊/💸 버튼으로 소비를 돌아보세요.',
-    'help.meTitle':'나 탭 — 데이터 관리','help.me1':'고정 지출 설정: 월세·통신비 등 정기 지출을 등록하면 지정일에 자동 기록돼요.','help.me2':'카테고리 편집: 이모지와 이름을 변경하거나 새 카테고리를 추가할 수 있어요.','help.me3':'백업/복구: JSON 파일로 데이터를 안전하게 보관하고 복원하세요.','help.me4':'엑셀 내보내기: 이번 달 또는 전체 내역을 CSV로 다운로드할 수 있어요.','help.me5':'푸시 알림: 원하는 시간에 가계부 작성 리마인드를 받을 수 있어요.',
-    'help.appTitle':'앱 정보','help.app1':'마이가계부 v1.0 — 현명한 소비 습관을 만들어드립니다.','help.app2':'데이터는 기기 브라우저에 저장되며 서버에도 연동됩니다.',
+    'help.reportTitle':'분석 탭','help.report1':'요약·챔피언·요일패턴·MBTI·TOP3 등 9가지 위젯으로 소비를 분석해요.','help.report2':'헤더 + 버튼으로 원하는 위젯을 추가하세요.','help.report3':'각 위젯 ··· 버튼으로 위·아래 이동, 삭제가 가능해요.','help.report4':'목표 예산 위젯에서 이번 달 남은 예산을 한눈에 확인해요.',
+    'help.meTitle':'나 탭 — 설정','help.me1':'고정 지출: 월세·통신비 등 정기 지출을 등록하면 지정일에 자동 기록돼요.','help.me2':'카테고리 편집: 이모지와 이름을 변경하거나 새 카테고리를 추가할 수 있어요.','help.me3':'결제수단 편집: 카드·현금 등 결제수단을 추가·수정할 수 있어요.','help.me4':'프로필: 아바타와 별명을 설정할 수 있어요.','help.me5':'기본 통화: 원하는 통화로 변경할 수 있어요.','help.me6':'언어: 한국어·영어·일본어·중국어를 지원해요.','help.me7':'다크 모드: 눈이 편한 어두운 테마로 전환해요.','help.me8':'푸시 알림: 원하는 시간에 가계부 작성 리마인드를 받을 수 있어요.',
+    'help.dataTitle':'데이터','help.data1':'서버 동기화: 여러 기기에서 같은 데이터를 사용할 수 있어요.','help.data2':'백업/복구: JSON 파일로 데이터를 안전하게 보관하고 복원하세요.','help.data3':'엑셀 내보내기: 이번 달 또는 전체 내역을 CSV로 다운로드할 수 있어요.',
+    'help.appTitle':'앱 정보','help.app1':'마이가계부 — 현명한 소비 습관을 만들어드립니다.','help.app2':'데이터는 기기에 저장되며 서버와 동기화됩니다.',
     'lbl.detail':'상세정보',
     'form.amount':'금액 (원)','form.amountPh':'0',
     'form.category':'카테고리','form.catSelect':'선택',
@@ -7263,11 +7300,12 @@ const TRANSLATIONS = {
     'del.confirm':'Are you sure you want to delete all data?',
     'del.warn':'Deleted data cannot be recovered. Back up before deleting.',
     'del.cancel':'Cancel','del.deleteAll':'Delete All',
-    'help.ledgerTitle':'Ledger Tab','help.ledger1':'Record expenses and income with the + button below.','help.ledger2':'Tap a transaction to edit, delete, or view details.','help.ledger3':'Use 📅 for calendar view and 🔍 to search.','help.ledger4':'Use ‹ › buttons at the top to navigate months.',
+    'help.ledgerTitle':'Ledger Tab','help.ledger1':'Record expenses and income with the + button below.','help.ledger2':'Tap a transaction to edit, delete, copy, or view details.','help.ledger3':'Use 📅 for calendar view and 🔍 to search.','help.ledger4':'Use ‹ › buttons at the top to navigate months.','help.ledger5':'Use 💼 to set a budget goal and check remaining balance.',
     'help.statsTitle':'Stats Tab','help.stats1':'View expense breakdown by category and payment method.','help.stats2':'Filter by week, month, or year from the top right.','help.stats3':'Tap the donut chart to see category details.',
-    'help.reportTitle':'Analysis Tab','help.report1':'Analyze spending patterns with widgets.','help.report2':'Use ··· to add, remove, or reorder widgets.','help.report3':'Set a budget goal to see remaining balance.','help.report4':'Reflect on spending with 😊/💸 in the top expense widget.',
-    'help.meTitle':'Me Tab — Data Management','help.me1':'Fixed Expenses: Register recurring expenses to auto-record on the set date.','help.me2':'Edit Categories: Change emoji/name or add new categories.','help.me3':'Backup/Restore: Keep data safe in a JSON file and restore anytime.','help.me4':'Export: Download this month\'s or all records as CSV.','help.me5':'Push Notifications: Get reminders at your preferred time.',
-    'help.appTitle':'App Info','help.app1':'MyBudget v1.0 — Build smart spending habits.','help.app2':'Data is stored in your browser and synced to the server.',
+    'help.reportTitle':'Analysis Tab','help.report1':'Analyze spending with 9 widgets: summary, champion, day pattern, MBTI, TOP3 and more.','help.report2':'Tap + in the header to add widgets.','help.report3':'Use ··· on each widget to move up/down or delete.','help.report4':'Check remaining budget for the month in the budget widget.',
+    'help.meTitle':'Me Tab — Settings','help.me1':'Fixed Expenses: Register recurring expenses to auto-record on the set date.','help.me2':'Edit Categories: Change emoji/name or add new categories.','help.me3':'Edit Payments: Add or edit payment methods like card or cash.','help.me4':'Profile: Set your avatar and nickname.','help.me5':'Currency: Change your default currency.','help.me6':'Language: Korean, English, Japanese, and Chinese supported.','help.me7':'Dark Mode: Switch to a comfortable dark theme.','help.me8':'Push Notifications: Get reminders at your preferred time.',
+    'help.dataTitle':'Data','help.data1':'Sync: Use the same data across multiple devices.','help.data2':'Backup/Restore: Keep data safe in a JSON file and restore anytime.','help.data3':'Export: Download this month\'s or all records as CSV.',
+    'help.appTitle':'App Info','help.app1':'MyBudget — Build smart spending habits.','help.app2':'Data is stored on your device and synced with the server.',
     'lbl.detail':'Detail',
     'form.amount':'Amount','form.amountPh':'0',
     'form.category':'Category','form.catSelect':'Select',
@@ -7501,11 +7539,12 @@ const TRANSLATIONS = {
     'del.confirm':'本当に全データを削除しますか？',
     'del.warn':'削除されたデータは復元できません。削除前に必ずバックアップしてください。',
     'del.cancel':'キャンセル','del.deleteAll':'全て削除',
-    'help.ledgerTitle':'家計簿タブ','help.ledger1':'下部の+ボタンで支出・収入を記録してください。','help.ledger2':'取引をタップすると編集・削除・詳細表示できます。','help.ledger3':'📅でカレンダービュー、🔍で履歴を検索します。','help.ledger4':'上部の‹ ›ボタンで月を移動できます。',
+    'help.ledgerTitle':'家計簿タブ','help.ledger1':'下部の+ボタンで支出・収入を記録してください。','help.ledger2':'取引をタップすると編集・削除・コピー・詳細表示できます。','help.ledger3':'📅でカレンダービュー、🔍で履歴を検索します。','help.ledger4':'上部の‹ ›ボタンで月を移動できます。','help.ledger5':'💼ボタンで予算目標を設定し残高を確認できます。',
     'help.statsTitle':'統計タブ','help.stats1':'カテゴリ別・支払方法別の支出割合を確認できます。','help.stats2':'右上から週・月・年単位で確認できます。','help.stats3':'ドーナツグラフをタップするとカテゴリ詳細が表示されます。',
-    'help.reportTitle':'分析タブ','help.report1':'今月の消費パターンをウィジェットで分析します。','help.report2':'ウィジェット右側の···ボタンで追加・削除・並び替えができます。','help.report3':'予算目標を設定すると残高が確認できます。','help.report4':'最高支出ウィジェットで😊/💸ボタンを使って消費を振り返りましょう。',
-    'help.meTitle':'私タブ — データ管理','help.me1':'固定支出設定：家賃・通信費などを登録すると指定日に自動記録されます。','help.me2':'カテゴリ編集：絵文字や名前の変更、新規カテゴリ追加ができます。','help.me3':'バックアップ/復元：JSONファイルでデータを安全に保管・復元できます。','help.me4':'エクスポート：今月または全期間の履歴をCSVでダウンロードできます。','help.me5':'プッシュ通知：希望の時間に記録リマインドを受け取れます。',
-    'help.appTitle':'アプリ情報','help.app1':'マイ家計簿 v1.0 — 賢い消費習慣を作りましょう。','help.app2':'データはブラウザに保存され、サーバーとも連携されます。',
+    'help.reportTitle':'分析タブ','help.report1':'要約・チャンピオン・曜日・MBTI・TOP3など9種のウィジェットで分析します。','help.report2':'ヘッダーの+ボタンでウィジェットを追加してください。','help.report3':'各ウィジェットの···で上下移動・削除ができます。','help.report4':'予算ウィジェットで今月の残り予算を確認できます。',
+    'help.meTitle':'私タブ — 設定','help.me1':'固定支出：家賃・通信費などを登録すると指定日に自動記録されます。','help.me2':'カテゴリ編集：絵文字や名前の変更、新規カテゴリ追加ができます。','help.me3':'支払方法編集：カード・現金などの支払方法を追加・編集できます。','help.me4':'プロフィール：アバターとニックネームを設定できます。','help.me5':'基本通貨：お好みの通貨に変更できます。','help.me6':'言語：日本語・韓国語・英語・中国語に対応しています。','help.me7':'ダークモード：目に優しい暗いテーマに切り替えられます。','help.me8':'プッシュ通知：希望の時間に記録リマインドを受け取れます。',
+    'help.dataTitle':'データ','help.data1':'サーバー同期：複数のデバイスで同じデータを利用できます。','help.data2':'バックアップ/復元：JSONファイルでデータを安全に保管・復元できます。','help.data3':'エクスポート：今月または全期間の履歴をCSVでダウンロードできます。',
+    'help.appTitle':'アプリ情報','help.app1':'マイ家計簿 — 賢い消費習慣を作りましょう。','help.app2':'データはデバイスに保存され、サーバーと同期されます。',
     'lbl.detail':'詳細情報',
     'form.amount':'金額 (円)','form.amountPh':'0',
     'form.category':'カテゴリ','form.catSelect':'選択',
@@ -7739,11 +7778,12 @@ const TRANSLATIONS = {
     'del.confirm':'确定删除所有数据吗？',
     'del.warn':'已删除数据无法恢复。删除前请务必备份。',
     'del.cancel':'取消','del.deleteAll':'全部删除',
-    'help.ledgerTitle':'账本标签','help.ledger1':'点击底部+按钮记录支出和收入。','help.ledger2':'点击交易可进行修改、删除和详细查看。','help.ledger3':'📅查看日历视图，🔍搜索记录。','help.ledger4':'使用顶部‹ ›按钮切换月份。',
+    'help.ledgerTitle':'账本标签','help.ledger1':'点击底部+按钮记录支出和收入。','help.ledger2':'点击交易可进行修改、删除、复制和详细查看。','help.ledger3':'📅查看日历视图，🔍搜索记录。','help.ledger4':'使用顶部‹ ›按钮切换月份。','help.ledger5':'💼按钮可设置预算目标并查看剩余金额。',
     'help.statsTitle':'统计标签','help.stats1':'查看按分类和支付方式的支出比例。','help.stats2':'在右上角按周、月、年查看。','help.stats3':'点击甜甜圈图查看分类详情。',
-    'help.reportTitle':'分析标签','help.report1':'用小部件分析本月消费模式。','help.report2':'点击···添加、删除或调整小部件顺序。','help.report3':'设置预算目标可查看剩余金额。','help.report4':'在最高支出小部件中用😊/💸回顾消费。',
-    'help.meTitle':'我的标签 — 数据管理','help.me1':'固定支出：登记房租、话费等定期支出，到期自动记录。','help.me2':'编辑分类：修改表情/名称或添加新分类。','help.me3':'备份/恢复：用JSON文件安全保存和恢复数据。','help.me4':'导出：将本月或全部记录下载为CSV。','help.me5':'推送通知：在设定时间收到记账提醒。',
-    'help.appTitle':'应用信息','help.app1':'我的账本 v1.0 — 培养明智的消费习惯。','help.app2':'数据存储在设备浏览器中，并与服务器同步。',
+    'help.reportTitle':'分析标签','help.report1':'用摘要·冠军·星期·MBTI·TOP3等9种小部件分析消费。','help.report2':'点击标题栏+按钮添加小部件。','help.report3':'每个小部件的···可上下移动或删除。','help.report4':'在预算小部件中查看本月剩余预算。',
+    'help.meTitle':'我的标签 — 设置','help.me1':'固定支出：登记房租、话费等定期支出，到期自动记录。','help.me2':'编辑分类：修改表情/名称或添加新分类。','help.me3':'编辑支付方式：添加或修改卡、现金等支付方式。','help.me4':'个人资料：设置头像和昵称。','help.me5':'默认货币：更改为您喜欢的货币。','help.me6':'语言：支持韩语、英语、日语、中文。','help.me7':'深色模式：切换到护眼的深色主题。','help.me8':'推送通知：在设定时间收到记账提醒。',
+    'help.dataTitle':'数据','help.data1':'服务器同步：可在多台设备上使用相同数据。','help.data2':'备份/恢复：用JSON文件安全保存和恢复数据。','help.data3':'导出：将本月或全部记录下载为CSV。',
+    'help.appTitle':'应用信息','help.app1':'我的账本 — 培养明智的消费习惯。','help.app2':'数据存储在设备中，并与服务器同步。',
     'lbl.detail':'详细信息',
     'form.amount':'金额','form.amountPh':'0',
     'form.category':'类别','form.catSelect':'选择',
@@ -8258,6 +8298,19 @@ function closeLangModal() {
 }
 
 
+// ── 네비게이션 바 색 강제 적용 (Note10+ 등 3버튼 기기 대응) ──────
+// design_apply.js 실행 시점에 AndroidBridge가 아직 주입 안 된 경우를 커버
+function _forceNavBarColor() {
+  if (window.AndroidBridge && typeof window.AndroidBridge.setNavBarColor === 'function') {
+    window.AndroidBridge.setNavBarColor(isDark ? '#131c27' : '#ffffff');
+  }
+}
+window.addEventListener('load', function() {
+  _forceNavBarColor();
+  setTimeout(_forceNavBarColor, 300);
+  setTimeout(_forceNavBarColor, 800);
+});
+
 // ── 초기화 ───────────────────────────────────────────────────
 
 
@@ -8268,6 +8321,7 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
 }
 startNotifScheduler();
+_autoRequestNotif();
 
 // 즉시 렌더
 try { goTab('ledger'); } catch(e) {
