@@ -512,8 +512,10 @@ try {
                     $insSt->execute([':uid'=>$userId, ':cid'=>$f['category_id'], ':amt'=>$f['amount'],
                                      ':desc'=>$f['name'], ':dt'=>$dt, ':type'=>$f['type']]);
                     $added++;
+                    $dbId = (int)$pdo->lastInsertId();
                     $newItems[] = [
-                        'id'          => 'fixed_apply_' . $pdo->lastInsertId(),
+                        'id'          => 'db_' . $dbId,
+                        'db_id'       => $dbId,
                         'type'        => $f['type'],
                         'amount'      => (int)$f['amount'],
                         'category'    => $f['name'],
@@ -623,7 +625,7 @@ try {
             if (!isset($sub['endpoint'], $sub['keys']['p256dh'], $sub['keys']['auth'])) {
                 http_response_code(400); echo json_encode(['status'=>'error','message'=>'Invalid subscription']); break;
             }
-            $notifTime = preg_match('/^\d{2}:\d{2}$/', $sub['time'] ?? '') ? $sub['time'] : '21:00';
+            $notifTime = preg_match('/^\d{2}:\d{2}$/', $sub['time'] ?? '') ? $sub['time'] : '18:00';
             $pdo = getConnection();
             try {
                 $pdo->exec("CREATE TABLE IF NOT EXISTS push_subscriptions (

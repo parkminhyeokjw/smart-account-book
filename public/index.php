@@ -148,6 +148,7 @@ if ($isLoggedIn) {
 @keyframes fadeIn      { from { opacity:0; }                              to { opacity:1; } }
 @keyframes fadeScaleIn { from { opacity:0; transform:scale(.95); }        to { opacity:1; transform:scale(1); } }
 @keyframes slideUp  { from { transform:translateY(30px); opacity:0; } to { transform:none; opacity:1; } }
+@keyframes slideUpSheet { from { transform:translateY(100%); } to { transform:translateY(0); } }
 
 html { background: #F8FAFC; min-height: 100%; color-scheme: light; }
 html.dark-bg { background: #0d1117; color-scheme: dark; }
@@ -182,8 +183,6 @@ body.dark { background: #0d1117; }
 .header-logo-text { font-size: clamp(15px, 4vw, 18px); font-weight: 700; letter-spacing: .3px; }
 #headerBackBtn { background:none; border:none; color:#fff; cursor:pointer; padding:4px 2px 4px 0; line-height:1; display:none; align-items:center; transition:opacity .15s; }
 #headerBackBtn:active { opacity:.6; }
-.app-header.stats-mode .header-logo-text,
-.app-header.report-mode .header-logo-text { font-size: 16px !important; }
 .header-center-title {
   position: absolute; left: 50%; transform: translateX(-50%);
   font-size: 18px; font-weight: 800; color: #fff; pointer-events: none; display: none;
@@ -658,6 +657,7 @@ body.dark .tab-pane { background: #0d1117; }
 /* ── 나 ── */
 /* ── 나 탭 ── */
 #pane-me { overflow: hidden; height: calc(100vh - calc(44px + env(safe-area-inset-top)) - calc(64px + env(safe-area-inset-bottom))); height: calc(100dvh - calc(44px + env(safe-area-inset-top)) - calc(64px + env(safe-area-inset-bottom))); padding-bottom: 0 !important; background: var(--bg); }
+body.dark #pane-me { background: #131c27; }
 .me-wrap { position: relative; height: 100%; overflow: hidden; touch-action: pan-y; }
 .me-subpage { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: var(--bg); opacity: 0; pointer-events: none; transition: opacity .18s ease; overflow: hidden; display: flex; flex-direction: column; z-index: 10; }
 .me-subpage.active { opacity: 1; pointer-events: auto; }
@@ -818,7 +818,7 @@ body.dark .avatar-sheet-sep { background:#334155; }
 .pv-arrow.right { right: 12px; }
 
 /* ── 모달 ── */
-.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 500; align-items: center; justify-content: center; padding: 16px; }
+.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 500; align-items: center; justify-content: center; padding: 16px 16px 52px; }
 .overlay.show { display: flex; }
 .overlay.show .modal { animation: fadeScaleIn .22s cubic-bezier(.22,1,.36,1); }
 .overlay.show .modal,
@@ -842,7 +842,7 @@ body.dark .avatar-sheet-sep { background:#334155; }
 .mf-input:focus, .mf-select:focus { border-color: var(--accent); }
 
 /* 카테고리 행 (select + 추가버튼) */
-.cat-row-wrap { display: flex; gap: 6px; margin-bottom: 6px; position: relative; }
+.cat-row-wrap { display: flex; gap: 6px; margin-bottom: 6px; flex-wrap: wrap; }
 .cat-row-wrap .mf-select { margin-bottom: 0; flex: 1; }
 .cat-add-btn { background: #F1F5F9; color: #364B6D; border: 1px solid #CBD5E1; border-radius: 8px; width: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: background .15s; padding: 0; }
 .cat-add-btn:active { background: #E2E8F0; }
@@ -867,8 +867,8 @@ body.dark .cat-cs-dropdown { background: #1a2638; border-color: #263447; }
 body.dark .cat-cs-option:hover { background: #1e2d3f; }
 body.dark .cat-cs-option.selected { background: #1e2d3f; }
 
-/* 새 카테고리 입력 영역 — absolute 드롭다운 (레이아웃 높이 영향 없음) */
-.new-cat-box { display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: #f9fbe7; border: 1px solid #e6ee9c; border-radius: 8px; padding: 10px 12px; z-index: 300; box-shadow: 0 6px 20px rgba(0,0,0,.12); }
+/* 새 카테고리 입력 영역 — 인라인 (행 아래 자연스럽게 펼침) */
+.new-cat-box { display: none; flex: 0 0 100%; background: #f9fbe7; border: 1px solid #e6ee9c; border-radius: 8px; padding: 10px 12px; }
 .new-cat-box.show { display: block; }
 .new-cat-row { display: flex; gap: 6px; align-items: center; overflow: hidden; }
 .nc-icon-btn { background: none; border: none; padding: 0; cursor: pointer; flex-shrink: 0; }
@@ -879,7 +879,7 @@ body.dark .cat-cs-option.selected { background: #1e2d3f; }
 .new-cat-save { background: var(--p); color: #fff; border: none; border-radius: 8px; padding: 0 10px; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; height: 36px; flex-shrink: 0; }
 .new-cat-save:active { opacity: .8; }
 /* 아이콘 피커 */
-.icon-picker-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 600; align-items: center; justify-content: center; padding: 16px; }
+.icon-picker-overlay { display: none; position: fixed; inset: 0; top: calc(-1 * env(safe-area-inset-top)); padding-top: env(safe-area-inset-top); background: rgba(0,0,0,.5); z-index: 600; align-items: center; justify-content: center; padding-left: 16px; padding-right: 16px; padding-bottom: 16px; }
 .icon-picker-overlay.show { display: flex; }
 .icon-picker-box { background: #fff; border-radius: 20px; width: 100%; max-width: 360px; max-height: 75vh; display: flex; flex-direction: column; overflow: hidden; animation: fadeScaleIn .2s cubic-bezier(.22,1,.36,1); }
 .icon-picker-hd { padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f0f0f0; flex-shrink: 0; }
@@ -960,11 +960,22 @@ body.dark .edit-row { border-bottom-color:#1e293b; background:#131c27; }
 body.dark .edit-row-label { color:#c0c0c0; }
 body.dark .report-edit-panel { background:#131c27; }
 body.dark .modal { background:#131c27; }
+body.dark #modal .modal-hd { background: #0F172A; }
 body.dark .txa-sheet { background:#131c27; }
+
+/* ── 내역 추가 풀스크린 ── */
+#modal { align-items: flex-end; padding: 0; background: #364B6D; }
+#modal.show .modal { animation: fadeScaleIn .18s ease; }
+#modal .modal { height: 100dvh; max-height: 100dvh; border-radius: 0; overflow: hidden; display: flex; flex-direction: column; padding-bottom: 0; }
+#modal .modal-hd { padding-top: max(16px, calc(env(safe-area-inset-top) + 10px)); background: #364B6D; }
+#modal .type-row { flex-shrink: 0; margin: 12px 20px 0; }
+#modal .mform { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 8px 20px 16px; }
+#modal .modal-save { flex-shrink: 0; margin: 8px 20px calc(env(safe-area-inset-bottom) + 24px); width: calc(100% - 40px); }
+
 /* 사진 선택 바텀시트 */
-.photo-picker-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:600; align-items:flex-end; justify-content:center; }
+.photo-picker-overlay { display:none; position:fixed; inset:0; top: calc(-1 * env(safe-area-inset-top)); background:rgba(0,0,0,.5); z-index:600; align-items:flex-end; justify-content:center; }
 .photo-picker-overlay.show { display:flex; }
-.photo-picker-sheet { background:#fff; border-radius:20px 20px 0 0; width:100%; max-width:600px; padding:20px 20px 36px; }
+.photo-picker-sheet { background:#fff; border-radius:20px 20px 0 0; width:100%; max-width:600px; padding:20px 20px calc(env(safe-area-inset-bottom) + 56px); }
 .photo-picker-title { font-size:14px; font-weight:700; color:#9e9e9e; text-align:center; margin-bottom:16px; }
 .photo-picker-row { display:flex; gap:12px; }
 .photo-picker-btn { flex:1; display:flex; flex-direction:column; align-items:center; gap:8px; padding:18px 0; border:1.5px solid #E2E8F0; border-radius:14px; background:#F8FAFC; cursor:pointer; }
@@ -1540,9 +1551,9 @@ body.dark #survPane .widget-card { background:#0f172a !important; border-bottom-
   <div class="header-center-title" id="headerCenterTitle" style="display:none">마이가계부</div>
   <div class="header-actions" id="headerActions">
     <div id="haDefault" style="display:flex;align-items:center;gap:2px">
-      <button class="search-btn" id="searchToggleBtn" onclick="toggleInlineSearch()" title="검색"><i data-lucide="search" style="width:20px;height:20px;stroke-width:1.75"></i></button>
-      <button class="cal-btn" id="survHdrBtn" onclick="document.getElementById('survPane').style.display==='none'?openSurvModal():closeSurvModal()" title="목표 예산"><i data-lucide="wallet" style="width:20px;height:20px;stroke-width:1.75"></i></button>
-      <button class="cal-btn" onclick="toggleCalendar()" title="달력"><i data-lucide="calendar" style="width:20px;height:20px;stroke-width:1.75"></i></button>
+      <button class="search-btn" id="searchToggleBtn" onclick="toggleInlineSearch()" title="검색"><svg style="width:20px;height:20px;stroke-width:1.75" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></button>
+      <button class="cal-btn" id="survHdrBtn" onclick="document.getElementById('survPane').style.display==='none'?openSurvModal():closeSurvModal()" title="목표 예산"><svg style="width:20px;height:20px;stroke-width:1.75" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg></button>
+      <button class="cal-btn" onclick="toggleCalendar()" title="달력"><svg style="width:20px;height:20px;stroke-width:1.75" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></button>
     </div>
     <div id="haReport" style="display:none;align-items:center;gap:4px">
       <button onclick="openRsAddModal()" style="background:none;border:none;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-size:24px;font-weight:300;line-height:1" title="위젯 추가">+</button>
@@ -1717,23 +1728,23 @@ body.dark #survPane .widget-card { background:#0f172a !important; border-bottom-
 
       <div class="me-grid">
         <div class="me-grid-item" onclick="openMePage('appSettings')">
-          <div class="me-grid-icon"><i data-lucide="settings"></i></div>
+          <div class="me-grid-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
           <span class="me-grid-label" data-i18n="grid.settings">앱 설정</span>
         </div>
         <div class="me-grid-item" onclick="openUpgradeModal()">
-          <div class="me-grid-icon"><i data-lucide="rocket"></i></div>
+          <div class="me-grid-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg></div>
           <span class="me-grid-label" data-i18n="grid.upgrade">업그레이드</span>
         </div>
         <div class="me-grid-item" onclick="openHelpModal()">
-          <div class="me-grid-icon"><i data-lucide="help-circle"></i></div>
+          <div class="me-grid-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
           <span class="me-grid-label" data-i18n="grid.help">도움말</span>
         </div>
         <div class="me-grid-item" onclick="openMePage('data')">
-          <div class="me-grid-icon"><i data-lucide="database"></i></div>
+          <div class="me-grid-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></div>
           <span class="me-grid-label" data-i18n="grid.data">데이터</span>
         </div>
         <div class="me-grid-item" onclick="openContactModal()">
-          <div class="me-grid-icon"><i data-lucide="message-circle"></i></div>
+          <div class="me-grid-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
           <span class="me-grid-label" data-i18n="grid.contact">문의하기</span>
         </div>
       </div>
@@ -2516,15 +2527,15 @@ body.dark #survPane .widget-card { background:#0f172a !important; border-bottom-
 
 <!-- 하단 탭바 -->
 <div class="tab-bar">
-  <button class="t-btn on" id="tb-ledger" onclick="goTab('ledger')"><i data-lucide="book-open" class="ico-sv"></i><span data-i18n="tab.ledger">가계부</span></button>
-  <button class="t-btn"    id="tb-stats"  onclick="goTab('stats')"><i data-lucide="bar-chart-2" class="ico-sv"></i><span data-i18n="tab.stats">통계</span></button>
+  <button class="t-btn on" id="tb-ledger" onclick="goTab('ledger')"><svg class="ico-sv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span data-i18n="tab.ledger">가계부</span></button>
+  <button class="t-btn"    id="tb-stats"  onclick="goTab('stats')"><svg class="ico-sv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span data-i18n="tab.stats">통계</span></button>
   <button class="fab-wrap" onclick="openModal()"><div class="fab">＋</div></button>
-  <button class="t-btn"    id="tb-report" onclick="goTab('report')"><i data-lucide="file-text" class="ico-sv"></i><span data-i18n="tab.report">분석</span></button>
-  <button class="t-btn"    id="tb-me"     onclick="goTab('me')"><i data-lucide="user" class="ico-sv"></i><span data-i18n="tab.me">나</span></button>
+  <button class="t-btn"    id="tb-report" onclick="goTab('report')"><svg class="ico-sv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><span data-i18n="tab.report">분석</span></button>
+  <button class="t-btn"    id="tb-me"     onclick="goTab('me')"><svg class="ico-sv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span data-i18n="tab.me">나</span></button>
 </div>
 
 <!-- 계산기 overlay -->
-<div id="calcOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;align-items:flex-end;justify-content:center;flex-direction:column">
+<div id="calcOverlay" style="display:none;position:fixed;inset:0;top:calc(-1 * env(safe-area-inset-top));background:rgba(0,0,0,.5);z-index:9999;align-items:flex-end;justify-content:center;flex-direction:column">
   <div style="background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:480px;height:75vh;display:flex;flex-direction:column;margin:0 auto">
     <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;background:var(--p);border-radius:20px 20px 0 0;flex-shrink:0">
       <span style="color:#fff;font-size:16px;font-weight:700">계산기</span>
@@ -2538,11 +2549,9 @@ body.dark #survPane .widget-card { background:#0f172a !important; border-bottom-
 <div class="overlay" id="modal" onclick="onOverlayClick(event)">
   <div class="modal">
     <div class="modal-hd">
+      <button class="modal-x" onclick="closeModal()" style="font-size:22px;padding:4px 8px 4px 0">‹</button>
       <span class="modal-hd-title" id="modalTitle">내역 추가</span>
-      <div style="display:flex;align-items:center;gap:8px">
-        <button onclick="openCalcOverlay()" style="background:none;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;padding:4px" title="계산기"><i data-lucide="calculator" style="width:20px;height:20px;stroke-width:1.75"></i></button>
-        <button class="modal-x" onclick="closeModal()">×</button>
-      </div>
+      <button onclick="openCalcOverlay()" style="background:none;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;padding:4px" title="계산기"><i data-lucide="calculator" style="width:20px;height:20px;stroke-width:1.75"></i></button>
     </div>
     <div class="type-row">
       <button class="type-t on e" id="typeE" onclick="setType('expense')" data-i18n="lbl.expense">지출</button>
@@ -4855,6 +4864,12 @@ function addWidgetById(id) {
 }
 
 // ── 모달 ─────────────────────────────────────────────────────
+function _setModalTheme(open) {
+  const color = open ? '#364B6D' : '#364B6D';
+  try { window.AndroidBridge.setStatusBarColor(color); } catch(e) {}
+  const meta = document.getElementById('metaThemeColor');
+  if (meta) meta.setAttribute('content', open ? '#1E293B' : (isDark ? '#0F172A' : '#ffffff'));
+}
 function openModal() {
   editingTxId = null;
   document.getElementById('modalTitle').textContent = tr('modal.addTx');
@@ -4866,6 +4881,7 @@ function openModal() {
   renderPhotoGrid();
   document.getElementById('newCatBox').classList.remove('show');
   document.getElementById('newPayBox').classList.remove('show');
+  _setModalTheme(true);
   // DB 카테고리가 아직 없으면 먼저 로드 후 열기
   if (IS_LOGGED_IN && dbCats.expense.length === 0 && dbCats.income.length === 0) {
     loadDbCats(() => { setType('expense'); document.getElementById('modal').classList.add('show'); });
@@ -4887,9 +4903,14 @@ function fillModal(t, titleText) {
   photosData = Array.isArray(t.photos) ? [...t.photos] : (t.photo ? [t.photo] : []);
   renderPhotoGrid();
   document.getElementById('newCatBox').classList.remove('show');
+  document.getElementById('newPayBox').classList.remove('show');
+  _setModalTheme(true);
   document.getElementById('modal').classList.add('show');
 }
-function closeModal() { document.getElementById('modal').classList.remove('show'); }
+function closeModal() {
+  document.getElementById('modal').classList.remove('show');
+  _setModalTheme(false);
+}
 function openCalcOverlay() {
   var ov = document.getElementById('calcOverlay');
   var fr = document.getElementById('calcFrame');
