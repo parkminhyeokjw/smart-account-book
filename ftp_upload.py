@@ -10,6 +10,7 @@ LOCAL_BASE = 'C:/xampp/htdocs/smart-account-book/public'
 
 FILES = [
     'manifest.json',
+    'manifest.php',
     'icon.svg',
     'icon-72.png',
     'icon-96.png',
@@ -21,6 +22,16 @@ FILES = [
     'icon-512.png',
     'favicon.png',
     'index.php',
+    'login.php',
+    'register.php',
+    'forgot_password.php',
+    'settings.php',
+    'help.php',
+    'premium.php',
+    'currency.php',
+    'design_settings.php',
+    'admin_inquiries.php',
+    'category_classify.php',
 ]
 
 def upload_file(ftp, local_path, remote_path):
@@ -52,6 +63,25 @@ for fname in FILES:
     else:
         print(f'FAILED: {fname}')
         failed.append(fname)
+
+# API 파일 별도 업로드
+API_FILES = [
+    ('C:/xampp/htdocs/smart-account-book/api/index.php', 'htdocs/api/index.php'),
+]
+for local, remote in API_FILES:
+    for attempt in range(3):
+        try:
+            ftp = connect()
+            print(f'Uploading api/index.php...', end=' ')
+            upload_file(ftp, local, remote)
+            ftp.quit()
+            print('OK')
+            break
+        except Exception as e:
+            print(f'RETRY ({attempt+1}/3): {e}')
+            time.sleep(3)
+    else:
+        failed.append('api/index.php')
 
 if failed:
     print('\n실패한 파일:', failed)

@@ -19,13 +19,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $user = $stmt->fetch();
 
             if ($user && $user['password'] && password_verify($password, $user['password'])) {
+                session_unset();
+                session_regenerate_id(true);
                 $_SESSION['user_id']    = $user['id'];
                 $_SESSION['user_name']  = $user['name'];
                 $_SESSION['user_email'] = $user['email'];
                 // remember-me 토큰 발급
                 try {
                     $pdo->exec("CREATE TABLE IF NOT EXISTS remember_tokens (id INT AUTO_INCREMENT PRIMARY KEY, user_id INT NOT NULL, token VARCHAR(64) NOT NULL, expires_at DATETIME NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
-                    $rm_token = sha1(uniqid(mt_rand(), true) . $user['id']);
+                    $rm_token = bin2hex(random_bytes(32));
                     $pdo->prepare("DELETE FROM remember_tokens WHERE user_id=:uid")->execute([':uid'=>$user['id']]);
                     $pdo->prepare("INSERT INTO remember_tokens (user_id,token,expires_at) VALUES (:uid,:t,DATE_ADD(NOW(),INTERVAL 30 DAY))")->execute([':uid'=>$user['id'],':t'=>$rm_token]);
                     setcookie('ddgb_rm', $rm_token, time()+30*86400, '/');
@@ -47,18 +49,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>로그인 — 똑똑가계부</title>
+<title>로그인 — 마이가계부</title>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
   font-family: -apple-system, 'Malgun Gothic', '맑은 고딕', sans-serif;
   background: #F3F5FA;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px 16px;
+  padding: 16px;
 }
 .card {
   background: #fff;
@@ -84,7 +87,7 @@ body {
 .logo h1 { font-size: 22px; font-weight: 700; color: #fff; margin-top: 0; }
 .logo p  { font-size: 13px; color: rgba(255,255,255,.65); margin-top: 5px; }
 
-.card-body { padding: 28px 28px 32px; }
+.card-body { padding: 20px 28px 24px; }
 
 .field { margin-bottom: 16px; }
 .field label { display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 6px; }
@@ -168,7 +171,7 @@ body {
 <div class="card">
   <div class="logo">
     <div class="logo-icon"><span class="material-icons">account_balance_wallet</span></div>
-    <h1>똑똑가계부</h1>
+    <h1>마이가계부</h1>
     <p>내 지출을 스마트하게 관리하세요</p>
   </div>
 

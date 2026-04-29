@@ -9,7 +9,7 @@ $_helpLoggedIn  = !empty($_SESSION['user_id']);
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>도움말 — 똑똑가계부</title>
+<title>도움말 — 마이가계부</title>
 <script src="design_apply.js"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -252,7 +252,7 @@ var ITEMS = [
   {
     title: '카드사 은행 어플 푸쉬 알림 연동하는법?',
     body: `<p><strong>1. 알림 접근 권한 허용</strong></p>
-<p>스마트폰 설정 → 알림 → 알림 접근 → 똑똑가계부 허용</p>
+<p>스마트폰 설정 → 알림 → 알림 접근 → 마이가계부 허용</p>
 <p><strong>2. 앱 내 설정</strong></p>
 <p>설정 → 자동입력 설정 → 어플 푸쉬 알림 자동입력 활성화</p>
 <p><strong>3. 카드사/은행 앱에서</strong></p>
@@ -310,7 +310,7 @@ var ITEMS = [
   {
     title: '문자 자동입력이 제대로 되지 않아요!',
     body: `<p><strong>확인사항 1: 문자 읽기 권한</strong></p>
-<p>설정 → 앱 → 똑똑가계부 → 권한 → 문자메시지 허용</p>
+<p>설정 → 앱 → 마이가계부 → 권한 → 문자메시지 허용</p>
 <p><strong>확인사항 2: 자동입력 설정</strong></p>
 <p>앱 설정 → 자동입력 설정 → 문자 메시지 자동입력 활성화</p>
 <p><strong>확인사항 3: 문자 형식</strong></p>
@@ -499,7 +499,7 @@ var ITEMS = [
   },
   {
     title: '사용할 수 있는 통계의 종류는?',
-    body: `<p>똑똑가계부는 다양한 통계를 제공합니다:</p>
+    body: `<p>마이가계부는 다양한 통계를 제공합니다:</p>
 <p>• <strong>기간별 통계</strong>: 일별, 주별, 월별, 연별 지출/수입 합계<br>• <strong>카테고리별 통계</strong>: 카테고리별 지출 비율 및 금액<br>• <strong>결제수단별 통계</strong>: 카드/계좌별 사용 내역<br>• <strong>수지 통계</strong>: 수입/지출/잔액 흐름<br>• <strong>요일별/시간대별 통계</strong>: 소비 패턴 분석</p>`
   },
   {
@@ -526,7 +526,7 @@ var ITEMS = [
   },
   {
     title: '사용할 수 있는 차트의 종류는?',
-    body: `<p>똑똑가계부는 다양한 차트를 제공합니다:</p>
+    body: `<p>마이가계부는 다양한 차트를 제공합니다:</p>
 <p>• <strong>파이차트</strong>: 카테고리별 지출 비율을 원형으로 표시<br>• <strong>막대차트</strong>: 기간별 지출/수입을 막대로 비교<br>• <strong>선형차트</strong>: 지출 추이를 선으로 표시<br>• <strong>누적차트</strong>: 월별 누적 지출/수입 흐름</p>`
   },
   {

@@ -7,7 +7,6 @@ require_once __DIR__ . '/../transaction/list.php';
 require_once __DIR__ . '/../transaction/delete.php';
 
 header('Content-Type: application/json; charset=utf-8');
-header('Access-Control-Allow-Origin: *');
 
 $action = $_GET['action'] ?? '';
 $userId = requireLogin(true);
@@ -568,12 +567,7 @@ try {
             } catch (PDOException $e) {
                 $settings = ['dark_mode'=>0,'notif_time'=>'21:00','notif_enabled'=>0,'nickname'=>'','avatar_color'=>0,'avatar_img'=>'','surv_budget'=>''];
             }
-            // 세션 값 우선
-            if (!empty($_SESSION['settings'])) {
-                foreach ($_SESSION['settings'] as $k => $v) {
-                    if (isset($settings[$k])) $settings[$k] = $v;
-                }
-            }
+            $settings['_uid'] = $userId;
             echo json_encode($settings);
             break;
 

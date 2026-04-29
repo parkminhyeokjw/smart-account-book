@@ -3,7 +3,7 @@ if (session_status() === PHP_SESSION_NONE) session_start();
 
 // ── 관리자 인증 ────────────────────────────────────────────────
 // admin 비밀번호: 세션에 is_admin=true 가 없으면 비밀번호 확인
-define('ADMIN_PASS', 'admin1234');   // ← 원하는 비밀번호로 변경
+define('ADMIN_PASS', '1122');   // ← 원하는 비밀번호로 변경
 
 if (isset($_POST['admin_pass'])) {
     if ($_POST['admin_pass'] === ADMIN_PASS) {
@@ -105,7 +105,7 @@ $totalPages  = max(1, (int)ceil($total / $limit));
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>문의 관리 — 똑똑가계부</title>
+<title>문의 관리 — 마이가계부</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: -apple-system,'Malgun Gothic','맑은 고딕',sans-serif;

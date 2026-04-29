@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>설정 — 똑똑가계부</title>
+<title>설정 — 마이가계부</title>
 <script src="design_apply.js"></script>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <style>
@@ -342,7 +342,7 @@ body {
 
   <div class="s-item">
     <div class="s-item-text">
-      <div class="s-item-title">똑똑가계부 정보</div>
+      <div class="s-item-title">마이가계부 정보</div>
       <div class="s-item-desc">버전 1.0.0</div>
     </div>
   </div>

@@ -23,7 +23,7 @@ $categories = $catStmt->fetchAll();
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>카테고리 일괄 분류 — 똑똑가계부</title>
+<title>카테고리 일괄 분류 — 마이가계부</title>
 <script src="design_apply.js"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }

@@ -186,7 +186,7 @@ if (!empty($data['rates'])) {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>통화와 환율 — 똑똑가계부</title>
+<title>통화와 환율 — 마이가계부</title>
 <script src="design_apply.js"></script>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <style>

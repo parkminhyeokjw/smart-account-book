@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>프리미엄 구독 — 똑똑가계부</title>
+<title>프리미엄 구독 — 마이가계부</title>
 <script src="design_apply.js"></script>
 <script src="currency_apply.js"></script>
 <style>

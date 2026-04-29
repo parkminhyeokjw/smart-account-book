@@ -1,6 +1,6 @@
 // sw.js — 알림 클릭 처리 & Web Push 지원
 // v3 — 새 SW 활성화 시 모든 페이지 강제 새로고침
-const SW_VERSION = 'v4';
+const SW_VERSION = 'v12';
 
 self.addEventListener('install', () => self.skipWaiting());
 
